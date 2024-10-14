@@ -1,10 +1,8 @@
 <template>
   <main>
-    <custom-header :is-home-page="true" />
+    <custom-header current-page="Home" />
 
-    <module-home-banner-pc :data="recApps.slice(0, 3)" />
-
-    <module-home-banner-mobile :data="recApps" />
+    <module-home-banner :data="recApps.slice(0, 3)" />
 
     <section class="module-common module-collection">
       <common-title-label title="Selected Collection" :is-see-more="true" to="/collection/" />
@@ -19,8 +17,6 @@
         />
       </div>
     </section>
-
-    <google-ad class="ad-m" ad-slot="6667048681" />
 
     <section class="module-common module-new">
       <common-title-label title="New Wallpapers" :is-see-more="true" to="/new/" />
@@ -195,12 +191,7 @@ export default {
 
 @media screen and (max-width: 750px) {
   main {
-    padding-top: 0;
-  }
-
-  .ad-m {
-    display: block;
-    margin-top: vw(48);
+    padding-top: vw(167);
   }
 
   .module-collection-content {

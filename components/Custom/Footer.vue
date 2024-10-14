@@ -139,7 +139,7 @@ footer {
       font-size: 16px;
       font-family: "sesb";
       border-radius: 32px;
-      @include bg-theme;
+      background: $color3;
       @include center;
       cursor: pointer;
     }

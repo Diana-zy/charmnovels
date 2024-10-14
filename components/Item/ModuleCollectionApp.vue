@@ -128,7 +128,7 @@ export default {
   border-radius: 50%;
   box-shadow: 3px 3px 6px 0 rgba(#83a9c4, 0.3), -3px -3px 6px 0 $color1;
   @include center;
-  @include bg-theme;
+  background: $color3;
 }
 
 .icon-download {

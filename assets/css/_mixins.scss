@@ -4,14 +4,10 @@
 
 $color1: #ffffff;
 $color2: #41414c; //字体颜色
-$color3: #ff82a8; //主题颜色
-$color4: #f3eded; //背景颜色
+$color3: #FF9345; //主题颜色
+$color4: #FFFCF7; //背景颜色
 $color5: #c5aaaa; //阴影颜色
 $color6: #550808; //阴影颜色
-
-@mixin bg-theme() {
-  background: $color3;
-}
 
 @mixin border() {
   border: 2px solid $color1;

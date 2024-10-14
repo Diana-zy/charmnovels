@@ -80,7 +80,7 @@ main {
     }
     .android {
       margin-right: 24px;
-      @include bg-theme;
+      background: $color3;
     }
     .ios {
       border: 2px solid $color3;

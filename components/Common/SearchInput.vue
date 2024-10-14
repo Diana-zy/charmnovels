@@ -35,8 +35,7 @@ export default {
   width: 320px;
   height: 40px;
   border-radius: 40px;
-  background: $color4;
-  @include shadow-inner;
+  border: 1px solid $color3;
 }
 .search-input {
   position: absolute;
@@ -44,7 +43,7 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  padding: 0 82px 0 16px;
+  padding: 0 97px 0 16px;
   color: $color2;
   font-size: 14px;
   &::placeholder {
@@ -53,12 +52,11 @@ export default {
 }
 .search-btn {
   position: absolute;
-  right: 4px;
+  right: 0;
   width: 83px;
-  height: 32px;
-  border-radius: 32px;
-  @include bg-theme;
-  @include btn-shadow-outer;
+  height: 40px;
+  border-radius: 40px;
+  background: $color3;
   @include center;
   cursor: pointer;
   i {
@@ -67,23 +65,18 @@ export default {
 }
 @media screen and (max-width: 750px) {
   .search-box {
-    width: vw(562);
-    height: vw(96);
-    border-radius: vw(96);
-    @include border;
-    box-shadow: inset vw(12) vw(12) vw(24) 0 rgba(#235691, 0.16),
-      inset vw(-12) vw(-12) vw(24) 0 $color1;
+    width: vw(400);
+    height: vw(64);
+    border-radius: vw(16);
   }
   .search-input {
-    padding: 0 vw(164) 0 vw(32);
+    padding: 0 vw(124) 0 vw(24);
     font-size: vw(32);
   }
   .search-btn {
-    right: vw(4);
-    width: vw(156);
-    height: vw(80);
-    border-radius: vw(80);
-    box-shadow: none;
+    width: vw(124);
+    height: vw(64);
+    border-radius: vw(16);
     i {
       width: vw(48);
       height: vw(48);

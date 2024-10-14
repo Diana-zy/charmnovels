@@ -4,18 +4,42 @@
       <i></i>
     </custom-link>
 
-    <div class="header-right-pc">
-      <div class="btn-pwa" v-if="showInstallButton" @click="installPWA">
-        <i></i>
-      </div>
-      <common-search-input @handle-search="handleSearch" />
+    <!-- Tab -->
+    <div
+      :class="[
+        'header-tabs',
+        { 'header-tabs-hidden': currentPage != 'Home' && currentPage != 'Library' }
+      ]"
+    >
+      <custom-link
+        v-for="(tab, i) in tabsArr"
+        :key="i"
+        :to="tab.path"
+        :class="['tab-item', { 'tab-item-active': currentPage === tab.name }]"
+        >{{ tab.name }}</custom-link
+      >
     </div>
 
-    <div class="header-right-m">
-      <div class="btn-pwa" v-if="showInstallButton" @click="installPWA">
-        <i class="h-icon-download-m"></i>
+    <div class="header-right">
+      <common-search-input @handle-search="handleSearch" />
+      <custom-link to="/login/" class="btn-login m-hidden-flex">Login</custom-link>
+      <div class="avatar-container">
+        <custom-link v-if="!isLogin" to="/login/">
+          <i class="avatar"></i>
+        </custom-link>
+        <i v-if="isLogin" class="avatar-a" tabindex="0"></i>
+        <custom-link to="purchased-novels" class="user-menu">
+          <div class="menu-item">
+            <i class="icon-order"></i>
+            <span>Purchased novels</span>
+          </div>
+          <div class="line"></div>
+          <div class="menu-item">
+            <i class="icon-logout"></i>
+            <span>Log out</span>
+          </div>
+        </custom-link>
       </div>
-      <custom-link to="/search/" class="btn-search"> <i class="h-icon-search-m"></i></custom-link>
     </div>
   </header>
 </template>
@@ -28,48 +52,28 @@ export default {
     isHomePage: {
       type: Boolean,
       default: false
+    },
+    currentPage: {
+      type: String,
+      default: ""
     }
   },
   data() {
     return {
-      deferredPrompt: null,
-      showInstallButton: false
+      tabsArr: [
+        {
+          name: "Home",
+          path: "/"
+        },
+        {
+          name: "Library",
+          path: "/Library/"
+        }
+      ],
+      isLogin: true
     };
   },
-  mounted() {
-    // 判断是否支持 PWA
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      if (window.deferredPrompt) {
-        this.deferredPrompt = window.deferredPrompt;
-        this.showInstallButton = true;
-      } else {
-        // 如果beforeinstallprompt这个事件在window.onload后 组件mounted时未触发，则重新建立监听
-        window.addEventListener("beforeinstallprompt", (e) => {
-          // console.log("page - beforeinstallprompt", e);
-          e.preventDefault();
-          this.deferredPrompt = e;
-          this.showInstallButton = true;
-        });
-      }
-    }
-  },
   methods: {
-    installPWA() {
-      if (this.deferredPrompt) {
-        // 触发 PWA 安装提示
-        this.deferredPrompt.prompt();
-        // 在用户做出选择后，保存结果
-        this.deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === "accepted") {
-            console.log("User accepted the A2HS prompt");
-          } else {
-            console.log("User dismissed the A2HS prompt");
-          }
-          // 重置 deferredPrompt
-          this.deferredPrompt = null;
-        });
-      }
-    },
     handleSearch(inputValue) {
       simulateClick("/search/", "text", inputValue);
     }
@@ -88,7 +92,6 @@ header {
   max-width: 1200px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 64px;
   margin: 0 auto;
   &:before {
@@ -100,82 +103,181 @@ header {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    background: $color3;
     z-index: -1;
+    background: $color4;
+    border: 1px solid rgba($color2, 0.2);
   }
 }
 
 .logo {
   @include center;
-  width: 193px;
-  height: 40px;
+  margin-right: 40px;
   i {
-    @include icon(161px, 32px, "logo-pc.png");
+    @include icon(219px, 54px, "logo-pc.png");
   }
 }
 
-.header-right-pc {
+.header-tabs {
+  display: flex;
+  gap: 21px;
+  .tab-item {
+    display: inline-block;
+    height: 64px;
+    line-height: 64px;
+    font-size: 20px;
+    color: rgba($color2, 0.6);
+  }
+  .tab-item-active {
+    position: relative;
+    font-family: "seb";
+    color: $color3;
+    &::before {
+      position: absolute;
+      content: "";
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: $color3;
+    }
+  }
+}
+
+.header-right {
   display: flex;
   align-items: center;
-  .btn-pwa {
-    width: 40px;
+  margin-left: auto;
+  .btn-login {
+    width: 91px;
     height: 40px;
-    margin-right: 24px;
+    margin-left: 24px;
     border-radius: 40px;
     @include center;
-    @include btn-shadow-outer();
-    cursor: pointer;
-    &:hover {
-      @include btn-shadow-inner();
-    }
-    i {
-      @include icon(24px, 24px, "h-icon-download.png");
-    }
-  }
-  .search-box {
-    background: $color4;
+    background: $color3;
+    color: $color1;
+    font-size: 18px;
+    font-family: "seb";
   }
 }
 
-.header-right-m {
-  display: none;
+.avatar-container {
+  position: relative;
+  margin-left: 24px;
+  .avatar {
+    @include icon(48px, 48px, "icon-avatar.png");
+  }
+  .avatar-a {
+    @include icon(48px, 48px, "icon-avatar-a.png");
+    &:focus-within + .user-menu {
+      display: block;
+    }
+  }
+  .user-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 56px;
+    width: 170px;
+    border-radius: 8px;
+    background: $color4;
+    box-shadow: 0px 4px 16px 0px rgba(#000, 0.15);
+  }
+  .line {
+    width: 146px;
+    height: 1px;
+    background: rgba($color2, 0.1);
+    margin: 0 auto;
+  }
+  .menu-item {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-family: "sesb";
+    cursor: pointer;
+    &:hover {
+      background: rgba($color3, 0.1);
+    }
+  }
+  .icon-order {
+    @include icon(24px, 24px, "icon-user-order.png");
+    margin-left: 10px;
+    margin-right: 12px;
+  }
+  .icon-logout {
+    @include icon(24px, 24px, "icon-user-logout.png");
+    margin-left: 10px;
+    margin-right: 12px;
+  }
 }
 
 @media screen and (max-width: 750px) {
   header {
-    position: relative;
     height: vw(96);
     padding: 0 vw(46);
     &:before {
-      background: none;
+      border: none;
     }
   }
   .logo {
-    width: vw(384);
-    height: vw(80);
-    border-radius: vw(80);
+    margin-right: vw(48);
     i {
-      @include icon(vw(318), vw(64), "logo-m-home.png");
+      @include icon(vw(80), vw(80), "logo-m.png");
     }
   }
-  .header-right-pc {
+
+  .header-tabs {
+    position: absolute;
+    top: vw(94);
+    left: 0;
+    width: 100%;
+    padding: vw(24) vw(46) 0;
+    background: $color4;
+    gap: vw(40);
+    border-bottom: 1px solid rgba($color2, 0.1);
+    .tab-item {
+      height: vw(46);
+      line-height: vw(38);
+      font-size: vw(28);
+    }
+    .tab-item-active {
+      &::before {
+        height: vw(4);
+      }
+    }
+  }
+
+  .header-tabs-hidden {
     display: none;
   }
-  .header-right-m {
-    display: flex;
-    .btn-pwa,
-    .btn-search {
+
+  .avatar-container {
+    margin-left: vw(50);
+    .avatar,
+    .avatar-a {
       width: vw(80);
       height: vw(80);
-      margin-left: vw(32);
-      border-radius: vw(32);
-      @include center;
     }
-    $icons: ("h-icon-download-m", "h-icon-search-m");
-    @each $icon in $icons {
-      .#{$icon} {
-        @include icon(vw(48), vw(48), "#{$icon}.png");
-      }
+    .user-menu {
+      top: vw(88);
+      width: vw(340);
+      border-radius: vw(16);
+    }
+    .line {
+      width: vw(292);
+    }
+    .menu-item {
+      height: vw(96);
+      font-size: vw(28);
+    }
+    .icon-order,
+    .icon-logout {
+      width: vw(48);
+      height: vw(48);
+      @include icon(24px, 24px, "icon-user-order.png");
+      margin-left: vw(20);
+      margin-right: vw(24);
     }
   }
 }
@@ -184,38 +286,9 @@ header {
 <style lang="scss" scoped>
 /* 其他页面的头部 */
 .other-page-header {
-  position: fixed;
-  .logo {
-    border-radius: 40px;
-    @include btn-shadow-outer;
-    &:hover {
-      @include btn-shadow-inner;
-    }
-  }
 }
 @media screen and (max-width: 750px) {
   .other-page-header {
-    &:before {
-      background: $color4;
-    }
-    .logo {
-      @include border;
-      @include shadow-outer;
-      &:hover {
-        @include shadow-inner;
-      }
-      i {
-        @include icon(vw(318), vw(64), "logo-m-other.png");
-      }
-    }
-    .btn-pwa,
-    .btn-search {
-      @include border;
-      @include shadow-outer;
-      &:hover {
-        @include shadow-inner;
-      }
-    }
   }
 }
 </style>

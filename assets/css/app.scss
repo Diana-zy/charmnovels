@@ -52,7 +52,7 @@ main {
     font-family: "seb";
     @include center;
     @include btn-shadow-outer;
-    @include bg-theme;
+    background: $color3;
     cursor: pointer;
     &:hover {
       @include btn-shadow-inner;
@@ -141,7 +141,7 @@ main {
     height: 32px;
     margin: 0 8px;
     border-radius: 50%;
-    @include bg-theme;
+    background: $color3;
     &::after {
       color: $color1;
       font-size: 14px;
@@ -186,7 +186,7 @@ main {
     height: 40px;
     border-radius: 40px;
     margin: 0 auto 8px;
-    @include bg-theme;
+    background: $color3;
     @include center;
     color: $color4;
     font-size: 16px;
