@@ -1,0 +1,144 @@
+body {
+  background-color: $color4;
+  font-family: "se";
+  color: $color2;
+  -webkit-tap-highlight-color: transparent;
+}
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 20px 0;
+  box-sizing: content-box;
+}
+
+.module-row-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(384px, 1fr));
+  gap: 24px;
+}
+
+.module-all-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(129px, 1fr));
+  gap: 24px;
+}
+
+.module-aside {
+  position: absolute;
+  width: 390px;
+  top: 176px;
+  right: 20px;
+  .item {
+    height: 96px;
+    padding-right: 16px;
+    margin-bottom: 24px;
+    .icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      margin-right: 10px;
+    }
+  }
+  @media screen and (max-width: 1220px) {
+    display: none;
+  }
+}
+
+.rating {
+  @include center;
+}
+
+.rating-icon {
+  @include icon(16px, 16px, "star.png");
+}
+
+/* 评分 */
+$starIcons: (
+  "icon-star-on",
+  "icon-star-off",
+  "icon-star-half",
+  "icon-star-on-a",
+  "icon-star-off-a",
+  "icon-star-half-a"
+);
+@each $icon in $starIcons {
+  .#{$icon} {
+    @include icon(16px, 16px, "#{$icon}.png");
+  }
+}
+
+.score {
+  color: rgba($color2, 0.6);
+  font-size: 12px;
+  line-height: 14px;
+  margin-left: 2px;
+}
+
+$class-names: ("block", "flex", "grid");
+@each $class-name in $class-names {
+  .pc-hidden-#{$class-name} {
+    display: none !important;
+  }
+  .m-hidden-#{$class-name} {
+    display: #{$class-name} !important;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  main {
+    width: 100%;
+    margin: 0 auto;
+    padding: vw(96) 0 0;
+  }
+
+  .module-common,
+  .module-all {
+    padding: 0 vw(46);
+  }
+
+  .module-row-content {
+    grid-template-columns: repeat(2, vw(312));
+    gap: vw(32);
+  }
+
+  .module-all-content {
+    grid-template-columns: repeat(3, vw(198));
+    gap: vw(32);
+  }
+
+  .rating-icon {
+    width: vw(32);
+    height: vw(32);
+  }
+
+  $starIcons: (
+    "icon-star-on",
+    "icon-star-off",
+    "icon-star-half",
+    "icon-star-on-a",
+    "icon-star-off-a",
+    "icon-star-half-a"
+  );
+  @each $icon in $starIcons {
+    .#{$icon} {
+      width: vw(32);
+      height: vw(32);
+    }
+  }
+
+  .score {
+    font-size: vw(24);
+    line-height: vw(28);
+    margin-left: vw(4);
+  }
+
+  $class-names: ("block", "flex", "grid");
+  @each $class-name in $class-names {
+    .pc-hidden-#{$class-name} {
+      display: #{$class-name} !important;
+    }
+    .m-hidden-#{$class-name} {
+      display: none !important;
+    }
+  }
+}

@@ -1,0 +1,281 @@
+main {
+  position: relative;
+}
+.main-left {
+  width: 770px;
+  @media screen and (max-width: 1220px) {
+    width: 100%;
+  }
+}
+
+.game-introduction {
+  padding: 24px;
+  margin-top: 32px;
+  border-radius: 24px;
+  @include shadow-outer;
+
+  .application-info {
+    display: flex;
+    margin-bottom: 24px;
+  }
+  .icon {
+    flex-shrink: 0;
+    width: 186px;
+    height: 186px;
+    border-radius: 20px;
+    margin-right: 24px;
+  }
+  .content {
+    flex: 1;
+  }
+  h3 {
+    margin-bottom: 30px;
+    line-height: 32px;
+    font-size: 24px;
+    font-family: "seb";
+    color: $color2;
+    @include ellipsis;
+  }
+  .download-info {
+    display: flex;
+    flex-wrap: wrap;
+    p {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      line-height: 21px;
+      margin: 0 32px 12px 0;
+    }
+    span {
+      color: rgba($color2, 0.6);
+      margin-right: 8px;
+    }
+    b {
+      color: $color2;
+      font-family: "sesb";
+    }
+  }
+  .download-buttons {
+    margin-top: 30px;
+    display: flex;
+    .android,
+    .ios {
+      position: relative;
+      z-index: 2;
+      width: 244px;
+      height: 40px;
+      border-radius: 40px;
+      @include center;
+      cursor: pointer;
+      color: $color4;
+      font-family: "sesb";
+      @include btn-shadow-outer;
+      &:hover {
+        @include btn-shadow-inner;
+        .qrcode {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+    }
+    .android {
+      margin-right: 24px;
+      @include bg-theme;
+    }
+    .ios {
+      border: 2px solid $color3;
+      color: $color3;
+      &:hover {
+        @include shadow-inner;
+      }
+    }
+    .icon-android {
+      @include icon(24px, 24px, "icon-download-google.png");
+      margin-right: 8px;
+    }
+    .icon-ios {
+      @include icon(24px, 24px, "icon-download-apple.png");
+      margin-right: 8px;
+    }
+
+    .qrcode {
+      position: absolute;
+      width: 124px;
+      height: 138px;
+      background: $color1;
+      border-radius: 16px;
+      top: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: $color2;
+      padding: 16px;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.3s;
+      border: 1px solid rgba($color2, 0.2);
+      img {
+        width: 92px;
+        height: 92px;
+        margin-top: 4px;
+      }
+    }
+  }
+}
+
+.module-new-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+  gap: 25px;
+  margin-bottom: 32px;
+}
+
+.new-content-pc {
+  padding: 25px;
+  border-radius: 24px;
+  @include shadow-inner;
+  ::v-deep .item {
+    height: 147px;
+    border-radius: 16px;
+    .icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 12px;
+    }
+  }
+}
+
+.module-all-content {
+  grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+  ::v-deep .item {
+    height: 131px;
+    border-radius: 16px;
+    .icon-container {
+      width: 76px;
+      height: 76px;
+      border-radius: 12px;
+    }
+  }
+}
+
+.main-right {
+  position: absolute;
+  width: 390px;
+  top: 152px;
+  right: 20px;
+  @media screen and (max-width: 1220px) {
+    display: none;
+  }
+}
+
+.collection-list {
+  display: grid;
+  grid-template-columns: repeat(2, 183px);
+  gap: 24px;
+
+  ::v-deep .item {
+    width: 183px;
+    height: 152px;
+    &::before {
+      height: 109px;
+    }
+    .cover {
+      height: 109px;
+    }
+    .name {
+      padding: 0 10px;
+    }
+    .btn-get {
+      display: none !important;
+    }
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .ad-1 {
+    margin: vw(48) 0;
+  }
+
+  .game-introduction {
+    width: vw(658);
+    padding: vw(32);
+    margin: 0 auto;
+    border-radius: vw(32);
+    .application-info {
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: vw(32);
+    }
+    .icon {
+      width: vw(160);
+      height: vw(160);
+      border-radius: vw(12);
+      margin: 0 0 vw(16);
+    }
+    h3 {
+      margin: 0;
+      line-height: vw(32);
+      font-size: vw(28);
+      text-align: center;
+    }
+    .download-info {
+      display: none;
+    }
+
+    .download-buttons {
+      margin-top: vw(28);
+      gap: vw(34);
+      justify-content: center;
+      .android,
+      .ios {
+        width: vw(280);
+        height: vw(64);
+        border-radius: vw(64);
+        font-size: vw(28);
+        a {
+          position: absolute;
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .android {
+        margin-right: 0;
+      }
+      .icon-android,
+      .icon-ios {
+        width: vw(48);
+        height: vw(48);
+        margin-right: vw(16);
+      }
+      .qrcode {
+        display: none;
+      }
+    }
+  }
+
+  .module-new-content {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: vw(32);
+    height: vw(568);
+    padding: vw(18) vw(46) vw(0);
+    margin: vw(-18) vw(-46) vw(0);
+    @include scroll;
+  }
+
+  .module-all-content {
+    grid-template-columns: repeat(3, vw(198));
+    ::v-deep .item {
+      height: vw(218);
+      padding: vw(24) 0 0;
+      border-radius: vw(32);
+      .icon-container {
+        width: vw(130);
+        height: vw(130);
+      }
+    }
+  }
+}
