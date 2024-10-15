@@ -1,27 +1,61 @@
 <template>
   <custom-link :to="to" class="item">
-    <div class="icon-container">
+    <div class="item-left">
       <nuxt-img
         format="auto"
         fit="cover"
-        width="110"
-        height="110"
+        width="108"
+        height="162"
         :src="item.icon"
         :alt="item.name"
-        class="icon"
-        :loading="index < eager ? 'eager' : 'lazy'"
+        class="cover m-hidden-block"
+        loading="lazy"
       />
-      <div class="rating">
-        <i class="rating-icon"></i>
-        <span class="score">{{ getStarScore(item.score) }}</span>
+      <nuxt-img
+        format="auto"
+        fit="cover"
+        width="198"
+        height="280"
+        :src="item.icon"
+        :alt="item.name"
+        class="cover"
+      />
+    </div>
+
+    <div class="item-right">
+      <p class="name"
+        >Accidentally Marked By The Alpha King aaaaaa Accidentally Marked By The Alpha King</p
+      >
+      <div class="info-row">
+        <span>Writer Name</span>
+        <span class="line"></span>
+        <span>Romance</span>
+      </div>
+      <p class="desc">
+        Novel summary: "Our marriage is nothing more than a transaction." Diablo glared at his
+        fiancée and said. "I doubt you expect doubt you expect
+      </p>
+      <div class="info-bottom">
+        <div class="rating">
+          <i
+            v-for="(item2, i) in getStarListStyle(item.score)"
+            :key="i"
+            :class="item2"
+            class="rating-item"
+          ></i>
+          <span class="score">{{ getStarScore(item.score) }}</span>
+        </div>
+        <div class="views">
+          <i class="icon-views"></i>
+          <span>12.9M</span>
+        </div>
       </div>
     </div>
-    <p class="name">{{ item.name }}</p>
   </custom-link>
 </template>
 
 <script>
-import { getStarScore } from "~/utils/utils";
+import { getStarListStyle, getStarScore } from "~/utils/utils";
 export default {
   props: {
     item: {
@@ -39,95 +73,139 @@ export default {
     to: {
       type: String,
       required: true
+    },
+    isShowTag: {
+      type: Boolean,
+      default: false
     }
   },
-  methods: { getStarScore }
+  methods: { getStarListStyle, getStarScore }
 };
 </script>
 
 <style lang="scss" scoped>
 .item {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 151px;
-  padding: 16px 0 0;
-  border-radius: 24px;
-  @include border;
-  @include shadow-outer;
-}
-
-.icon-container {
-  position: relative;
-  width: 96px;
-  height: 96px;
+  height: 198px;
+  padding: 18px 40px 18px 18px;
   border-radius: 16px;
-  overflow: hidden;
+  background: $color5;
 }
-.icon {
-  position: absolute;
-  top: 0;
-  left: 0;
+.item-left {
+  flex-shrink: 0;
+  width: 108px;
+  height: 162px;
+  margin-right: 18px;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px 0 rgba(#000, 0.45);
+  overflow: hidden;
+  @include book-edge(2.18px, 3px);
+}
+.cover {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
-.rating {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 44px;
-  height: 20px;
-  border-radius: 20px;
-  backdrop-filter: blur(4px);
-  background: rgba($color1, 0.4);
-}
-.rating-icon {
-  @include icon(16px, 16px, "star.png");
-}
-.score {
-  color: $color2;
+.item-right {
+  width: calc(100% - 126px);
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba($color2, 0.6);
 }
 .name {
-  width: 100%;
-  margin-top: 8px;
-  padding: 0 10px;
-  text-align: center;
+  margin-bottom: 8px;
   font-family: "seb";
-  line-height: 19px;
-  font-size: 14px;
+  line-height: 21px;
+  font-size: 16px;
+  color: $color2;
   @include ellipsis;
 }
-
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  .line {
+    display: none;
+  }
+  span:last-child {
+    color: $color3;
+  }
+}
+.desc {
+  margin-top: 8px;
+  @include ellipsis(3);
+}
+.info-bottom {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.views {
+  @include center;
+  .icon-views {
+    @include icon(16px, 16px, "icon-views.png");
+  }
+}
 .item:hover {
-  @include shadow-inner;
   .name {
     color: $color3;
   }
 }
+
 @media screen and (max-width: 750px) {
   .item {
-    height: vw(218);
-    padding: vw(24) 0 0;
-    border-radius: vw(32);
+    height: vw(280);
+    padding: 0;
+    border-radius: 0;
+    background: none;
   }
-  .icon-container {
-    width: vw(130);
-    height: vw(130);
+  .item-left {
+    width: vw(198);
+    height: vw(280);
+    margin-right: vw(16);
+    border-radius: vw(4);
+    box-shadow: none;
+    @include book-edge(vw(4), vw(8));
   }
-  .rating {
-    width: vw(88);
-    height: vw(40);
-  }
-  .rating-icon {
-    width: vw(32);
-    height: vw(32);
+  .item-right {
+    width: vw(444);
+    padding: vw(4) 0;
+    font-size: vw(24);
+    line-height: vw(32);
   }
   .name {
-    padding: 0 vw(20);
-    font-size: vw(28);
+    margin-bottom: vw(8);
     line-height: vw(38);
-    margin-top: vw(10);
+    font-size: vw(28);
+    @include ellipsis(2);
+    white-space: unset;
+  }
+  .info-row {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: flex-end;
+    gap: vw(12);
+    .line {
+      display: block;
+      width: vw(2);
+      height: vw(20);
+      background: $color2;
+      opacity: 0.1;
+    }
+  }
+  .desc {
+    margin-top: vw(8);
+  }
+  .views {
+    .icon-views {
+      width: vw(32);
+      height: vw(32);
+    }
   }
 }
 </style>

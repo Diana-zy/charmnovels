@@ -6,8 +6,8 @@ $color1: #ffffff;
 $color2: #41414c; //字体颜色
 $color3: #ff9345; //主题颜色
 $color4: #fffcf7; //背景颜色
-$color5: #c5aaaa; //阴影颜色
-$color6: #550808; //阴影颜色
+$color5: #F5ECDF; //item背景颜色
+$color6: #F5ECDF; //阴影颜色
 
 @mixin border() {
   border: 2px solid $color1;
@@ -18,9 +18,11 @@ $color6: #550808; //阴影颜色
 
 /* 书边效果 */
 @mixin book-edge($width: 2px, $left: 4px) {
+  position: relative;
   &::before {
     position: absolute;
     left: $left;
+    top: 0;
     z-index: 1;
     display: inline-block;
     content: "";
@@ -34,6 +36,7 @@ $color6: #550808; //阴影颜色
   &::after {
     position: absolute;
     left: calc($left + $width);
+    top: 0;
     z-index: 1;
     display: inline-block;
     content: "";

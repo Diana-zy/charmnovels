@@ -11,15 +11,9 @@ main {
   box-sizing: content-box;
 }
 
-.module-row-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(384px, 1fr));
-  gap: 24px;
-}
-
 .module-all-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(129px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(588px, 1fr));
   gap: 24px;
 }
 
@@ -98,13 +92,8 @@ $class-names: ("block", "flex", "grid");
     padding: 0 vw(46);
   }
 
-  .module-row-content {
-    grid-template-columns: repeat(2, vw(312));
-    gap: vw(32);
-  }
-
   .module-all-content {
-    grid-template-columns: repeat(3, vw(198));
+    grid-template-columns: repeat(1, vw(658));
     gap: vw(32);
   }
 
