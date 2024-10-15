@@ -45,7 +45,8 @@ main {
 }
 
 .rating {
-  @include center;
+  display: flex;
+  align-items: center;
 }
 
 .rating-icon {
@@ -55,10 +56,10 @@ main {
 /* 评分 */
 $starIcons: (
   "icon-star-on",
-  "icon-star-off",
+  // "icon-star-off",
   "icon-star-half",
   "icon-star-on-a",
-  "icon-star-off-a",
+  // "icon-star-off-a",
   "icon-star-half-a"
 );
 @each $icon in $starIcons {
@@ -72,6 +73,7 @@ $starIcons: (
   font-size: 12px;
   line-height: 14px;
   margin-left: 2px;
+  font-family: "sesb";
 }
 
 $class-names: ("block", "flex", "grid");
@@ -113,10 +115,10 @@ $class-names: ("block", "flex", "grid");
 
   $starIcons: (
     "icon-star-on",
-    "icon-star-off",
+    // "icon-star-off",
     "icon-star-half",
     "icon-star-on-a",
-    "icon-star-off-a",
+    // "icon-star-off-a",
     "icon-star-half-a"
   );
   @each $icon in $starIcons {

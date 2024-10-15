@@ -12,11 +12,47 @@
           fit="cover"
           width="1200"
           height="380"
-          :src="item.pc_img || item.icon"
+          :src="item.icon"
           :alt="item.name"
           loading="lazy"
-          class="cover"
+          class="cover-bg m-hidden-block"
         />
+
+        <nuxt-img
+          format="auto"
+          fit="cover"
+          width="658"
+          height="330"
+          :src="item.icon"
+          :alt="item.name"
+          class="cover-bg pc-hidden-block"
+        />
+
+        <div class="info">
+          <div class="info-left">
+            <nuxt-img
+              width="198"
+              height="296"
+              :src="item.icon"
+              :alt="item.name"
+              loading="lazy"
+              class="cover"
+            />
+          </div>
+          <div class="info-right">
+            <p class="name">{{ item.name }}</p>
+            <div class="rating">
+              <i
+                v-for="(item2, i) in getStarListStyle(item.score)"
+                :key="i"
+                :class="item2"
+                class="rating-item"
+              ></i>
+              <span class="score">{{ getStarScore(item.score) }}</span>
+            </div>
+            <p class="author">By Writer Name</p>
+          </div>
+        </div>
       </custom-link>
     </div>
     <div class="swiper-pagination"></div>
@@ -24,6 +60,7 @@
 </template>
 
 <script>
+import { getStarListStyle, getStarScore } from "~/utils/utils";
 import { directive } from "vue-awesome-swiper";
 import "swiper/css/swiper.min.css";
 export default {
@@ -42,7 +79,7 @@ export default {
       swiperOption: {
         effect: "fade",
         autoplay: {
-          delay: 3000,
+          delay: 3000000,
           disableOnInteraction: false
         },
         pagination: {
@@ -56,6 +93,8 @@ export default {
     };
   },
   methods: {
+    getStarScore,
+    getStarListStyle,
     handleSwiperChange() {
       this.currentBannerIndex = (this.recPcSwiper && this.recPcSwiper.realIndex) || 0;
     }
@@ -66,18 +105,93 @@ export default {
 <style scoped lang="scss">
 .swiper-box {
   position: relative;
-  margin-top: 24px;
+  margin-top: 32px;
   width: 100%;
-  height: 380px;
-  border-radius: 24px;
+  height: 240px;
   overflow: hidden;
 }
 
-.cover {
+.swiper-slide {
+  &::before {
+    position: absolute;
+    z-index: 2;
+    display: inline-block;
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: rgba(#000, 0.4);
+    backdrop-filter: blur(24px);
+  }
+}
+
+.cover-bg {
+  position: absolute;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 24px;
+}
+
+.info {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+}
+
+.info-left {
+  position: relative;
+  width: 120px;
+  height: 180px;
+  margin-right: 20px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.45);
+  border-radius: 4px;
+  overflow: hidden;
+  @include book-edge(2.42px);
+}
+
+.info-right {
+  width: 567px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  .name {
+    font-family: "sh";
+    font-size: 34px;
+    line-height: 50px;
+    color: $color1;
+    @include ellipsis(2);
+  }
+  .rating {
+    margin-top: 19px;
+    .icon-star-on,
+    .icon-star-half {
+      width: 24px;
+      height: 24px;
+    }
+    .score {
+      font-size: 18px;
+      line-height: 24px;
+      color: $color1;
+      margin-left: 6px;
+    }
+  }
+  .author {
+    font-size: 22px;
+    line-height: 29px;
+    margin-top: 8px;
+    font-family: "sesb";
+    color: rgba($color1, 0.6);
+  }
+}
+
+.cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 ::v-deep .swiper-pagination-bullets {
@@ -85,7 +199,7 @@ export default {
   display: flex;
   align-items: center;
   bottom: 16px;
-  right: 24px;
+  right: 16px;
   left: auto;
 }
 ::v-deep .swiper-pagination-bullet {
@@ -100,5 +214,76 @@ export default {
   background: $color3;
   border: 2px solid $color1;
   box-sizing: content-box;
+}
+
+@media (max-width: 800px) {
+  .info-right {
+    width: 500px;
+  }
+}
+
+@media (max-width: 750px) {
+  .swiper-box {
+    margin: vw(22) auto 0;
+    width: vw(658);
+    height: vw(330);
+    border-radius: vw(16);
+  }
+
+  .swiper-slide {
+    &::before {
+      backdrop-filter: blur(vw(8));
+    }
+  }
+
+  .info-left {
+    position: relative;
+    width: vw(198);
+    height: vw(296);
+    margin-right: vw(32);
+    box-shadow: 0 vw(8) vw(24) 0 rgba(0, 0, 0, 0.45);
+    border-radius: vw(4);
+    overflow: hidden;
+    @include book-edge(vw(4));
+  }
+
+  .info-right {
+    width: vw(364);
+    .name {
+      font-size: vw(32);
+      line-height: vw(46);
+    }
+    .rating {
+      margin-top: vw(32);
+      .icon-star-on,
+      .icon-star-half {
+        width: vw(32);
+        height: vw(32);
+      }
+      .score {
+        font-size: vw(24);
+        line-height: vw(32);
+        margin-left: vw(8);
+      }
+    }
+    .author {
+      font-size: vw(28);
+      line-height: vw(38);
+      margin-top: vw(16);
+    }
+  }
+
+  ::v-deep .swiper-pagination-bullets {
+    bottom: vw(20);
+    right: vw(20);
+  }
+  ::v-deep .swiper-pagination-bullet {
+    width: vw(20);
+    height: vw(20);
+    margin: 0 vw(8) !important;
+  }
+  ::v-deep .swiper-pagination-bullet-active {
+    border: vw(4) solid $color1;
+  }
 }
 </style>

@@ -212,6 +212,15 @@ header {
   }
 }
 
+@media screen and (max-width: 950px) {
+  .logo {
+    margin-right: 20px;
+    i {
+      @include icon(54px, 54px, "logo-m.png");
+    }
+  }
+}
+
 @media screen and (max-width: 750px) {
   header {
     height: vw(96);

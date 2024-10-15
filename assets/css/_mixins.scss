@@ -4,8 +4,8 @@
 
 $color1: #ffffff;
 $color2: #41414c; //字体颜色
-$color3: #FF9345; //主题颜色
-$color4: #FFFCF7; //背景颜色
+$color3: #ff9345; //主题颜色
+$color4: #fffcf7; //背景颜色
 $color5: #c5aaaa; //阴影颜色
 $color6: #550808; //阴影颜色
 
@@ -13,6 +13,36 @@ $color6: #550808; //阴影颜色
   border: 2px solid $color1;
   @media screen and (max-width: 750px) {
     border: vw(4) solid $color1;
+  }
+}
+
+/* 书边效果 */
+@mixin book-edge($width: 2px, $left: 4px) {
+  &::before {
+    position: absolute;
+    left: $left;
+    z-index: 1;
+    display: inline-block;
+    content: "";
+    width: $width;
+    height: 100%;
+    background-color: $color2;
+    mix-blend-mode: multiply;
+    opacity: 0.3;
+    filter: blur($width);
+  }
+  &::after {
+    position: absolute;
+    left: calc($left + $width);
+    z-index: 1;
+    display: inline-block;
+    content: "";
+    width: $width;
+    height: 100%;
+    background-color: $color1;
+    // mix-blend-mode: lighten;
+    opacity: 0.4;
+    filter: blur($width);
   }
 }
 
