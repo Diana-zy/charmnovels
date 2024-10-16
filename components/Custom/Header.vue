@@ -67,7 +67,7 @@ export default {
         },
         {
           name: "Library",
-          path: "/Library/"
+          path: "/library/"
         }
       ],
       isLogin: true
