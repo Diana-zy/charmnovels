@@ -27,20 +27,11 @@
       </div>
       <span>Copyright ©&nbsp; 2024 charmnovels &nbsp;All rights reserved.</span>
     </div>
-    <common-notification v-if="showNotification" :message="notificationMessage" />
   </footer>
 </template>
 
 <script>
 export default {
-  computed: {
-    showNotification() {
-      return this.$globalData.notification.show;
-    },
-    notificationMessage() {
-      return this.$globalData.notification.message;
-    }
-  },
   methods: {}
 };
 </script>

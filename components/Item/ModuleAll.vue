@@ -97,7 +97,7 @@ export default {
   height: 162px;
   margin-right: 18px;
   border-radius: 4px;
-  box-shadow: 0 4px 12px 0 rgba(#000, 0.45);
+  box-shadow: 0 4px 12px 0 rgba($color6, 0.45);
   overflow: hidden;
   @include book-edge(2.18px, 3px);
 }

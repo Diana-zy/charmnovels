@@ -2,19 +2,12 @@
   @return calc($size/750) * 100vw;
 }
 
-$color1: #ffffff;
+$color1: #fff;
 $color2: #41414c; //字体颜色
 $color3: #ff9345; //主题颜色
 $color4: #fffcf7; //背景颜色
-$color5: #F5ECDF; //item背景颜色
-$color6: #F5ECDF; //阴影颜色
-
-@mixin border() {
-  border: 2px solid $color1;
-  @media screen and (max-width: 750px) {
-    border: vw(4) solid $color1;
-  }
-}
+$color5: #f5ecdf; //item背景颜色
+$color6: #000;
 
 /* 书边效果 */
 @mixin book-edge($width: 2px, $left: 4px) {
@@ -46,40 +39,6 @@ $color6: #F5ECDF; //阴影颜色
     // mix-blend-mode: lighten;
     opacity: 0.4;
     filter: blur($width);
-  }
-}
-
-// 外阴影
-@mixin shadow-outer() {
-  box-shadow: 5px 5px 10px 0 rgba($color5, 0.4), -5px -5px 10px 0 $color1;
-  @media screen and (max-width: 750px) {
-    box-shadow: vw(10) vw(10) vw(20) 0 rgba($color5, 0.4), vw(-10) vw(-10) vw(20) 0 $color1;
-  }
-}
-// 内阴影
-@mixin shadow-inner() {
-  box-shadow: inset 5px 5px 10px 0 rgba($color5, 0.4), inset -5px -5px 10px 0 $color1;
-  @media screen and (max-width: 750px) {
-    box-shadow: inset vw(10) vw(10) vw(20) 0 rgba($color5, 0.4),
-      inset vw(-10) vw(-10) vw(20) 0 $color1;
-  }
-}
-
-// 按钮外阴影
-@mixin btn-shadow-outer() {
-  box-shadow: 6px 6px 12px 0 rgba($color6, 0.3), -6px -6px 12px 0 rgba($color1, 0.3);
-  @media screen and (max-width: 750px) {
-    box-shadow: vw(12) vw(12) vw(24) 0 rgba($color6, 0.3),
-      vw(-12) vw(-12) vw(24) 0 rgba($color1, 0.3);
-  }
-}
-
-// 按钮内阴影
-@mixin btn-shadow-inner() {
-  box-shadow: inset 6px 6px 12px 0 rgba($color6, 0.3), inset -6px -6px 12px 0 rgba($color1, 0.3);
-  @media screen and (max-width: 750px) {
-    box-shadow: inset vw(12) vw(12) vw(24) 0 rgba($color6, 0.3),
-      inset vw(-12) vw(-12) vw(24) 0 rgba($color1, 0.3);
   }
 }
 

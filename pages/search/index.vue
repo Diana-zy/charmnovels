@@ -177,7 +177,6 @@ export default {
   height: 120px;
   margin-top: 32px;
   @include center;
-  @include shadow-inner;
   border-radius: 24px;
   font-size: 16px;
   font-family: "seb";
@@ -189,7 +188,6 @@ export default {
 .search-result {
   padding: 32px 24px;
   margin-top: 32px;
-  @include shadow-inner;
   border-radius: 24px;
   .number {
     width: 100%;

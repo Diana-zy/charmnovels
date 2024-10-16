@@ -13,7 +13,7 @@
           :item="item"
           :index="i"
           :eager="3"
-          :to="`/app/${item.path}/`"
+          :to="`/read/${item.path}/`"
         />
       </div>
     </section>
@@ -54,6 +54,7 @@
       </common-infinite-scroll-list>
     </section>
     <custom-footer />
+    <common-notification />
     <common-back-top />
     <ad-loading />
   </main>

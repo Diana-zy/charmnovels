@@ -85,20 +85,20 @@ function shuffleArray(array) {
 }
 
 // 计算星星组的显示
-function getStarListStyle(scoreNum, isActive = false) {
+function getStarListStyle(scoreNum) {
   let result = [];
   const score = Math.floor(scoreNum * 2) / 2; // 四舍五入到0.5分
   const integer = Math.floor(score);
   const hasDecimal = score % 1 !== 0;
   // 先将on添加到list中
   for (let i = 0; i < integer; i++) {
-    result.push(`icon-star-on${isActive ? "-a" : ""}`);
+    result.push("icon-star-on");
   }
   // 将半选添加到list
-  if (hasDecimal) result.push(`icon-star-half${isActive ? "-a" : ""}`);
+  if (hasDecimal) result.push("icon-star-half");
   // 若不满5个，剩下的添加off直到满5个为止
   for (let i = result.length; i < 5; i++) {
-    result.push(`icon-star-off${isActive ? "-a" : ""}`);
+    result.push("icon-star-off");
   }
   return result;
 }

@@ -43,18 +43,10 @@ main {
   align-items: center;
 }
 
-.rating-icon {
-  @include icon(16px, 16px, "star.png");
-}
-
 /* 评分 */
 $starIcons: (
   "icon-star-on",
-  // "icon-star-off",
   "icon-star-half",
-  "icon-star-on-a",
-  // "icon-star-off-a",
-  "icon-star-half-a"
 );
 @each $icon in $starIcons {
   .#{$icon} {
@@ -97,18 +89,9 @@ $class-names: ("block", "flex", "grid");
     gap: vw(32);
   }
 
-  .rating-icon {
-    width: vw(32);
-    height: vw(32);
-  }
-
   $starIcons: (
     "icon-star-on",
-    // "icon-star-off",
     "icon-star-half",
-    "icon-star-on-a",
-    // "icon-star-off-a",
-    "icon-star-half-a"
   );
   @each $icon in $starIcons {
     .#{$icon} {

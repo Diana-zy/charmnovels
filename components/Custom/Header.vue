@@ -180,7 +180,7 @@ header {
     width: 170px;
     border-radius: 8px;
     background: $color4;
-    box-shadow: 0px 4px 16px 0px rgba(#000, 0.15);
+    box-shadow: 0px 4px 16px 0px rgba($color6, 0.15);
   }
   .line {
     width: 146px;

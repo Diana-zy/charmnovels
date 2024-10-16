@@ -119,7 +119,7 @@ export default {
     content: "";
     width: 100%;
     height: 100%;
-    background-color: rgba(#000, 0.4);
+    background-color: rgba($color6, 0.4);
     backdrop-filter: blur(24px);
   }
 }

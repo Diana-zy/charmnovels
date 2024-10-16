@@ -1,14 +1,4 @@
 @font-face {
-  font-family: "bi";
-  src: url("~assets/fonts/Bevan-Italic.woff2") format("woff2");
-  font-display: swap;
-}
-@font-face {
-  font-family: "bib";
-  src: url("~assets/fonts/Bevan-Italic-bold.woff2") format("woff2");
-  font-display: swap;
-}
-@font-face {
   font-family: "sh";
   src: url("~assets/fonts/Shrikhand.woff2") format("woff2");
   font-display: swap;
