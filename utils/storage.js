@@ -1,5 +1,6 @@
-// utils/storage.js
+import { setIframeLocalStorage } from "~/utils/utils";
 
+// utils/storage.js
 export default {
   /**
    * 保存数据到 localStorage
@@ -10,6 +11,7 @@ export default {
     try {
       const serializedValue = JSON.stringify(value);
       localStorage.setItem(key, serializedValue);
+      setIframeLocalStorage(key, serializedValue);
     } catch (error) {
       console.error("Error setting item in localStorage", error);
     }
@@ -53,6 +55,7 @@ export default {
     }
   },
 
+  /* Cookie 操作 */
   getMainDomain() {
     var url = window.location.hostname; // 获取当前主机名
     var parts = url.split("."); // 按点分割

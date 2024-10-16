@@ -1,5 +1,5 @@
 // 模拟点击链接
-export function simulateClick(route, key, value) {
+function simulateClick(route, key, value) {
   // 获取当前页面的 URL 参数
   const currentURLSearchParams = new URLSearchParams(window.location.search);
   // 创建一个新的 URLSearchParams 对象
@@ -34,7 +34,7 @@ export function simulateClick(route, key, value) {
   document.body.removeChild(link);
 }
 
-export function generateCustomLink(url) {
+function generateCustomLink(url) {
   const targetPath = url;
   const currentParams = new URLSearchParams(window.location.search);
   const currentPathname = window.location.pathname;
@@ -57,35 +57,8 @@ export function generateCustomLink(url) {
     currentParams.delete("text");
   }
 
-  const currentDomain = window.location.host;
-  let targetDomain = "";
+  let targetDomain = getTargetDomain();
 
-  // 提取主域名和顶级域名部分的正则表达式
-  // eslint-disable-next-line no-useless-escape
-  const domainPattern = /^(www[0-9]*|[0-9]*)\.?([^\.]+)\.([a-z]{2,})$/;
-  const match = currentDomain.match(domainPattern);
-  if (match) {
-    const prefix = match[1]; // 提取前缀部分，如 "www", "www2", "2", ""
-
-    if (!prefix) {
-      // case: siteId.tld
-      targetDomain = `www.${currentDomain}`;
-    } else if (prefix.startsWith("www")) {
-      if (prefix === "www") {
-        // case: www.siteId.tld
-        targetDomain = currentDomain.substring(4);
-      } else {
-        // case: wwwx.siteId.tld
-        targetDomain = currentDomain.substring(3);
-      }
-    } else {
-      // case: x.siteId.tld
-      targetDomain = `www${currentDomain}`;
-    }
-  } else {
-    // 如果不匹配期望的模式，保留当前域名
-    targetDomain = currentDomain;
-  }
   const protocol = window.location.protocol;
 
   // 生成新的查询参数字符串
@@ -96,14 +69,14 @@ export function generateCustomLink(url) {
 }
 
 // 校验邮箱格式
-export function validateEmail(email) {
+function validateEmail(email) {
   // 使用正则表达式验证邮箱格式
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 }
 
 // 重新排序
-export function shuffleArray(array) {
+function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1)); // 生成一个随机索引，范围是 [0, i]
     [array[i], array[j]] = [array[j], array[i]]; // 交换当前位置和随机位置的元素
@@ -112,7 +85,7 @@ export function shuffleArray(array) {
 }
 
 // 计算星星组的显示
-export function getStarListStyle(scoreNum, isActive = false) {
+function getStarListStyle(scoreNum, isActive = false) {
   let result = [];
   const score = Math.floor(scoreNum * 2) / 2; // 四舍五入到0.5分
   const integer = Math.floor(score);
@@ -130,7 +103,52 @@ export function getStarListStyle(scoreNum, isActive = false) {
   return result;
 }
 
-export function getStarScore(score) {
+function getStarScore(score) {
   let newScore = score.length == 1 ? score + ".0" : score || 4.8;
   return newScore;
 }
+
+function getTargetDomain() {
+  const currentDomain = window.location.host;
+  let targetDomain = "";
+  const domainPattern = /^(www[0-9]*|[0-9]*)\.?([^\.]+)\.([a-z]{2,})$/;
+  const match = currentDomain.match(domainPattern);
+  if (match) {
+    const prefix = match[1];
+    if (!prefix) {
+      targetDomain = `www.${currentDomain}`;
+    } else if (prefix.startsWith("www")) {
+      if (prefix === "www") {
+        targetDomain = currentDomain.substring(4);
+      } else {
+        targetDomain = currentDomain.substring(3);
+      }
+    } else {
+      targetDomain = `www${currentDomain}`;
+    }
+  } else {
+    targetDomain = currentDomain;
+  }
+  return targetDomain;
+}
+
+function setIframeLocalStorage(key, value) {
+  let targetDomain = getTargetDomain();
+  const iframe = document.getElementById("storage-iframe");
+  iframe &&
+    iframe.contentWindow.postMessage(
+      { type: "send-localStorage-message", name: key, data: value },
+      `https://${targetDomain}`
+    );
+}
+
+export {
+  simulateClick,
+  generateCustomLink,
+  validateEmail,
+  shuffleArray,
+  getStarListStyle,
+  getStarScore,
+  getTargetDomain,
+  setIframeLocalStorage
+};
