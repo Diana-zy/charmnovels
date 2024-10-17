@@ -27,14 +27,14 @@
           :item="item"
           :index="i"
           :eager="3"
-          :to="`/app/${item.path}/`"
+          :to="`/read/${item.path}/`"
           :isShowTag="true"
         />
       </div>
     </section>
 
     <section class="module-all">
-      <common-title-label title="Trending Apps" />
+      <common-title-label title="Rec Books" />
       <common-infinite-scroll-list
         api-endpoint="/api/game/all_app"
         :initial-page="2"
@@ -48,7 +48,7 @@
             :key="i"
             :item="item"
             :index="i"
-            :to="`/app/${item.path}/`"
+            :to="`/read/${item.path}/`"
           />
         </template>
       </common-infinite-scroll-list>
@@ -92,21 +92,8 @@ export default {
         })
       ]);
 
-      let recApps = recAppsResponse.list;
-      recApps.forEach((item) => {
-        if (item.path.indexOf("56446") != -1 || item.path.indexOf("56318") != -1) {
-          item.collectionPath = 2;
-        }
-        if (item.path.indexOf("47410") != -1) {
-          item.collectionPath = 5;
-        }
-        if (item.path.indexOf("56346") != -1 || item.path.indexOf("72115") != -1) {
-          item.collectionPath = 6;
-        }
-      });
-
       return {
-        recApps,
+        recApps: recAppsResponse.list,
         latestApps: latestAppsResponse.list,
         allApps: allAppsResponse.list
       };

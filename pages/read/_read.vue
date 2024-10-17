@@ -3,10 +3,10 @@
     <custom-header />
     <section class="read-container">
       <div class="fixed-bar">
-        <button class="fixed-chapter">
+        <div class="fixed-chapter">
           <i class="icon-chapter"></i>
           <span>Chapters</span>
-        </button>
+        </div>
       </div>
 
       <!-- 只有第一章节才展示 top-info-->
@@ -131,7 +131,6 @@ export default {
   line-height: 19px;
   color: $color1;
   font-family: "seb";
-  border: none;
   cursor: pointer;
   z-index: 9;
   .icon-chapter {
