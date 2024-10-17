@@ -43,8 +43,8 @@
             <p class="name">{{ item.name }}</p>
             <div class="rating">
               <i
-                v-for="(item2, i) in getStarListStyle(item.score)"
-                :key="i"
+                v-for="(item2, i2) in getStarListStyle(item.score)"
+                :key="i2"
                 :class="item2"
                 class="rating-item"
               ></i>
@@ -60,22 +60,21 @@
 </template>
 
 <script>
-import { getStarListStyle, getStarScore } from "~/utils/utils";
 import { directive } from "vue-awesome-swiper";
+import { getStarListStyle, getStarScore } from "~/utils/utils";
 import "swiper/css/swiper.min.css";
 export default {
+  directives: {
+    swiper: directive
+  },
   props: {
     data: {
       type: Array,
       required: true
     }
   },
-  directives: {
-    swiper: directive
-  },
   data() {
     return {
-      currentBannerIndex: 0,
       swiperOption: {
         effect: "fade",
         autoplay: {
@@ -85,19 +84,13 @@ export default {
         pagination: {
           el: ".swiper-pagination",
           clickable: true
-        },
-        on: {
-          slideChange: this.handleSwiperChange
         }
       }
     };
   },
   methods: {
     getStarScore,
-    getStarListStyle,
-    handleSwiperChange() {
-      this.currentBannerIndex = (this.recPcSwiper && this.recPcSwiper.realIndex) || 0;
-    }
+    getStarListStyle
   }
 };
 </script>
