@@ -57,7 +57,7 @@ function generateCustomLink(url) {
     currentParams.delete("text");
   }
 
-  let targetDomain = getTargetDomain();
+  const targetDomain = getTargetDomain();
 
   const protocol = window.location.protocol;
 
@@ -86,7 +86,7 @@ function shuffleArray(array) {
 
 // 计算星星组的显示
 function getStarListStyle(scoreNum) {
-  let result = [];
+  const result = [];
   const score = Math.floor(scoreNum * 2) / 2; // 四舍五入到0.5分
   const integer = Math.floor(score);
   const hasDecimal = score % 1 !== 0;
@@ -104,7 +104,7 @@ function getStarListStyle(scoreNum) {
 }
 
 function getStarScore(score) {
-  let newScore = score.length == 1 ? score + ".0" : score || 4.8;
+  const newScore = score.length === 1 ? score + ".0" : score || 4.8;
   return newScore;
 }
 
@@ -133,7 +133,7 @@ function getTargetDomain() {
 }
 
 function setIframeLocalStorage(key, value) {
-  let targetDomain = getTargetDomain();
+  const targetDomain = getTargetDomain();
   const iframe = document.getElementById("storage-iframe");
   iframe &&
     iframe.contentWindow.postMessage(

@@ -57,8 +57,8 @@ export default {
 
   /* Cookie 操作 */
   getMainDomain() {
-    var url = window.location.hostname; // 获取当前主机名
-    var parts = url.split("."); // 按点分割
+    const url = window.location.hostname; // 获取当前主机名
+    const parts = url.split("."); // 按点分割
     if (parts.length > 2) {
       // 当主机名有子域时，取最后两个部分
       return parts.slice(-2).join("."); // 返回主域名
@@ -68,21 +68,21 @@ export default {
 
   setCookie(name, value, daysToExpire) {
     console.log(this.getMainDomain());
-    var date = new Date();
+    const date = new Date();
     date.setTime(date.getTime() + daysToExpire * 24 * 60 * 60 * 1000); // 设置过期时间为指定的天数之后
-    var expires = "; expires=" + date.toUTCString(); // 转换为GMT格式的字符串
+    const expires = "; expires=" + date.toUTCString(); // 转换为GMT格式的字符串
     document.cookie =
       name + "=" + (value || "") + expires + "; path=/; domain=" + this.getMainDomain(); // 设置cookie
   },
 
   // 获取cookie
   getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(";");
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i];
-      while (c.charAt(0) == " ") c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === " ") c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
   }
