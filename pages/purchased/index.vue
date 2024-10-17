@@ -50,9 +50,7 @@
   </main>
 </template>
 <script>
-import GoogleAd from "../../components/GoogleAd.vue";
 export default {
-  components: { GoogleAd },
   async asyncData({ $axios, env }) {
     try {
       const [latestAppsResponse, allAppsResponse] = await Promise.all([
