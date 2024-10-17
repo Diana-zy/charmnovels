@@ -3,7 +3,6 @@ import OptimizeCSSAssetsPlugin from "optimize-css-assets-webpack-plugin";
 
 export default {
   target: "static",
-  // debug: true,
   server: {
     host: "0.0.0.0"
   },
@@ -12,26 +11,17 @@ export default {
   },
   generate: {
     crawler: false,
-    concurrency: 10, // 设置为 5 表示同时最多发起 5 个请求
-    interval: 100, // 设置为 100 表示每隔 100 毫秒发起一次请求
+    concurrency: 10,
+    interval: 100,
     async routes() {
-      // 获取应用的动态路由
-      const appPathResponse = await fetch(
-        `${process.env.PROD_API_URL}/api/game/get_all_path_v2?site_id=${process.env.SITE_ID}`
+      const pathData = await fetch(
+        `${process.env.PROD_API_URL}/api/rec_article/get_all_path?site_id=${process.env.SITE_ID}`
       );
-      const appPosts = await appPathResponse.json();
-      const appDetailPaths = appPosts.data.app_detail.map((item) => `/app/${item}`);
-      const appDownloadPaths = appPosts.data.app_detail.map((item) => `/download/${item}`);
-
-      // 获取应用合集的动态路由
-      const collectionPathResponse = await fetch(
-        `${process.env.PROD_API_URL}/api/game/get_app_collection_path?site_id=${process.env.SITE_ID}`
-      );
-      const collectionPosts = await collectionPathResponse.json();
-      const collectionDetailPaths = collectionPosts.data.detail.map(
-        (item) => `/collection/${item}`
-      );
-      const urls = [...appDetailPaths, ...appDownloadPaths, ...collectionDetailPaths];
+      const path = await pathData.json();
+      const categoryPaths = path.data.category.map((item) => `/category/${item}`);
+      const detailPaths = path.data.detail.map((item) => `/detail/${item}`);
+      const modulePaths = ["top", "choose", "trending"].map((item) => `/module/${item}`);
+      const urls = [...categoryPaths, ...detailPaths, ...modulePaths];
       return urls;
     }
   },
@@ -45,14 +35,14 @@ export default {
   head: {
     title: "charmnovels－Carefully selected - Each one is filled with surprises and inspiration.",
     meta: [
-      { charset: "utf-8" },
       {
         name: "version",
         content: process.env.APP_VERSION || "1.0"
       },
       {
         name: "viewport",
-        content: "width=device-width,initial-scale=1,viewport-fit=cover,minimum-scale=1,minimal-ui"
+        content:
+          "width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,minimal-ui"
       },
       {
         name: "apple-mobile-web-app-capable",
@@ -80,20 +70,19 @@ export default {
   image: {
     provider: "cloudflare",
     cloudflare: {
-      baseURL: "https://bunchthings.com" // Cloudflare 图片服务的基础 URL
+      baseURL: "https://bunchthings.com"
     }
   },
-  css: ["@/assets/css/fonts.css", "@/assets/css/reset.css", "@/assets/css/common.scss"],
   plugins: [
     { src: "~/plugins/vue-infinite-scroll", ssr: false },
-    "~/plugins/axios", // 注册 axios.js 插件
-    "~/plugins/global-data.js"
+    "~/plugins/axios",
+    "~/plugins/global-data"
   ],
-
   components: true,
   buildModules: ["@nuxtjs/style-resources", "@nuxt/image", "@nuxtjs/pwa", "@nuxtjs/sitemap"],
+  css: ["@/assets/css/fonts.css", "@/assets/css/reset.css", "@/assets/css/common.scss"],
   styleResources: {
-    scss: ["./assets/css/_mixins.scss"]
+    scss: ["~/assets/css/_mixins.scss"]
   },
   modules: ["@nuxtjs/axios"],
   sitemap: {
@@ -109,11 +98,6 @@ export default {
         {
           src: "/icons/32.png",
           sizes: "32x32",
-          type: "image/png"
-        },
-        {
-          src: "/icons/36.png",
-          sizes: "36x36",
           type: "image/png"
         },
         {
@@ -157,22 +141,14 @@ export default {
   build: {
     html: {
       minify: {
-        collapseWhitespace: true, // 压缩空格
-        removeComments: true, // 移除注释
-        collapseBooleanAttributes: true,
-        decodeEntities: true,
-        minifyCSS: true,
-        minifyJS: true,
-        processConditionalComments: true,
-        removeEmptyAttributes: true,
-        removeRedundantAttributes: true,
-        trimCustomFragments: true,
-        useShortDoctype: true
+        collapseWhitespace: true,
+        removeComments: true
       }
     },
-    extractCSS: { allChunks: true },
+    extractCSS: {
+      ignoreOrder: true
+    },
     optimization: {
-      minimize: true,
       splitChunks: {
         chunks: "all",
         automaticNameDelimiter: ".",
@@ -195,20 +171,18 @@ export default {
           }
         }
       },
-      // 压缩配置
+      minimize: true,
       minimizer: [
-        // 压缩 JavaScript
         new TerserPlugin({
           terserOptions: {
             compress: {
-              drop_console: true // 删除 console 日志
+              drop_console: true
             },
             output: {
               comments: false
             }
           }
         }),
-        // 压缩 CSS
         new OptimizeCSSAssetsPlugin({
           cssProcessorOptions: {
             map: { inline: false },
