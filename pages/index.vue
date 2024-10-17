@@ -28,7 +28,7 @@
           :index="i"
           :eager="3"
           :to="`/read/${item.path}/`"
-          :isShowTag="true"
+          :is-show-tag="true"
         />
       </div>
     </section>
@@ -61,9 +61,6 @@
 </template>
 <script>
 export default {
-  data() {
-    return {};
-  },
   async asyncData({ $axios, env }) {
     try {
       const [recAppsResponse, latestAppsResponse, allAppsResponse] = await Promise.all([
@@ -100,6 +97,9 @@ export default {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  },
+  data() {
+    return {};
   },
   mounted() {},
   beforeDestroy() {},
