@@ -9,6 +9,10 @@ $color4: #fffcf7; //背景颜色
 $color5: #f5ecdf; //item背景颜色
 $color6: #000;
 
+/* 深色主题 */
+$color7: #0f0f0f; //背景颜色
+$color8: #eee; //字体颜色
+
 /* 书边效果 */
 @mixin book-edge($width: 2px, $left: 4px) {
   position: relative;
@@ -80,7 +84,7 @@ $color6: #000;
 @mixin scroll($direction: "row") {
   @if $direction == "row" {
     overflow-x: auto;
-  } @else {
+  } @else if $direction == "column" {
     overflow-y: auto;
   }
   &::-webkit-scrollbar {

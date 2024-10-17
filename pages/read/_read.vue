@@ -7,6 +7,9 @@
           <i class="icon-chapter"></i>
           <span>Chapters</span>
         </div>
+        <div class="fixed-chapter-list">
+          <module-read-chapter />
+        </div>
       </div>
 
       <!-- 只有第一章节才展示 top-info-->
@@ -62,6 +65,10 @@
         </div>
       </section>
     </section>
+
+    <div class="fixed-chapter-list-m">
+      <module-read-chapter />
+    </div>
     <common-notification />
   </main>
 </template>
@@ -113,9 +120,13 @@ export default {
   position: fixed;
   top: 224px;
   left: 50%;
+  z-index: 9;
   transform: translateX(-50%);
   width: 100%;
   max-width: 900px;
+  @media screen and (max-width: 750px) {
+    display: none;
+  }
 }
 .fixed-chapter {
   position: absolute;
@@ -139,8 +150,13 @@ export default {
   @media screen and (max-width: 1170px) {
     right: 40px;
   }
-  @media screen and (max-width: 750px) {
-    display: none;
+}
+.fixed-chapter-list {
+  position: absolute;
+  top: 0;
+  right: 0;
+  @media screen and (max-width: 1170px) {
+    right: 149px;
   }
 }
 .top-info {
@@ -354,6 +370,25 @@ export default {
   .module-related-chapters-content {
     grid-template-columns: vw(658);
     gap: vw(32);
+  }
+
+  /* 章节 */
+  .fixed-chapter-list-m {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 9;
+    width: 100%;
+    &::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      background: rgba($color6, 0.6);
+    }
   }
 }
 </style>
