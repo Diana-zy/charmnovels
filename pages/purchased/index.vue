@@ -12,14 +12,12 @@
       <span>"Not yet purchased the novel"</span>
     </div>
     <section v-else class="module-common module-purchased">
-      <common-title-label title="Purchase 6 novels" />
+      <common-title-label :title="`Purchase ${latestApps.length} novels`" />
       <div class="module-purchased-content">
         <item-module-purchased
           v-for="(item, i) in latestApps"
           :key="i"
           :item="item"
-          :index="i"
-          :eager="3"
           :to="`/read/${item.path}/`"
         />
       </div>

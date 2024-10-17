@@ -9,8 +9,6 @@
           v-for="(item, i) in latestApps"
           :key="i"
           :item="item"
-          :index="i"
-          :eager="3"
           :to="`/read/${item.path}/`"
         />
       </div>
