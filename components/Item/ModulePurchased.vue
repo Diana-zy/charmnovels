@@ -1,18 +1,29 @@
 <template>
   <custom-link :to="to" class="item">
-    <div class="cover">
-      <nuxt-img
-        width="180"
-        height="270"
-        :src="item.icon"
-        :alt="item.name"
-        fit="cover"
-        format="auto"
-      />
-      <span class="tag-status">Purchased</span>
+    <div class="item-top">
+      <span class="order-no">Order No.123456789123456</span>
+      <span class="status">Paid</span>
     </div>
-    <p class="name">{{ item.name }}</p>
-    <p class="progress">Read 78%</p>
+    <div class="item-content">
+      <div class="cover">
+        <nuxt-img
+          width="96"
+          height="144"
+          :src="item.icon"
+          :alt="item.name"
+          fit="cover"
+          format="auto"
+        />
+      </div>
+      <div class="right-info">
+        <p class="name">{{ item.name }}</p>
+        <div class="time-row">
+          <i class="icon-time"></i>
+          <span>October 15, 2024, 3:13:26 PM</span>
+        </div>
+        <p class="price">$ 5.9</p>
+      </div>
+    </div>
   </custom-link>
 </template>
 
@@ -33,70 +44,122 @@ export default {
 
 <style lang="scss" scoped>
 .item {
-  width: 180px;
-  height: 322px;
+  width: 100%;
+  height: 138px;
+  border-radius: 8px;
+  border: 1px solid $color5;
+  overflow: hidden;
+}
+.item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding: 0 8px;
+  background: $color5;
+}
+.order-no {
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba($color2, 0.6);
+}
+.status {
+  width: 37px;
+  height: 16px;
+  border-radius: 4px;
+  background: $color3;
+  color: $color1;
+  font-size: 12px;
+  font-family: "seb";
+  @include center;
+}
+.item-content {
+  padding: 8px;
+  display: flex;
+  align-items: center;
 }
 .cover {
-  width: 180px;
-  height: 270px;
-  border-radius: 6px;
-  overflow: hidden;
-  @include book-edge(3.64px, 5px);
-  img {
-    width: 100%;
-    height: 100%;
-  }
-}
-.tag-status {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 5;
-  width: 67px;
-  height: 20px;
-  border-bottom-right-radius: 8px;
-  background: $color3;
-  @include center;
-  font-size: 12px;
-  color: $color1;
+  width: 60px;
+  height: 90px;
+  border-radius: 2px;
+  margin-right: 12px;
+  @include book-edge(1.21px, 2px);
 }
 .name {
-  font-size: 16px;
-  line-height: 21px;
-  font-family: "seb";
-  margin: 9px 0 2px;
-  @include ellipsis;
-}
-.progress {
+  height: 38px;
   font-size: 14px;
   line-height: 19px;
-  color: rgba($color2, 0.4);
+  margin-bottom: 6px;
+  font-family: "seb";
+  @include ellipsis(2);
 }
+.time-row {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 16px;
+  color: rgba($color2, 0.6);
+  .icon-time {
+    @include icon(12px, 12px, "icon-time.png");
+    margin-right: 4px;
+  }
+}
+.price {
+  color: $color3;
+  font-size: 14px;
+  line-height: 19px;
+  margin-top: 6px;
+  font-family: "seb";
+}
+
 @media screen and (max-width: 750px) {
   .item {
-    width: 100%;
-    height: vw(378);
+    height: vw(276);
+    border-radius: vw(16);
   }
-  .cover {
-    width: vw(198);
-    height: vw(296);
-    border-radius: vw(4);
-    @include book-edge(vw(4), vw(6));
+  .item-top {
+    height: vw(64);
+    padding: 0 vw(16);
   }
-  .tag-status {
-    width: vw(114);
-    height: vw(34);
-    border-bottom-right-radius: vw(16);
-    font-size: vw(20);
-  }
-  .name {
-    font-size: vw(28);
-    line-height: vw(38);
-    margin: vw(8) 0 vw(4);
-  }
-  .progress {
+  .order-no {
     font-size: vw(24);
     line-height: vw(32);
+  }
+  .status {
+    width: vw(74);
+    height: vw(32);
+    border-radius: vw(8);
+    font-size: vw(24);
+  }
+  .item-content {
+    padding: vw(16);
+  }
+  .cover {
+    width: vw(120);
+    height: vw(180);
+    border-radius: vw(4);
+    margin-right: vw(24);
+    @include book-edge(vw(2.42), vw(4));
+  }
+  .name {
+    height: vw(76);
+    font-size: vw(28);
+    line-height: vw(38);
+    margin-bottom: vw(12);
+  }
+  .time-row {
+    font-size: vw(24);
+    line-height: vw(32);
+    .icon-time {
+      width: vw(24);
+      height: vw(24);
+      margin-right: vw(8);
+    }
+  }
+  .price {
+    font-size: vw(28);
+    line-height: vw(38);
+    margin-top: vw(12);
   }
 }
 </style>
