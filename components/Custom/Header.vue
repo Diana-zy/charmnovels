@@ -89,12 +89,7 @@ export default {
     },
     hideUserMenu(event) {
       const avatarContainer = this.$refs.avatarContainer;
-      const userMenu = this.$refs.userMenu;
-      console.log(event.target);
-      if (
-        !avatarContainer.contains(event.target) &&
-        (!userMenu || !userMenu.contains(event.target))
-      ) {
+      if (!avatarContainer.contains(event.target)) {
         this.isShowMenu = false;
       }
     }
