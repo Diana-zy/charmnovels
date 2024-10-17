@@ -27,18 +27,18 @@
         <custom-link v-if="!isLogin" to="/login/">
           <i class="avatar"></i>
         </custom-link>
-        <i v-if="isLogin" class="avatar-a" tabindex="0"></i>
-        <custom-link to="purchased-novels" class="user-menu">
-          <div class="menu-item">
+        <i v-if="isLogin" ref="avatarContainer" class="avatar-a" @click.stop="toggleUserMenu"></i>
+        <div v-show="isShowMenu" ref="userMenu" class="user-menu">
+          <custom-link to="/purchased/" class="menu-item">
             <i class="icon-order"></i>
             <span>Purchased novels</span>
-          </div>
+          </custom-link>
           <div class="line"></div>
           <div class="menu-item">
             <i class="icon-logout"></i>
             <span>Log out</span>
           </div>
-        </custom-link>
+        </div>
       </div>
     </div>
   </header>
@@ -70,12 +70,33 @@ export default {
           path: "/library/"
         }
       ],
-      isLogin: true
+      isLogin: true,
+      isShowMenu: false
     };
+  },
+  mounted() {
+    document.addEventListener("click", this.hideUserMenu);
+  },
+  beforeDestroy() {
+    document.removeEventListener("click", this.hideUserMenu);
   },
   methods: {
     handleSearch(inputValue) {
       simulateClick("/search/", "text", inputValue);
+    },
+    toggleUserMenu() {
+      this.isShowMenu = !this.isShowMenu;
+    },
+    hideUserMenu(event) {
+      const avatarContainer = this.$refs.avatarContainer;
+      const userMenu = this.$refs.userMenu;
+      console.log(event.target);
+      if (
+        !avatarContainer.contains(event.target) &&
+        (!userMenu || !userMenu.contains(event.target))
+      ) {
+        this.isShowMenu = false;
+      }
     }
   }
 };
@@ -168,12 +189,11 @@ header {
   }
   .avatar-a {
     @include icon(48px, 48px, "icon-avatar-a.png");
-    &:focus-within + .user-menu {
-      display: block;
-    }
+    // &:focus-within + .user-menu {
+    //   display: block;
+    // }
   }
   .user-menu {
-    display: none;
     position: absolute;
     right: 0;
     top: 56px;
