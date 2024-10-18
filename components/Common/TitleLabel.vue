@@ -40,7 +40,6 @@ export default {
   margin: 32px 0 16px;
   font-family: "seb";
   font-size: 20px;
-  color: $color2;
 }
 
 .label-right {

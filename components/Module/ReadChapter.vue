@@ -6,7 +6,7 @@
     </div>
     <div class="chapter-content">
       <!-- 正序倒序 -->
-      <div class="chapter-item sort-row">
+      <div class="chapter-item sort-row" @click="changeSortType">
         <i
           :class="[
             sortType === 'asc'
@@ -19,13 +19,18 @@
       <!-- 章节列表 -->
       <div class="chapter-list">
         <div
-          v-for="(item, i) in chapters"
+          v-for="(item, i) in chaptersList"
           :key="i"
-          :class="['chapter-item', i === currentChapter ? 'chapter-item-active' : '']"
+          :ref="item === currentChapter ? 'activeChapter' : ''"
         >
-          <div class="tag-current"><i class="icon-chapter-current"></i></div>
-          <span>Chapter {{ item }}</span>
-          <i v-if="i >= 7" class="icon-lock"></i>
+          <custom-link
+            :to="`/read/`"
+            :class="['chapter-item', item === currentChapter ? 'chapter-item-active' : '']"
+          >
+            <div class="tag-current"><i class="icon-chapter-current"></i></div>
+            <span>Chapter {{ item }}</span>
+            <i v-if="i >= 7" class="icon-lock"></i>
+          </custom-link>
         </div>
       </div>
     </div>
@@ -50,9 +55,30 @@ export default {
   },
   data() {
     return {
+      chaptersList: this.chapters,
       currentChapter: 6,
       sortType: "asc" // asc: 正序, desc: 倒序
     };
+  },
+  mounted() {
+    this.scrollToActiveChapter();
+  },
+  methods: {
+    scrollToActiveChapter() {
+      const activeChapterElement = this.$refs.activeChapter; // 获取到被选中的章节元素
+      if (activeChapterElement && activeChapterElement.length > 0) {
+        activeChapterElement[0].scrollIntoView({ behavior: "auto", block: "start" }); // 滚动到视图
+      }
+    },
+    changeSortType() {
+      this.sortType = this.sortType === "asc" ? "desc" : "asc";
+      this.chaptersList.sort((a, b) => {
+        return this.sortType === "asc" ? a - b : b - a;
+      });
+      this.$nextTick(() => {
+        this.scrollToActiveChapter();
+      });
+    }
   }
 };
 </script>
@@ -83,7 +109,7 @@ h3 {
 .chapter-content {
   padding: 0 24px;
 }
-.sort-row {
+.sort-row.chapter-item {
   display: none;
 }
 .chapter-list {
@@ -139,7 +165,9 @@ h3 {
     @include icon(vw(48), vw(48), "icon-close-black.png");
     margin-left: auto;
   }
-  .sort-row {
+
+  .sort-row.chapter-item {
+    display: flex;
     font-size: vw(24);
     line-height: vw(32);
     color: rgba($color2, 0.6);

@@ -52,7 +52,7 @@ export default {
 .content {
   font-size: 14px;
   line-height: 19px;
-  color: rgba($color2, 0.6);
+  opacity: 0.6;
   @include ellipsis(2);
 }
 @media screen and (max-width: 750px) {
