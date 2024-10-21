@@ -26,7 +26,8 @@
           </div>
 
           <button type="submit" class="btn-login">Login</button>
-          <custom-link to="/register" class="register-link">Register</custom-link>
+          <div class="line-or">—————————— or ——————————</div>
+          <custom-link to="/register" class="btn-register">Register</custom-link>
           <custom-link to="/reset" class="reset">Forgot Password?</custom-link>
         </form>
       </div>
@@ -66,7 +67,6 @@ export default {
 .login-container {
   max-width: 900px;
   width: calc(100% - 24px);
-  height: 620px;
   background: #fffefc;
   box-shadow: 0px 0px 11px 0px rgba(0, 0, 0, 0.06);
   border-radius: 2px 2px 2px 2px;
@@ -129,6 +129,37 @@ export default {
     cursor: pointer;
   }
   .btn-login {
+    width: 328px;
+    height: 48px;
+    background: $color3;
+    border-radius: 40px 40px 40px 40px;
+    border: none;
+    cursor: pointer;
+    font-family: "seb";
+    font-size: 16px;
+    color: #fff;
+    margin-top: 32px;
+  }
+  .line-or {
+    color: rgba($color2, 0.2);
+    white-space: nowrap;
+    font-size: 14px;
+    line-height: 19px;
+    margin: 16px 0;
+  }
+  .btn-register {
+    width: 328px;
+    height: 48px;
+    border-radius: 40px 40px 40px 40px;
+    border: 1px solid $color3;
+    @include center;
+    font-size: 16px;
+    font-family: "seb";
+    color: $color3;
+  }
+  .reset {
+    font-size: 14px;
+    margin-top: 16px;
   }
 }
 </style>
