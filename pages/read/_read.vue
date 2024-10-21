@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-header />
+    <custom-header :class="{ 'header-active': isShowHeader }" />
 
     <!-- PC端悬浮章节列表 -->
     <section class="fixed-bar">
@@ -13,11 +13,31 @@
       </div>
     </section>
 
-    <module-read-content :current-app="currentApp" :all-apps="allApps" />
-    <module-read-sidebar />
-    <!-- <div class="fixed-chapter-list-m">
-      <module-read-chapter />
-    </div> -->
+    <module-read-content
+      :current-app="currentApp"
+      :all-apps="allApps"
+      @show-menu-setting="handleShowMenuSetting"
+    />
+    <module-read-sidebar
+      ref="readSidebar"
+      @show-chapter-popup="handleShowChapterPopup"
+      @hide-menu-setting="handleHideHeader"
+      @hide-style-setting="handleHideHeader"
+    />
+    <!-- 移动端章节弹窗 -->
+    <transition name="fade">
+      <div v-show="isShowChapterPopup" class="chapter-list-popup">
+        <div class="mask" @click="handleHideChapterPopup"></div>
+        <transition name="slide">
+          <module-read-chapter
+            v-show="isShowChapterPopup"
+            theme="dark"
+            @close-chapter-popup="handleHideChapterPopup"
+          />
+        </transition>
+      </div>
+    </transition>
+
     <common-notification />
   </main>
 </template>
@@ -54,7 +74,9 @@ export default {
   },
   data() {
     return {
-      isShowChapters: false
+      isShowChapters: false, // PC端悬浮章节列表
+      isShowHeader: false,
+      isShowChapterPopup: false // 移动端章节弹窗
     };
   },
   mounted() {
@@ -78,6 +100,26 @@ export default {
       if (!fixedChapterBar.contains(event.target)) {
         this.isShowChapters = false;
       }
+    },
+
+    /* 移动端操作 */
+    // 展示菜单设置
+    handleShowMenuSetting() {
+      this.$refs.readSidebar.showMenuSetting();
+      this.isShowHeader = true;
+      document.body.classList.add("no-scroll");
+    },
+    handleShowChapterPopup() {
+      this.isShowChapterPopup = true;
+    },
+    handleHideChapterPopup() {
+      this.handleHideHeader();
+      this.isShowChapterPopup = false;
+    },
+    // 关闭header，等同关闭所有弹窗
+    handleHideHeader() {
+      this.isShowHeader = false;
+      document.body.classList.remove("no-scroll");
     }
   }
 };
@@ -133,25 +175,35 @@ export default {
     padding-top: 0;
   }
   header {
-    transform: translateY(-100%);
+    z-index: 11;
+    transform: translate(-50%, -100%);
+    transition: transform 0.2s;
+  }
+  .header-active {
+    transform: translate(-50%, 0);
   }
 
   /* 章节 */
-  .fixed-chapter-list-m {
+  .chapter-list-popup {
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 9;
-    width: 100%;
-    &::before {
-      content: "";
-      position: fixed;
+    .mask {
+      position: absolute;
       top: 0;
       left: 0;
-      z-index: -1;
+      right: 0;
+      bottom: 0;
+      background: rgba($color6, 0.4);
+    }
+    .chapter-container {
+      position: absolute;
+      left: 0;
+      bottom: 0;
       width: 100%;
-      height: 100%;
-      background: rgba($color6, 0.6);
     }
   }
 }

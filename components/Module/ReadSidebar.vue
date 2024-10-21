@@ -1,21 +1,83 @@
 <template>
   <div>
-    <div class="bottom-setting">
-      <div class="mask"></div>
-      <div class="content">
-        <div class="progress-box">
-          <span>{{ readProgress }}%</span>
-          <div :style="`--progress-width:${readProgress}%`" class="progress-bar"></div>
-        </div>
-        <div class="menu-box">
-          <div class="menu-item"><i class="icon-sidebar-chapter"></i></div>
-          <div class="menu-item"><i class="icon-sidebar-theme"></i></div>
-          <div class="menu-item" @click="handleChangeDarkTheme"
-            ><i :class="[isDarkTheme ? 'icon-sidebar-light' : 'icon-sidebar-dark']"></i
-          ></div>
-        </div>
+    <transition name="fade">
+      <div v-show="isShowMenuSetting" class="bottom-setting">
+        <div class="mask" @click="hideMenuSetting"></div>
+        <transition name="slide">
+          <div v-show="isShowMenuSetting" class="content">
+            <div class="progress-box">
+              <span>{{ readProgress }}%</span>
+              <div :style="`--progress-width:${readProgress}%`" class="progress-bar"></div>
+            </div>
+            <div class="menu-box">
+              <div class="menu-item" @click="showChapterPopup"
+                ><i class="icon-sidebar-chapter"></i
+              ></div>
+              <div class="menu-item" @click="showStyleSetting">
+                <i class="icon-sidebar-theme"></i>
+              </div>
+              <div class="menu-item" @click="handleChangeDarkTheme"
+                ><i :class="[isDarkTheme ? 'icon-sidebar-light' : 'icon-sidebar-dark']"></i
+              ></div>
+            </div>
+          </div>
+        </transition>
       </div>
-    </div>
+    </transition>
+
+    <!-- 主题样式设置 -->
+    <transition name="fade">
+      <div v-show="isShowStyleSetting" class="bottom-setting">
+        <div class="mask" @click="hideStyleSetting"></div>
+        <transition name="slide">
+          <div v-show="isShowStyleSetting" class="content content_style-setting">
+            <div class="setting-row">
+              <!-- 主题颜色 -->
+              <div class="theme-box">
+                <div
+                  v-for="(item, index) in themeColor.slice(1)"
+                  :key="index"
+                  :class="['theme-item', { 'theme-item-active': index + 1 === themeColorIndex }]"
+                  :style="{ 'background-color': item.bgColor }"
+                  @click="handleChangeThemeColor(item, index + 1)"
+                >
+                  <i :class="[item.theme === 'brown' ? 'icon-T-dark' : 'icon-T-light']"></i>
+                </div>
+              </div>
+              <!-- 字体大小 -->
+              <div class="font-size-box">
+                <i
+                  :class="[
+                    'icon-font-size-minus',
+                    { 'icon-font-size-disabled': currentFontSize === 14 }
+                  ]"
+                  @click="handleChangeFontSize(currentFontSize - 1)"
+                ></i>
+                <span>{{ currentFontSize }}</span>
+                <i
+                  :class="[
+                    'icon-font-size-plus',
+                    { 'icon-font-size-disabled': currentFontSize === 28 }
+                  ]"
+                  @click="handleChangeFontSize(currentFontSize + 1)"
+                ></i>
+              </div>
+            </div>
+            <!-- 文本行高 -->
+            <div class="font-space-box">
+              <div
+                v-for="item in 3"
+                :key="item"
+                :class="['space-item', { 'space-item-active': item === currentFontSpace }]"
+                @click="handleChangeSpace(item)"
+              >
+                <i :class="`icon-light-height-${item}`"></i>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -24,37 +86,41 @@ import Storage from "@/utils/storage";
 export default {
   data() {
     return {
+      isShowMenuSetting: false,
+      isShowStyleSetting: false,
       readProgress: 88.8,
       isDarkTheme: false,
       themeColor: [
         /* dark */
         {
+          theme: "dark",
           bgColor: "#0f0f0f",
           textColor: "#6E6E6E"
         },
         /* 常规 */
         {
+          theme: "light",
           bgColor: "#fffcf7",
           textColor: "#41414c"
         },
         {
+          theme: "green",
           bgColor: "#CCDCBE",
           textColor: "#41414C"
         },
         {
+          theme: "brown",
           bgColor: "#393335",
           textColor: "#928D8B"
         }
       ],
-      themeColorIndex: 0
+      themeColorIndex: 1,
+      currentFontSize: 15,
+      currentFontSpace: 1
     };
   },
-  created() {},
-  mounted() {
-    this.getReadThemeColor();
-  },
+  mounted() {},
   methods: {
-    /* 打开设置时调用 */
     getReadThemeColor() {
       const readThemeColor = Storage.getItem("novel_cssReadBackgroundColor");
       if (readThemeColor) {
@@ -64,33 +130,92 @@ export default {
         this.isDarkTheme = false;
       }
     },
+    getReadFontSize() {
+      const readFontSize = Storage.getItem("novel_cssReadFontSize");
+      this.currentFontSize = readFontSize || 16;
+    },
+    getReadFontSpace() {
+      const readFontSpace = Storage.getItem("novel_cssReadFontSpace");
+      this.currentFontSpace = readFontSpace || 1;
+    },
+    initReadSetting() {
+      this.getReadThemeColor();
+      this.getReadFontSize();
+      this.getReadFontSpace();
+    },
+    /* 主题颜色 */
+    handleChangeThemeColor(item, index) {
+      this.themeColorIndex = index;
+      const root = document.documentElement;
+      root.style.setProperty("--read-bg-color", item.bgColor);
+      root.style.setProperty("--read-text-color", item.textColor);
+      Storage.setItem("novel_cssReadBackgroundColor", item.bgColor);
+      Storage.setItem("novel_cssReadTextColor", item.textColor);
+      Storage.setItem("novel_cssReadLastTheme", item.theme);
+    },
     /* 字体大小 */
     handleChangeFontSize(value) {
       const root = document.documentElement;
+      if (value < 14 || value > 28) {
+        return;
+      }
+      this.currentFontSize = value;
       root.style.setProperty("--read-font-size", value + "px");
       Storage.setItem("novel_cssReadFontSize", value);
     },
     /* 字体间距 */
     handleChangeSpace(value) {
       const root = document.documentElement;
+      this.currentFontSpace = value;
       root.style.setProperty("--read-font-space", value);
       Storage.setItem("novel_cssReadFontSpace", value);
     },
 
-    /* TODO: 切换到白天模式，要获取上一次的白天主题 */
     /* 切换昼夜主题 */
     handleChangeDarkTheme() {
       this.isDarkTheme = !this.isDarkTheme;
       const root = document.documentElement;
-      const themeIndex = this.isDarkTheme ? 0 : 1;
+      let themeIndex;
+      // 夜间模式
+      if (this.isDarkTheme) {
+        themeIndex = 0;
+      }
+      // 日间模式
+      else {
+        const lastTheme = Storage.getItem("novel_cssReadLastTheme");
+        themeIndex = this.themeColor.findIndex((item) => item.theme === lastTheme);
+      }
+
       const themeBgColor = this.themeColor[themeIndex].bgColor;
       const themeTextColor = this.themeColor[themeIndex].textColor;
       root.style.setProperty("--read-bg-color", themeBgColor);
       root.style.setProperty("--read-text-color", themeTextColor);
-      Storage.getItem("novel_cssReadBackgroundColor") ||
-        Storage.setItem("novel_cssReadBackgroundColor", themeBgColor);
-      Storage.getItem("novel_cssReadTextColor") ||
-        Storage.setItem("novel_cssReadTextColor", themeTextColor);
+      Storage.setItem("novel_cssReadBackgroundColor", themeBgColor);
+      Storage.setItem("novel_cssReadTextColor", themeTextColor);
+    },
+
+    /* 显示设置 */
+    showMenuSetting() {
+      this.isShowMenuSetting = true;
+      this.getReadThemeColor(); // 刷新昼夜模式
+    },
+    showStyleSetting() {
+      this.isShowStyleSetting = true;
+      this.isShowMenuSetting = false;
+      this.initReadSetting(); // 刷新style设置
+    },
+    hideMenuSetting() {
+      this.isShowMenuSetting = false;
+      this.$emit("hide-menu-setting");
+    },
+    hideStyleSetting() {
+      this.isShowStyleSetting = false;
+      this.$emit("hide-style-setting");
+    },
+    // 打开章节弹窗
+    showChapterPopup() {
+      this.isShowMenuSetting = false;
+      this.$emit("show-chapter-popup");
     }
   }
 };
@@ -164,6 +289,81 @@ export default {
       @each $icon in $menuIcons {
         .#{$icon} {
           @include icon(vw(48), vw(48), "#{$icon}.png");
+        }
+      }
+    }
+
+    /* 主题背景文字等设置 */
+    .content_style-setting {
+      padding: vw(32) vw(46) vw(40);
+    }
+    .setting-row {
+      display: flex;
+      align-items: center;
+    }
+    .theme-box {
+      @include center;
+      gap: vw(32);
+      .theme-item {
+        width: vw(92);
+        height: vw(56);
+        border-radius: vw(56);
+        @include center;
+        .icon-T-dark {
+          @include icon(vw(32), vw(32), "icon-T-dark.png");
+        }
+        .icon-T-light {
+          @include icon(vw(32), vw(32), "icon-T-light.png");
+        }
+      }
+      .theme-item-active {
+        border: 1px solid $color3;
+      }
+    }
+    .font-size-box {
+      width: vw(266);
+      height: vw(64);
+      border-radius: vw(64);
+      background: #2c2c2c;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 vw(32);
+      @each $type in ("minus", "plus") {
+        .icon-font-size-#{$type} {
+          @include icon(vw(32), vw(32), "icon-font-size-#{$type}.png");
+        }
+      }
+      .icon-font-size-disabled {
+        opacity: 0.4;
+      }
+      span {
+        font-size: vw(38);
+        line-height: vw(50);
+        font-family: "sesb";
+        color: $color1;
+      }
+    }
+    .font-space-box {
+      display: flex;
+      align-items: center;
+      margin-top: vw(32);
+      gap: vw(32);
+      .space-item {
+        width: vw(92);
+        height: vw(56);
+        border-radius: vw(56);
+        background: #2c2c2c;
+        @include center;
+      }
+      .space-item-active {
+        border: 1px solid $color3;
+      }
+
+      @each $i in 1 2 3 {
+        .icon-light-height-#{$i} {
+          @include icon(vw(32), vw(32), "icon-light-height-#{$i}.png");
         }
       }
     }

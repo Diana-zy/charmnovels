@@ -2,7 +2,7 @@
   <div :class="['chapter-container', { 'chapter-container-dark': theme === 'dark' }]">
     <div class="chapter-header">
       <h3>Chapters</h3>
-      <i class="icon-close"></i>
+      <i class="icon-close" @click="$emit('close-chapter-popup')"></i>
     </div>
     <div class="chapter-content">
       <!-- 正序倒序 -->

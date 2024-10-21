@@ -12,6 +12,10 @@ main {
   box-sizing: content-box;
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
 .module-all-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(588px, 1fr));
@@ -109,5 +113,36 @@ $class-names: ("block", "flex", "grid");
     .m-hidden-#{$class-name} {
       display: none !important;
     }
+  }
+}
+
+/* 动画过渡 */
+.fade-enter-active {
+  animation: fadeAnimation 0.2s;
+}
+.fade-leave-active {
+  animation: fadeAnimation 0.2s reverse;
+}
+@keyframes fadeAnimation {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-enter-active {
+  animation: slideAnimation 0.2s;
+}
+.slide-leave-active {
+  animation: slideAnimation 0.2s reverse;
+}
+@keyframes slideAnimation {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
   }
 }

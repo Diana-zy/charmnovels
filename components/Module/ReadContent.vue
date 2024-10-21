@@ -15,7 +15,7 @@
       <p class="name">{{ currentApp.desc }}</p>
       <span class="author">By Writer Name</span>
     </div>
-    <article class="read-content">
+    <article @click="handleShowMenuSetting" class="read-content">
       <h3>Chapter 0001</h3>
       <p>{{ currentApp.desc }}</p>
     </article>
@@ -83,12 +83,18 @@ export default {
   },
   methods: {
     initStorageReadSetting() {
-      Storage.getItem("novel_cssReadFontSize") || Storage.setItem("novel_cssReadFontSize", 16);
-      Storage.getItem("novel_cssReadFontSpace") || Storage.setItem("novel_cssReadFontSpace", 3);
+      Storage.getItem("novel_cssReadFontSize") || Storage.setItem("novel_cssReadFontSize", 15);
+      Storage.getItem("novel_cssReadFontSpace") || Storage.setItem("novel_cssReadFontSpace", 1);
       Storage.getItem("novel_cssReadBackgroundColor") ||
-        Storage.setItem("novel_cssReadBackgroundColor", "#CCDCBE");
+        Storage.setItem("novel_cssReadBackgroundColor", "#fffcf7");
       Storage.getItem("novel_cssReadTextColor") ||
         Storage.setItem("novel_cssReadTextColor", "#41414c");
+      Storage.getItem("novel_cssReadLastTheme") ||
+        Storage.setItem("novel_cssReadLastTheme", "light");
+    },
+
+    handleShowMenuSetting() {
+      this.$emit("show-menu-setting");
     }
   }
 };
