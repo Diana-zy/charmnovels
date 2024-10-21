@@ -76,7 +76,8 @@ export default {
     return {
       isShowChapters: false, // PC端悬浮章节列表
       isShowHeader: false,
-      isShowChapterPopup: false // 移动端章节弹窗
+      isShowChapterPopup: false, // 移动端章节弹窗
+      distanceFromTop: 0 // body距离顶部距离
     };
   },
   mounted() {
@@ -107,7 +108,10 @@ export default {
     handleShowMenuSetting() {
       this.$refs.readSidebar.showMenuSetting();
       this.isShowHeader = true;
+
+      this.distanceFromTop = document.documentElement.scrollTop;
       document.body.classList.add("no-scroll");
+      document.body.style.top = `-${this.distanceFromTop}px`;
     },
     handleShowChapterPopup() {
       this.isShowChapterPopup = true;
@@ -120,6 +124,7 @@ export default {
     handleHideHeader() {
       this.isShowHeader = false;
       document.body.classList.remove("no-scroll");
+      window.scrollTo(0, this.distanceFromTop); // 恢复滚动位置
     }
   }
 };
