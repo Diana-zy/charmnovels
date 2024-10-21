@@ -25,7 +25,7 @@
             <p>Please enter a valid email address</p>
           </div>
 
-          <button type="submit">Login</button>
+          <button type="submit" class="btn-login">Login</button>
           <custom-link to="/register" class="register-link">Register</custom-link>
           <custom-link to="/reset" class="reset">Forgot Password?</custom-link>
         </form>
@@ -76,20 +76,59 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 40px 32px 32px;
+  .logo-login {
+    @include icon(120px, 120px, "logo-login.png");
+  }
   .title {
     font-family: "seb";
     font-size: 22px;
     line-height: 29px;
     color: $color3;
-  }
-  .logo-login {
-    @include icon(120px, 120px, "logo-login.png");
+    margin: 12px 0 16px;
   }
   form {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
+    max-width: 329px;
+  }
+  .form-item {
+    width: 100%;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  input {
+    width: 100%;
+    height: 40px;
+    border-radius: 8px 8px 8px 8px;
+    border: 1px solid rgba(65, 65, 76, 0.4);
+    padding: 0 10px;
+    font-size: 14px;
+    &::placeholder {
+      color: rgba($color2, 0.4);
+    }
+  }
+  p {
+    font-size: 14px;
+    color: #ff6b6b;
+    line-height: 19px;
+  }
+  label {
+    display: block;
+    line-height: 21px;
+    font-family: "seb";
+    margin-bottom: 8px;
+  }
+  .icon-visible {
+    @include icon(24px, 24px, "icon-visible.png");
+    position: absolute;
+    right: 10px;
+    top: 37px;
+    cursor: pointer;
+  }
+  .btn-login {
   }
 }
 </style>

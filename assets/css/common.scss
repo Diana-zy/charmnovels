@@ -2,6 +2,7 @@ body {
   background-color: $color4;
   font-family: "se";
   color: $color2;
+  font-size: 16px;
   -webkit-tap-highlight-color: transparent;
 }
 main {
@@ -44,10 +45,7 @@ main {
 }
 
 /* 评分 */
-$starIcons: (
-  "icon-star-on",
-  "icon-star-half",
-);
+$starIcons: ("icon-star-on", "icon-star-half");
 @each $icon in $starIcons {
   .#{$icon} {
     @include icon(16px, 16px, "#{$icon}.png");
@@ -89,10 +87,7 @@ $class-names: ("block", "flex", "grid");
     gap: vw(32);
   }
 
-  $starIcons: (
-    "icon-star-on",
-    "icon-star-half",
-  );
+  $starIcons: ("icon-star-on", "icon-star-half");
   @each $icon in $starIcons {
     .#{$icon} {
       width: vw(32);
