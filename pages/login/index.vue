@@ -1,12 +1,12 @@
 <template>
   <main>
     <custom-header />
-    <div class="login-container">
-      <div class="login-form-container">
+    <div class="container">
+      <div class="form-container">
         <i class="logo-login"></i>
         <h1 class="title">Welcome to CharmNovels!</h1>
 
-        <form class="login-form" @submit.prevent="handleSubmit">
+        <form class="form" @submit.prevent="handleSubmit">
           <div class="form-item">
             <label for="email">Email</label>
             <input v-model="email" type="text" name="email" placeholder="Example@email.com" />
@@ -27,8 +27,8 @@
 
           <button type="submit" class="btn-login">Login</button>
           <div class="line-or">—————————— or ——————————</div>
-          <custom-link to="/register" class="btn-register">Register</custom-link>
-          <custom-link to="/reset" class="reset">Forgot Password?</custom-link>
+          <custom-link to="/register/" class="btn-register">Register</custom-link>
+          <custom-link to="/reset/" class="reset">Forgot Password?</custom-link>
         </form>
       </div>
     </div>
@@ -64,102 +64,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.login-container {
-  max-width: 900px;
-  width: calc(100% - 24px);
-  background: #fffefc;
-  box-shadow: 0px 0px 11px 0px rgba(0, 0, 0, 0.06);
-  border-radius: 2px 2px 2px 2px;
-  margin: 32px auto;
-}
-.login-form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 32px 32px;
-  .logo-login {
-    @include icon(120px, 120px, "logo-login.png");
-  }
-  .title {
-    font-family: "seb";
-    font-size: 22px;
-    line-height: 29px;
-    color: $color3;
-    margin: 12px 0 16px;
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 329px;
-  }
-  .form-item {
-    width: 100%;
-    margin-bottom: 8px;
-    position: relative;
-  }
-  input {
-    width: 100%;
-    height: 40px;
-    border-radius: 8px 8px 8px 8px;
-    border: 1px solid rgba(65, 65, 76, 0.4);
-    padding: 0 10px;
-    font-size: 14px;
-    &::placeholder {
-      color: rgba($color2, 0.4);
-    }
-  }
-  p {
-    font-size: 14px;
-    color: #ff6b6b;
-    line-height: 19px;
-  }
-  label {
-    display: block;
-    line-height: 21px;
-    font-family: "seb";
-    margin-bottom: 8px;
-  }
-  .icon-visible {
-    @include icon(24px, 24px, "icon-visible.png");
-    position: absolute;
-    right: 10px;
-    top: 37px;
-    cursor: pointer;
-  }
-  .btn-login {
-    width: 328px;
-    height: 48px;
-    background: $color3;
-    border-radius: 40px 40px 40px 40px;
-    border: none;
-    cursor: pointer;
-    font-family: "seb";
-    font-size: 16px;
-    color: #fff;
-    margin-top: 32px;
-  }
-  .line-or {
-    color: rgba($color2, 0.2);
-    white-space: nowrap;
-    font-size: 14px;
-    line-height: 19px;
-    margin: 16px 0;
-  }
-  .btn-register {
-    width: 328px;
-    height: 48px;
-    border-radius: 40px 40px 40px 40px;
-    border: 1px solid $color3;
-    @include center;
-    font-size: 16px;
-    font-family: "seb";
-    color: $color3;
-  }
-  .reset {
-    font-size: 14px;
-    margin-top: 16px;
-  }
-}
+@import "@/assets/css/login.scss";
 </style>
