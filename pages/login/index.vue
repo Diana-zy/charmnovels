@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-header />
+    <custom-header class="login-page" />
     <div class="container">
       <div class="form-container">
         <i class="logo-login"></i>

@@ -158,3 +158,8 @@
   background: #c6c4c4 !important;
   pointer-events: none;
 }
+@media screen and (max-width: 750px) {
+  .login-page {
+    display: none;
+  }
+}
