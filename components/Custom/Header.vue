@@ -1,5 +1,5 @@
 <template>
-  <header :class="{ 'other-page-header': !isHomePage }">
+  <header :class="{ 'theme-dark': theme === 'dark' }">
     <custom-link to="/" class="logo">
       <i></i>
     </custom-link>
@@ -49,9 +49,9 @@ import { simulateClick } from "~/utils/utils";
 
 export default {
   props: {
-    isHomePage: {
-      type: Boolean,
-      default: false
+    theme: {
+      type: String,
+      default: "light"
     },
     currentPage: {
       type: String,
@@ -308,11 +308,23 @@ header {
 </style>
 
 <style lang="scss" scoped>
-/* 其他页面的头部 */
-.other-page-header {
-}
 @media screen and (max-width: 750px) {
-  .other-page-header {
+  .theme-dark {
+    &:before {
+      background: $color7;
+    }
+    ::v-deep .search-box {
+      border: 1px solid rgba($color2, 0.6);
+      .search-btn {
+        background: rgba($color2, 0.6);
+      }
+      .search-input {
+        color: $color8;
+        &::placeholder {
+          color: rgba($color8, 0.6);
+        }
+      }
+    }
   }
 }
 </style>

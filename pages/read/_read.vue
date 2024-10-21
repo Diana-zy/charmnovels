@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-header :class="{ 'header-active': isShowHeader }" />
+    <custom-header :class="{ 'header-active': isShowHeader }" theme="dark" />
 
     <!-- PC端悬浮章节列表 -->
     <section class="fixed-bar">

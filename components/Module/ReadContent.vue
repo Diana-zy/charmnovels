@@ -15,7 +15,7 @@
       <p class="name">{{ currentApp.desc }}</p>
       <span class="author">By Writer Name</span>
     </div>
-    <article @click="handleShowMenuSetting" class="read-content">
+    <article class="read-content" @click="handleShowMenuSetting">
       <h3>Chapter 0001</h3>
       <p>{{ currentApp.desc }}</p>
     </article>
