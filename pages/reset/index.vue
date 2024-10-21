@@ -1,12 +1,12 @@
 <template>
   <main>
     <custom-header />
-    <div class="login-container">
-      <div class="login-form-container">
+    <div class="container">
+      <div class="form-container">
         <i class="logo-login"></i>
-        <h1 class="title">Welcome to CharmNovels!</h1>
+        <h1 class="title black">Change Password</h1>
 
-        <form class="login-form" @submit.prevent="handleSubmit">
+        <form class="form" @submit.prevent="handleSubmit">
           <div class="form-item">
             <label for="email">Email</label>
             <input v-model="email" type="text" name="email" placeholder="Example@email.com" />
@@ -25,11 +25,26 @@
             <p>Please enter a valid email address</p>
           </div>
 
-          <button type="submit">Login</button>
-          <custom-link to="/register" class="register-link">Register</custom-link>
-          <custom-link to="/forgot-password" class="forgot-password-link"
-            >Forgot Password?</custom-link
-          >
+          <div class="form-item">
+            <label for="password2">Confirm password</label>
+            <input
+              v-model="password2"
+              type="password"
+              name="password2"
+              placeholder="Enter password"
+            />
+            <i class="icon-invisible"></i>
+            <p>Please enter a valid email address</p>
+          </div>
+
+          <div class="form-item form-item-code">
+            <label for="code">Verification code</label>
+            <input v-model="code" type="text" name="code" placeholder="Enter Verification code" />
+            <div class="send-email disabled">Send mail</div>
+            <p>4-digit number</p>
+          </div>
+
+          <button type="submit" class="btn-login disabled">Modify and log in</button>
         </form>
       </div>
     </div>
@@ -41,7 +56,9 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      password2: "",
+      code: ""
     };
   },
   methods: {
@@ -65,33 +82,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.login-container {
-  max-width: 900px;
-  width: calc(100% - 24px);
-  height: 620px;
-  background: #fffefc;
-  box-shadow: 0px 0px 11px 0px rgba(0, 0, 0, 0.06);
-  border-radius: 2px 2px 2px 2px;
-  margin: 32px auto;
-}
-.login-form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  .title {
-    font-family: "seb";
-    font-size: 22px;
-    line-height: 29px;
-    color: $color3;
-  }
-  .logo-login {
-    @include icon(120px, 120px, "logo-login.png");
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-}
+@import "@/assets/css/login.scss";
 </style>

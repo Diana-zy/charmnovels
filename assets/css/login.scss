@@ -150,6 +150,11 @@
       @include center;
       font-size: 14px;
       color: #fff;
+      cursor: pointer;
     }
   }
+}
+.disabled {
+  background: #c6c4c4 !important;
+  pointer-events: none;
 }
