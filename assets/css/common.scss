@@ -77,6 +77,9 @@ $class-names: ("block", "flex", "grid");
 }
 
 @media screen and (max-width: 750px) {
+  body {
+    font-size: vw(32);
+  }
   main {
     width: 100%;
     margin: 0 auto;

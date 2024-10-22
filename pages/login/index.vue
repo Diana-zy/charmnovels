@@ -1,6 +1,10 @@
 <template>
   <main>
     <custom-header class="login-page" />
+    <div class="m-header">
+      <div class="header-title">Join or Login</div>
+      <custom-link to="/" class="btn-skip">Skip<i class="icon-skip"></i></custom-link>
+    </div>
     <div class="container">
       <div class="form-container">
         <i class="logo-login"></i>
