@@ -13,29 +13,41 @@
         <form class="form" @submit.prevent="handleSubmit">
           <div class="form-item">
             <label for="email">Email</label>
-            <input v-model="email" type="text" name="email" placeholder="Example@email.com" />
-            <p>Please enter a valid email address</p>
+            <input
+              v-model="email"
+              type="text"
+              name="email"
+              placeholder="Example@email.com"
+              @input="validateEmail"
+            />
+            <p v-if="emailError">{{ emailError }}</p>
           </div>
 
           <div class="form-item">
             <label for="password">Password</label>
             <input
               v-model="password"
-              type="password"
+              :type="showPassword ? 'text' : 'password'"
               name="password"
               placeholder="Enter password"
+              @input="validateForm"
             />
-            <i class="icon-visible"></i>
-            <p>Please enter a valid email address</p>
+            <i
+              class="icon-visible"
+              :class="{ 'icon-invisible': showPassword }"
+              @click="togglePasswordVisibility"
+            ></i>
+            <p v-if="globalError">{{ globalError }}</p>
           </div>
 
-          <button type="submit" class="btn-login">Login</button>
+          <button type="submit" :disabled="!isFormValid" class="btn-login">Login</button>
           <div class="line-or">—————————— or ——————————</div>
           <custom-link to="/register/" class="btn-register">Register</custom-link>
           <custom-link to="/reset/" class="reset">Forgot Password?</custom-link>
         </form>
       </div>
     </div>
+    <common-notification />
   </main>
 </template>
 
@@ -44,10 +56,31 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      emailError: "",
+      showPassword: false,
+      globalError: "",
+      isFormValid: false
     };
   },
   methods: {
+    validateEmail() {
+      // 简单的邮箱格式校验
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(this.email)) {
+        this.emailError = "Please enter a valid email address";
+      } else {
+        this.emailError = "";
+      }
+      this.validateForm();
+    },
+    validateForm() {
+      // 表单有效性校验：邮箱格式正确且密码不为空
+      this.isFormValid = this.emailError === "" && this.password !== "";
+    },
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
     handleSubmit() {
       // 可以在这里处理表单提交的逻辑
       // 比如发起API请求

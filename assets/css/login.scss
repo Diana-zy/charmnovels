@@ -36,11 +36,14 @@
     width: 100%;
     margin-bottom: 8px;
     position: relative;
+    padding-bottom: 19px;
   }
   p {
     font-size: 14px;
     color: #ff6b6b;
     line-height: 19px;
+    position: absolute;
+    bottom: 0;
   }
   label {
     display: block;
@@ -158,7 +161,8 @@
 .m-header {
   display: none;
 }
-.disabled {
+.disabled,
+button[disabled] {
   background: #c6c4c4 !important;
   pointer-events: none;
 }
@@ -226,6 +230,7 @@
     }
     .form-item {
       margin-bottom: vw(16);
+      padding-bottom: vw(38);
     }
     p {
       font-size: vw(28);

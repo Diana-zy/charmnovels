@@ -50,6 +50,7 @@
         </form>
       </div>
     </div>
+    <common-notification />
   </main>
 </template>
 
