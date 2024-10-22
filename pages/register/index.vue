@@ -30,6 +30,11 @@
               placeholder="Enter password"
               @input="validateForm"
             />
+            <i
+              class="icon-visible"
+              :class="{ 'icon-invisible': showPassword }"
+              @click="togglePasswordVisibility"
+            ></i>
             <p v-if="passwordFormatError">{{ passwordFormatError }}</p>
           </div>
 
