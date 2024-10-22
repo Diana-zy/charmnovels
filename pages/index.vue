@@ -27,7 +27,7 @@
           :item="item"
           :index="i"
           :eager="3"
-          :to="`/read/${item.path}/`"
+          :to="`/novel/${item.path}/`"
           :is-show-tag="true"
         />
       </div>

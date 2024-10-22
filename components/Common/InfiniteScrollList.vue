@@ -46,7 +46,7 @@ export default {
       if (this.loading || this.endOfList) return;
       this.loading = true;
       try {
-        let params = {
+        const params = {
           site_id: process.env.SITE_ID,
           page: this.currentPage,
           size: this.pageSize
