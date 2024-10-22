@@ -1,11 +1,13 @@
 <template>
   <main>
     <custom-header class="login-page" />
+    <div class="m-header">
+      <custom-link to="/login/" class="btn-back"><i class="icon-back"></i></custom-link>
+      <div class="header-title">Register</div>
+    </div>
     <div class="container">
       <div class="form-container">
-        <i class="logo-login"></i>
-        <h1 class="title black">Register Account</h1>
-
+        <i class="logo-login logo-margin"></i>
         <form class="form" @submit.prevent="handleSubmit">
           <div class="form-item">
             <label for="email">Email</label>
