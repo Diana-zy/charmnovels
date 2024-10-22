@@ -11,43 +11,65 @@
         <form class="form" @submit.prevent="handleSubmit">
           <div class="form-item">
             <label for="email">Email</label>
-            <input v-model="email" type="text" name="email" placeholder="Example@email.com" />
-            <p>Please enter a valid email address</p>
+            <input
+              v-model="email"
+              type="text"
+              name="email"
+              placeholder="Example@email.com"
+              @input="validateEmail"
+            />
+            <p v-if="emailError">{{ emailError }}</p>
           </div>
 
           <div class="form-item">
             <label for="password">Password</label>
             <input
               v-model="password"
-              type="password"
+              :type="showPassword ? 'text' : 'password'"
               name="password"
               placeholder="Enter password"
+              @input="validateForm"
             />
-            <i class="icon-visible"></i>
-            <p>Please enter a valid email address</p>
+            <p v-if="passwordFormatError">{{ passwordFormatError }}</p>
           </div>
 
           <div class="form-item">
             <label for="password2">Confirm password</label>
             <input
-              v-model="password2"
-              type="password"
-              name="password2"
+              v-model="confirmPassword"
+              :type="showPassword ? 'text' : 'password'"
+              name="confirmPassword"
               placeholder="Enter password"
+              @input="validateForm"
             />
-            <i class="icon-invisible"></i>
-            <p>Please enter a valid email address</p>
+            <i
+              class="icon-visible"
+              :class="{ 'icon-invisible': showPassword }"
+              @click="togglePasswordVisibility"
+            ></i>
+            <p v-if="passwordConfirmError">{{ passwordConfirmError }}</p>
           </div>
 
           <div class="form-item form-item-code">
             <label for="code">Verification code</label>
-            <input v-model="code" type="text" name="code" placeholder="Enter Verification code" />
-            <div class="send-email">Send mail</div>
-            <p>4-digit number</p>
+            <input
+              v-model="emailCode"
+              type="text"
+              name="code"
+              placeholder="Enter Verification code"
+            />
+            <button
+              class="send-email"
+              :disabled="countdown > 0 || !emailValid"
+              @click="sendVerificationCode"
+            >
+              {{ countdown > 0 ? `${countdown}s` : "Send Code" }}
+            </button>
+            <p v-if="globalError">{{ globalError }}</p>
           </div>
 
           <div class="form-item form-item-terms">
-            <input id="terms" type="checkbox" name="terms" value="terms" />
+            <input v-model="agreement" type="checkbox" name="terms" @change="validateForm" />
             <label for="terms" class="terms">
               I accept the conditions of the
               <CustomLink to="/eula.html" target="_blank">Terms of Service</CustomLink>
@@ -56,7 +78,9 @@
             </label>
           </div>
 
-          <button type="submit" class="btn-login">Register and log in</button>
+          <button type="submit" class="btn-login" :disabled="!isFormValid"
+            >Register and log in</button
+          >
         </form>
       </div>
     </div>
@@ -69,18 +93,65 @@ export default {
   data() {
     return {
       email: "",
+      emailCode: "",
       password: "",
-      password2: "",
-      code: "",
-      terms: false
+      confirmPassword: "",
+      showPassword: false,
+      agreement: false,
+      countdown: 0,
+      emailError: "",
+      passwordFormatError: "",
+      passwordConfirmError: "",
+      globalError: "",
+      emailValid: false,
+      isFormValid: false
     };
   },
   methods: {
+    validateEmail() {
+      // 简单的邮箱格式校验
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.emailValid = emailPattern.test(this.email);
+      if (!this.emailValid) {
+        this.emailError = "Invalid email address";
+      } else {
+        this.emailError = "";
+      }
+      this.validateForm();
+    },
+    validateForm() {
+      // 校验表单有效性：邮箱有效、密码匹配且同意协议
+      this.passwordConfirmError =
+        this.password !== this.confirmPassword ? "Passwords do not match" : "";
+      this.isFormValid =
+        this.emailValid &&
+        this.password !== "" &&
+        this.password === this.confirmPassword &&
+        this.agreement;
+    },
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
+    sendVerificationCode() {
+      if (this.emailValid && this.countdown === 0) {
+        // 模拟发送验证码
+        console.log("Sending verification code to", this.email);
+        this.startCountdown();
+      }
+    },
+    startCountdown() {
+      this.countdown = 60;
+      const interval = setInterval(() => {
+        this.countdown -= 1;
+        if (this.countdown === 0) {
+          clearInterval(interval);
+        }
+      }, 1000);
+    },
     handleSubmit() {
       // 可以在这里处理表单提交的逻辑
       // 比如发起API请求
-      console.log("Email:", this.email);
-      console.log("Password:", this.password);
+      console.log("Registering with", this.email, this.password, this.emailCode);
 
       // 假如是发送登录请求
       // this.$axios.post('/api/login', { email: this.email, password: this.password })
