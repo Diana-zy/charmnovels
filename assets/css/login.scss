@@ -48,6 +48,17 @@
     font-family: "seb";
     margin-bottom: 8px;
   }
+  input:not([type="checkbox"]) {
+    width: 100%;
+    height: 40px;
+    border-radius: 8px 8px 8px 8px;
+    border: 1px solid rgba(65, 65, 76, 0.4);
+    padding: 0 10px;
+    font-size: 14px;
+    &::placeholder {
+      color: rgba($color2, 0.4);
+    }
+  }
   .form-item-terms {
     display: flex;
     input {
@@ -64,17 +75,6 @@
     a {
       color: #155eda;
       font-family: "seb";
-    }
-  }
-  input:not([type="checkbox"]) {
-    width: 100%;
-    height: 40px;
-    border-radius: 8px 8px 8px 8px;
-    border: 1px solid rgba(65, 65, 76, 0.4);
-    padding: 0 10px;
-    font-size: 14px;
-    &::placeholder {
-      color: rgba($color2, 0.4);
     }
   }
   input[type="checkbox"] {
@@ -134,6 +134,7 @@
   .reset {
     font-size: 14px;
     margin-top: 16px;
+    line-height: 19px;
   }
   .form-item-code {
     input {
@@ -168,6 +169,7 @@
   .m-header {
     position: fixed;
     top: 0;
+    background: #fffcf7;
     height: vw(96);
     width: 100%;
     @include center;
@@ -183,8 +185,18 @@
       font-family: "sesb";
       @include center;
     }
+    .btn-back {
+      position: absolute;
+      left: vw(46);
+      font-size: vw(28);
+      font-family: "sesb";
+      @include center;
+    }
     .icon-skip {
-      @include icon(vw(28), vw(28), "icon-visible.png");
+      @include icon(vw(48), vw(48), "icon-skip.png");
+    }
+    .icon-back {
+      @include icon(vw(48), vw(48), "icon-back.png");
     }
   }
   .container {
@@ -193,12 +205,16 @@
     background: #fffcf7;
     box-shadow: none;
     border-radius: 0;
-    margin: vw(36) auto 0;
+    margin: vw(32) auto vw(80);
   }
   .form-container {
     padding: 0;
     .logo-login {
       @include icon(vw(240), vw(240), "logo-login.png");
+      &.logo-margin {
+        @include icon(vw(128), vw(128), "logo-login.png");
+        margin-bottom: vw(32);
+      }
     }
     .title {
       font-size: vw(44);
@@ -219,22 +235,77 @@
       line-height: vw(42);
       margin-bottom: vw(16);
     }
+    input:not([type="checkbox"]) {
+      height: vw(80);
+      border-radius: vw(16);
+      border: vw(2) solid rgba(65, 65, 76, 0.4);
+      padding: 0 vw(20);
+      font-size: vw(28);
+    }
     .form-item-terms {
       display: flex;
       input {
-        margin-top: 2px;
-        margin-right: 4px;
-        flex-shrink: 0;
+        margin-top: vw(4);
+        margin-right: vw(8);
       }
       label {
-        font-size: 14px;
-        line-height: 19px;
-        font-family: "se";
-        margin: 0;
+        font-size: vw(28);
+        line-height: vw(38);
       }
-      a {
-        color: #155eda;
-        font-family: "seb";
+    }
+    input[type="checkbox"] {
+      width: vw(32);
+      height: vw(32);
+      border-radius: vw(8);
+      border: vw(2) solid rgba(65, 65, 76, 0.4);
+    }
+    input[type="checkbox"]:checked {
+      @include icon(vw(32), vw(32), "icon-checked.png");
+    }
+    .icon-visible {
+      @include icon(vw(48), vw(48), "icon-visible.png");
+      right: vw(20);
+      top: vw(74);
+    }
+    .icon-invisible {
+      @include icon(vw(48), vw(48), "icon-invisible.png");
+      right: vw(20);
+      top: vw(74);
+    }
+    .btn-login {
+      width: vw(656);
+      height: vw(96);
+      border-radius: vw(80);
+      font-size: vw(32);
+      margin-top: vw(64);
+    }
+    .line-or {
+      font-size: vw(28);
+      line-height: vw(38);
+      margin: vw(32) 0;
+    }
+    .btn-register {
+      width: vw(656);
+      height: vw(96);
+      border-radius: vw(80);
+      border: vw(2) solid $color3;
+      font-size: vw(32);
+    }
+    .reset {
+      font-size: vw(28);
+      margin-top: vw(32);
+      line-height: vw(38);
+    }
+    .form-item-code {
+      input {
+        width: calc(100% - vw(288));
+        margin-right: vw(16);
+      }
+      .send-email {
+        width: vw(272);
+        height: vw(80);
+        border-radius: vw(16);
+        font-size: vw(28);
       }
     }
   }
