@@ -4,7 +4,7 @@
       <custom-link
         v-for="(item, i) in data"
         :key="i"
-        :to="`/novel/${item.collectionPath}/`"
+        :to="`/novel/${item.id}/`"
         class="swiper-slide"
       >
         <nuxt-img

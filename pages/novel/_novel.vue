@@ -10,7 +10,7 @@
             height="300"
             fit="cover"
             format="auto"
-            :src="allApps[0].icon"
+            :src="allBooks[0].cover"
             alt="cover"
           />
           <i class="bg-book-edge"></i>
@@ -65,8 +65,9 @@
         v-if="!isMobile"
         api-endpoint="/api/game/all_app"
         :initial-page="2"
-        :page-size="16"
-        :initial-items="allApps"
+        :page-size="4"
+        :initial-items="allBooks"
+        :params="{ module_id: 'all' }"
         class="module-all-content"
       >
         <template #default="{ items }">
@@ -75,7 +76,7 @@
             :key="i"
             :item="item"
             :index="i"
-            :to="`/read/${item.path}/`"
+            :to="`/read/${item.id}/`"
           />
         </template>
       </common-infinite-scroll-list>
@@ -83,7 +84,7 @@
       <div v-if="isMobile" class="module-rec-mobile">
         <div class="module-rec-list">
           <div
-            v-for="(item, i) in allApps.slice(0, 5)"
+            v-for="(item, i) in allBooks.slice(0, 5)"
             :key="i"
             class="item"
             @click="handleRecItemClick(i)"
@@ -94,16 +95,16 @@
                 height="168"
                 fit="cover"
                 format="auto"
-                :src="item.icon"
+                :src="item.cover"
                 :alt="item.name"
               />
             </div>
           </div>
         </div>
         <item-module-all
-          :item="allApps[currentRecIndex]"
+          :item="allBooks[currentRecIndex]"
           :index="0"
-          :to="`/novel/${allApps[currentRecIndex].path}/`"
+          :to="`/novel/${allBooks[currentRecIndex].id}/`"
         />
       </div>
     </section>
@@ -139,19 +140,31 @@
 <script>
 import { getStarListStyle, getStarScore } from "~/utils/utils";
 export default {
-  async asyncData({ $axios, env }) {
+  async asyncData({ $axios, params, env }) {
     try {
-      const [allAppsResponse] = await Promise.all([
-        $axios.$get("/api/game/all_app", {
-          params: {
-            site_id: env.SITE_ID,
-            size: 16,
-            page: 1
-          }
+      const novelId = params.novel;
+      console.log("novel_id", novelId);
+      const [novelDetailResponse, allBooksResponse] = await Promise.all([
+        $axios.$post("/api/novel/novel_module", {
+          site_id: env.SITE_ID,
+          module_id: "all",
+          page_size: 4,
+          page: 1
+        }),
+        $axios.$post("/api/novel/novel_module", {
+          site_id: env.SITE_ID,
+          module_id: "all",
+          page_size: 4,
+          page: 1
         })
       ]);
+      const novelDetailInfo = novelDetailResponse.novel_info;
+      const novelChapterList = novelDetailResponse.chapter;
       return {
-        allApps: allAppsResponse.list
+        novelDetail: novelDetailResponse,
+        novelDetailInfo,
+        novelChapterList,
+        allBooks: allBooksResponse.novel_list
       };
     } catch (error) {
       console.error("Error fetching data:", error);
