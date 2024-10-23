@@ -4,7 +4,7 @@
       <custom-link
         v-for="(item, i) in data"
         :key="i"
-        :to="`/collection/${item.collectionPath}/`"
+        :to="`/novel/${item.collectionPath}/`"
         class="swiper-slide"
       >
         <nuxt-img
@@ -12,7 +12,7 @@
           fit="cover"
           width="1200"
           height="380"
-          :src="item.icon"
+          :src="item.cover"
           :alt="item.name"
           loading="lazy"
           class="cover-bg m-hidden-block"
@@ -23,7 +23,7 @@
           fit="cover"
           width="658"
           height="330"
-          :src="item.icon"
+          :src="item.cover"
           :alt="item.name"
           class="cover-bg pc-hidden-block"
         />
@@ -33,7 +33,7 @@
             <nuxt-img
               width="198"
               height="296"
-              :src="item.icon"
+              :src="item.cover"
               :alt="item.name"
               loading="lazy"
               class="cover"
@@ -50,7 +50,7 @@
               ></i>
               <span class="score">{{ getStarScore(item.score) }}</span>
             </div>
-            <p class="author">By Writer Name</p>
+            <p class="author">{{ item.author }}</p>
           </div>
         </div>
       </custom-link>
@@ -78,7 +78,7 @@ export default {
       swiperOption: {
         effect: "fade",
         autoplay: {
-          delay: 3000000,
+          delay: 3000,
           disableOnInteraction: false
         },
         pagination: {

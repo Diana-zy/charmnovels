@@ -28,7 +28,7 @@ export default {
       type: Array,
       default: () => []
     },
-    parmas: {
+    params: {
       type: Object,
       default: () => {}
     }
@@ -49,13 +49,13 @@ export default {
         const params = {
           site_id: process.env.SITE_ID,
           page: this.currentPage,
-          size: this.pageSize
+          page_size: this.pageSize
         };
         if (this.params) {
           Object.assign(params, this.params);
         }
-        const response = await this.$axios.$get(this.apiEndpoint, { params });
-        const newData = response.list;
+        const response = await this.$axios.$post(this.apiEndpoint, params);
+        const newData = response.novel_list;
         this.items = this.items.concat(newData);
         if (newData.length === 0 || newData.length < this.pageSize) {
           this.endOfList = true;

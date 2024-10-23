@@ -4,7 +4,7 @@
       <nuxt-img
         width="180"
         height="270"
-        :src="item.icon"
+        :src="item.cover"
         :alt="item.name"
         fit="cover"
         format="auto"

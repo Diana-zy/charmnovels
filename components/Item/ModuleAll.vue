@@ -6,7 +6,7 @@
         fit="cover"
         width="108"
         height="162"
-        :src="item.icon"
+        :src="item.cover"
         :alt="item.name"
         class="cover m-hidden-block"
         loading="lazy"
@@ -16,25 +16,20 @@
         fit="cover"
         width="198"
         height="280"
-        :src="item.icon"
+        :src="item.cover"
         :alt="item.name"
         class="cover"
       />
     </div>
 
     <div class="item-right">
-      <p class="name"
-        >Accidentally Marked By The Alpha King aaaaaa Accidentally Marked By The Alpha King</p
-      >
+      <p class="name">{{ item.name }}</p>
       <div class="info-row">
-        <span>Writer Name</span>
+        <span>{{ item.author }}</span>
         <span class="line"></span>
-        <span>Romance</span>
+        <span>{{ item.category }}</span>
       </div>
-      <p class="desc">
-        Novel summary: "Our marriage is nothing more than a transaction." Diablo glared at his
-        fiancée and said. "I doubt you expect doubt you expect
-      </p>
+      <p class="desc">{{ item.intro }}</p>
       <div class="info-bottom">
         <div class="rating">
           <i
@@ -47,7 +42,7 @@
         </div>
         <div class="views">
           <i class="icon-views"></i>
-          <span>12.9M</span>
+          <span>{{ item.view }}</span>
         </div>
       </div>
     </div>

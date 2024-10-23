@@ -87,7 +87,7 @@ function shuffleArray(array) {
 // 计算星星组的显示
 function getStarListStyle(scoreNum) {
   const result = [];
-  const score = Math.floor(scoreNum * 2) / 2; // 四舍五入到0.5分
+  const score = scoreNum / 2; // 四舍五入到0.5分
   const integer = Math.floor(score);
   const hasDecimal = score % 1 !== 0;
   // 先将on添加到list中
