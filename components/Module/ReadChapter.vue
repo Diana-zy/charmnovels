@@ -14,22 +14,22 @@
               : `icon-sort-up${theme === 'light' ? '-black' : ''}`
           ]"
         ></i>
-        <span>999 Chapter</span>
+        <span>{{ chaptersList.length }} Chapter</span>
       </div>
       <!-- 章节列表 -->
       <div class="chapter-list">
         <div
           v-for="(item, i) in chaptersList"
           :key="i"
-          :ref="item === currentChapter ? 'activeChapter' : ''"
+          :ref="item.id === currentChapterId ? 'activeChapter' : ''"
         >
           <custom-link
-            :to="`/read/`"
-            :class="['chapter-item', item === currentChapter ? 'chapter-item-active' : '']"
+            :to="`/novel/${item.novel_id}/${item.id}/`"
+            :class="['chapter-item', item.id === currentChapterId ? 'chapter-item-active' : '']"
           >
             <div class="tag-current"><i class="icon-chapter-current"></i></div>
-            <span>Chapter {{ item }}</span>
-            <i v-if="i >= 7" class="icon-lock"></i>
+            <span>{{ item.chapter_num }} {{ item.name }}</span>
+            <i v-if="item.chapter_num > 8" class="icon-lock"></i>
           </custom-link>
         </div>
       </div>
@@ -43,10 +43,32 @@ export default {
     chapters: {
       type: Array,
       default: () => [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-        26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-        49, 50
+        {
+          id: 1144,
+          novel_id: 4,
+          chapter_num: 1,
+          name: "Filling In",
+          content: ""
+        },
+        {
+          id: 1145,
+          novel_id: 4,
+          chapter_num: 2,
+          name: "Bambi",
+          content: ""
+        },
+        {
+          id: 1146,
+          novel_id: 4,
+          chapter_num: 3,
+          name: "Sold",
+          content: ""
+        }
       ]
+    },
+    currentChapterId: {
+      type: Number,
+      default: 0
     },
     theme: {
       type: String,
@@ -73,7 +95,9 @@ export default {
     changeSortType() {
       this.sortType = this.sortType === "asc" ? "desc" : "asc";
       this.chaptersList.sort((a, b) => {
-        return this.sortType === "asc" ? a - b : b - a;
+        return this.sortType === "asc"
+          ? a.chapter_num - b.chapter_num
+          : b.chapter_num - a.chapter_num;
       });
       this.$nextTick(() => {
         this.scrollToActiveChapter();

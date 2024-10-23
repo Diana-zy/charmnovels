@@ -10,60 +10,60 @@
             height="300"
             fit="cover"
             format="auto"
-            :src="allBooks[0].cover"
+            :src="novelDetailInfo.cover"
             alt="cover"
           />
           <i class="bg-book-edge"></i>
         </div>
         <div class="introduce-info">
-          <h3 class="name"
-            >Accidentally Marked By The Alpha King Accidentally Marked By The Alpha King</h3
-          >
+          <h3 class="name">{{ novelDetailInfo.name }}</h3>
           <div class="author-row">
-            <span>Romance</span>
+            <span>{{ novelDetailInfo.category }}</span>
             <span class="line"></span>
-            <span>Writer Name</span>
+            <span>{{ novelDetailInfo.author }}</span>
           </div>
 
           <div class="info-row">
             <div>
               <div class="rating">
                 <i
-                  v-for="(item, i) in getStarListStyle(4.6)"
+                  v-for="(item, i) in getStarListStyle(novelDetailInfo.score)"
                   :key="i"
                   :class="item"
                   class="rating-item"
                 ></i>
-                <span class="score">{{ getStarScore(4.6) }}</span>
+                <span class="score">{{ getStarScore(novelDetailInfo.score) }}</span>
               </div>
               <span>Score</span>
             </div>
             <div>
-              <p>85</p>
+              <p>{{ novelDetailInfo.chapter }}</p>
               <span>Chapters</span>
             </div>
             <div>
-              <p>38.8K</p>
+              <p>{{ novelDetailInfo.view }}</p>
               <span>Views</span>
             </div>
           </div>
 
           <div class="btn-read">
             <i class="icon-read-book"></i>
-            <span>Start Reading</span>
+            <span>{{
+              novelDetail.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
+            }}</span>
           </div>
         </div>
       </div>
       <div class="video-container">视频占位</div>
-      <p class="desc m-hidden-block">{{ textData }}</p>
-      <module-expandable-text :text="textData" class="pc-hidden-block" />
+      <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
+      <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
     </section>
     <section class="module-all">
       <common-title-label title="Rec Books" />
       <!-- PC端rec模块 -->
       <common-infinite-scroll-list
         v-if="!isMobile"
-        api-endpoint="/api/game/all_app"
+        api-endpoint="/api/novel/novel_module"
         :initial-page="2"
         :page-size="4"
         :initial-items="allBooks"
@@ -76,7 +76,7 @@
             :key="i"
             :item="item"
             :index="i"
-            :to="`/read/${item.id}/`"
+            :to="`/novel/${item.id}/`"
           />
         </template>
       </common-infinite-scroll-list>
@@ -84,7 +84,7 @@
       <div v-if="isMobile" class="module-rec-mobile">
         <div class="module-rec-list">
           <div
-            v-for="(item, i) in allBooks.slice(0, 5)"
+            v-for="(item, i) in recBooks.slice(0, 5)"
             :key="i"
             class="item"
             @click="handleRecItemClick(i)"
@@ -102,9 +102,9 @@
           </div>
         </div>
         <item-module-all
-          :item="allBooks[currentRecIndex]"
+          :item="recBooks[currentRecIndex]"
           :index="0"
-          :to="`/novel/${allBooks[currentRecIndex].id}/`"
+          :to="`/novel/${recBooks[currentRecIndex].id}/`"
         />
       </div>
     </section>
@@ -116,6 +116,8 @@
         <transition name="slide">
           <module-read-chapter
             v-show="isShowChapterPopup"
+            :chapters="novelChapterList"
+            :current-chapter-id="novelDetail.user_last_read_chapter_id"
             @close-chapter-popup="handleHideChapterPopup"
           />
         </transition>
@@ -138,13 +140,16 @@
 </template>
 
 <script>
-import { getStarListStyle, getStarScore } from "~/utils/utils";
+import { getStarListStyle, getStarScore, shuffleArray } from "~/utils/utils";
 export default {
   async asyncData({ $axios, params, env }) {
     try {
-      const novelId = params.novel;
+      const novelId = Number(params.novel);
       console.log("novel_id", novelId);
-      const [novelDetailResponse, allBooksResponse] = await Promise.all([
+      const [novelDetailResponse, allBooksResponse, recBooksResponse] = await Promise.all([
+        $axios.$post("/api/novel/novel_info", {
+          novel_id: novelId
+        }),
         $axios.$post("/api/novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
@@ -154,17 +159,19 @@ export default {
         $axios.$post("/api/novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
-          page_size: 4,
+          page_size: 20,
           page: 1
         })
       ]);
       const novelDetailInfo = novelDetailResponse.novel_info;
       const novelChapterList = novelDetailResponse.chapter;
+      const recBooks = shuffleArray(recBooksResponse.novel_list).slice(0, 5);
       return {
         novelDetail: novelDetailResponse,
         novelDetailInfo,
         novelChapterList,
-        allBooks: allBooksResponse.novel_list
+        allBooks: allBooksResponse.novel_list,
+        recBooks
       };
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -214,7 +221,7 @@ export default {
     },
     setChangeCurrentRecIndexTimer() {
       this.changeCurrentRecIndexTimer = setInterval(() => {
-        this.currentRecIndex = (this.currentRecIndex + 1) % 5;
+        this.currentRecIndex = (this.currentRecIndex + 1) % this.recBooks.length;
       }, this.changeCurrentRecIndexInterval);
     },
     clearChangeCurrentRecIndexTimer() {
@@ -323,7 +330,8 @@ export default {
     & > div:first-child {
       align-items: flex-start;
     }
-    .rating-item {
+    .icon-star-on,
+    .icon-star-half {
       width: 24px;
       height: 24px;
     }
@@ -440,7 +448,8 @@ export default {
         flex: 1;
         align-items: center;
       }
-      .rating-item {
+      .icon-star-on,
+      .icon-star-half {
         width: vw(32);
         height: vw(32);
       }
@@ -519,7 +528,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 9;
+    z-index: 12;
     .mask {
       position: absolute;
       top: 0;
