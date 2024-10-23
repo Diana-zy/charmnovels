@@ -67,7 +67,7 @@ export default {
     scrollToActiveChapter() {
       const activeChapterElement = this.$refs.activeChapter; // 获取到被选中的章节元素
       if (activeChapterElement && activeChapterElement.length > 0) {
-        activeChapterElement[0].scrollIntoView({ behavior: "auto", block: "start" }); // 滚动到视图
+        activeChapterElement[0].scrollIntoView({ behavior: "auto", block: "center" }); // 滚动到视图
       }
     },
     changeSortType() {

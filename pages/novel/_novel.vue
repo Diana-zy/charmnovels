@@ -60,6 +60,7 @@
     </section>
     <section class="module-all">
       <common-title-label title="Rec Books" />
+      <!-- PC端rec模块 -->
       <common-infinite-scroll-list
         v-if="!isMobile"
         api-endpoint="/api/game/all_app"
@@ -78,6 +79,33 @@
           />
         </template>
       </common-infinite-scroll-list>
+      <!-- 移动端rec模块 -->
+      <div v-if="isMobile" class="module-rec-mobile">
+        <div class="module-rec-list">
+          <div
+            v-for="(item, i) in allApps.slice(0, 5)"
+            :key="i"
+            class="item"
+            @click="handleRecItemClick(i)"
+          >
+            <div :class="['cover', { active: i === currentRecIndex }]">
+              <nuxt-img
+                width="112"
+                height="168"
+                fit="cover"
+                format="auto"
+                :src="item.icon"
+                :alt="item.name"
+              />
+            </div>
+          </div>
+        </div>
+        <item-module-all
+          :item="allApps[currentRecIndex]"
+          :index="0"
+          :to="`/novel/${allApps[currentRecIndex].path}/`"
+        />
+      </div>
     </section>
 
     <!-- 移动端章节弹窗 -->
@@ -134,9 +162,21 @@ export default {
       textData:
         "'Please believe me. I didn't do anything!' Thalassa Thompson cried helplessly. 'Take her away.' Kris Miller, her husband, said coldly. He didn't care as she was humiliated for the whole world to see. What would you if the love of your life and the woman you considered your best friend betrayed you in the worse way possible? For Thalassa, the answer was only one; she's going to come back stronger and better and bring everyone who made her suffer to their knees. Let the games begin! ***** 'I hate you.' Kris gritted out, glaring into her eyes. Thalassa laughed. 'Mr Miller, if you hate me so much, then why is your dick so hard?",
       isMobile: false,
+      currentRecIndex: 0, // 移动端rec模块当前索引
+      changeCurrentRecIndexTimer: null,
+      changeCurrentRecIndexInterval: 3000,
       isShowChapterPopup: false, // 移动端章节弹窗
       distanceFromTop: 0 // body距离顶部距离
     };
+  },
+  watch: {
+    isMobile(newVal) {
+      if (newVal) {
+        this.setChangeCurrentRecIndexTimer();
+      } else {
+        this.clearChangeCurrentRecIndexTimer();
+      }
+    }
   },
   mounted() {
     this.handleResize();
@@ -146,12 +186,26 @@ export default {
     getStarListStyle,
     getStarScore,
     handleResize() {
-      console.log(window.innerWidth);
       if (window.innerWidth <= 750) {
         this.isMobile = true;
       } else {
         this.isMobile = false;
       }
+    },
+
+    // 移动端rec模块切换
+    handleRecItemClick(index) {
+      this.currentRecIndex = index;
+      this.clearChangeCurrentRecIndexTimer();
+      this.setChangeCurrentRecIndexTimer();
+    },
+    setChangeCurrentRecIndexTimer() {
+      this.changeCurrentRecIndexTimer = setInterval(() => {
+        this.currentRecIndex = (this.currentRecIndex + 1) % 5;
+      }, this.changeCurrentRecIndexInterval);
+    },
+    clearChangeCurrentRecIndexTimer() {
+      clearInterval(this.changeCurrentRecIndexTimer);
     },
 
     // 展示菜单设置
@@ -164,7 +218,7 @@ export default {
     handleHideChapterPopup() {
       this.isShowChapterPopup = false;
       document.body.classList.remove("no-scroll");
-      window.scrollTo(0, this.distanceFromTop); // 恢复滚动位置
+      window.scrollTo(0, this.distanceFromTop); // 恢复body滚动位置
     }
   }
 };
@@ -388,6 +442,27 @@ export default {
     }
     .btn-read {
       display: none;
+    }
+  }
+
+  .module-rec-mobile {
+    margin-bottom: vw(44);
+    .module-rec-list {
+      display: flex;
+      align-items: center;
+      gap: vw(24);
+      margin-bottom: vw(48);
+    }
+    .cover {
+      width: vw(112);
+      height: vw(168);
+      border-radius: vw(4);
+      @include book-edge(vw(2.26), vw(4));
+      transition: all 0.3s;
+    }
+    .active {
+      transform: scale(1.17);
+      border: vw(4) solid $color3;
     }
   }
 
