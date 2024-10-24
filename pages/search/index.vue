@@ -23,7 +23,7 @@
           :key="i"
           :item="item"
           :index="i"
-          :to="`/read/${item.path}/`"
+          :to="`/novel/${item.id}/`"
         />
       </div>
     </section>
@@ -31,10 +31,11 @@
     <section class="module-all">
       <common-title-label title="Rec Books" />
       <common-infinite-scroll-list
-        api-endpoint="/api/game/all_app"
+        api-endpoint="/api/novel/novel_module"
         :initial-page="2"
-        :page-size="16"
-        :initial-items="allApps"
+        :page-size="4"
+        :initial-items="allBooks"
+        :params="{ module_id: 'all' }"
         class="module-all-content"
       >
         <template #default="{ items }">
@@ -43,7 +44,7 @@
             :key="i"
             :item="item"
             :index="i"
-            :to="`/app/${item.path}/`"
+            :to="`/novel/${item.id}/`"
           />
         </template>
       </common-infinite-scroll-list>
@@ -59,18 +60,16 @@
 export default {
   async asyncData({ $axios, env }) {
     try {
-      // 并行处理多个异步请求
-      const [allAppResponse] = await Promise.all([
-        $axios.$get("/api/game/all_app", {
-          params: {
-            site_id: env.SITE_ID,
-            page: 1,
-            size: 16
-          }
+      const [allBooksResponse] = await Promise.all([
+        $axios.$post("/api/novel/novel_module", {
+          site_id: env.SITE_ID,
+          module_id: "all",
+          page_size: 4,
+          page: 1
         })
       ]);
       return {
-        allApps: allAppResponse.list
+        allBooks: allBooksResponse.novel_list
       };
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -97,13 +96,13 @@ export default {
     async searchApp(text) {
       this.input = text;
       this.searchLoading = true;
-      const searchResultResponse = await this.$axios.$post("/api/game/search", {
+      const searchResultResponse = await this.$axios.$post("/api/novel/novel_search", {
         site_id: process.env.SITE_ID,
         name: text
       });
       this.searchLoading = false;
-      this.resultDataCount = searchResultResponse.app_count;
-      this.resultDataList = searchResultResponse.app_list;
+      this.resultDataCount = searchResultResponse.total;
+      this.resultDataList = searchResultResponse.list;
       this.searchQueryText = text;
     }
   }
