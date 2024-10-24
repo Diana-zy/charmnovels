@@ -5,7 +5,7 @@
     <div class="feedback-info">
       <i class="icon-clock"></i>
       For payment issues, please contact
-      <a href="#" @click.prevent="copyToClipboard('support@himobi.cc')">support@himobi.cc</a>
+      <a href="#" @click.prevent="copyToClipboard('support@egames.cc')">support@egames.cc</a>
     </div>
     <div v-if="purchaseBooks.length === 0" class="empty-box">
       <i class="icon-empty"></i>
