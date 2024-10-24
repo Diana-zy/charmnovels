@@ -123,7 +123,7 @@
         </transition>
       </div>
     </transition>
-    <section class="bottom-menu">
+    <section class="bottom-menu pc-hidden-flex">
       <div class="menu-item" @click="handleShowChapterPopup">
         <i class="icon-chapters"></i>
         <span>Chapters</span>
@@ -179,8 +179,6 @@ export default {
   },
   data() {
     return {
-      textData:
-        "'Please believe me. I didn't do anything!' Thalassa Thompson cried helplessly. 'Take her away.' Kris Miller, her husband, said coldly. He didn't care as she was humiliated for the whole world to see. What would you if the love of your life and the woman you considered your best friend betrayed you in the worse way possible? For Thalassa, the answer was only one; she's going to come back stronger and better and bring everyone who made her suffer to their knees. Let the games begin! ***** 'I hate you.' Kris gritted out, glaring into her eyes. Thalassa laughed. 'Mr Miller, if you hate me so much, then why is your dick so hard?",
       isMobile: false,
       currentRecIndex: 0, // 移动端rec模块当前索引
       changeCurrentRecIndexTimer: null,

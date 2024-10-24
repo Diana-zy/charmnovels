@@ -7,18 +7,18 @@
       For payment issues, please contact
       <a href="#" @click.prevent="copyToClipboard('support@himobi.cc')">support@himobi.cc</a>
     </div>
-    <div v-if="latestApps.length === 0" class="empty-box">
+    <div v-if="purchaseBooks.length === 0" class="empty-box">
       <i class="icon-empty"></i>
       <span>"Not yet purchased the novel"</span>
     </div>
     <section v-else class="module-common module-purchased">
-      <common-title-label :title="`Purchase ${latestApps.length} novels`" />
+      <common-title-label :title="`Purchase ${purchaseBooks.length} novels`" />
       <div class="module-purchased-content">
         <item-module-purchased
-          v-for="(item, i) in latestApps"
+          v-for="(item, i) in purchaseBooks"
           :key="i"
           :item="item"
-          :to="`/read/${item.path}/`"
+          :to="`/novel/${item.id}/`"
         />
       </div>
     </section>
@@ -26,10 +26,11 @@
     <section class="module-all">
       <common-title-label title="Rec Books" />
       <common-infinite-scroll-list
-        api-endpoint="/api/game/all_app"
+        api-endpoint="/api/novel/novel_module"
         :initial-page="2"
-        :page-size="16"
-        :initial-items="allApps"
+        :page-size="4"
+        :initial-items="allBooks"
+        :params="{ module_id: 'all' }"
         class="module-all-content"
       >
         <template #default="{ items }">
@@ -38,7 +39,7 @@
             :key="i"
             :item="item"
             :index="i"
-            :to="`/read/${item.path}/`"
+            :to="`/novel/${item.id}/`"
           />
         </template>
       </common-infinite-scroll-list>
@@ -53,26 +54,18 @@
 export default {
   async asyncData({ $axios, env }) {
     try {
-      const [latestAppsResponse, allAppsResponse] = await Promise.all([
-        $axios.$get("/api/game/menu", {
-          params: {
-            site_id: env.SITE_ID,
-            mod_id: "new",
-            size: 6,
-            page: 1
-          }
-        }),
-        $axios.$get("/api/game/all_app", {
-          params: {
-            site_id: env.SITE_ID,
-            size: 16,
-            page: 1
-          }
+      const [purchaseResponse, allBooksResponse] = await Promise.all([
+        $axios.$get("/api/novel/novel_purchase_list"),
+        $axios.$post("/api/novel/novel_module", {
+          site_id: env.SITE_ID,
+          module_id: "all",
+          page_size: 4,
+          page: 1
         })
       ]);
       return {
-        latestApps: latestAppsResponse.list,
-        allApps: allAppsResponse.list
+        purchaseBooks: purchaseResponse.list,
+        allBooks: allBooksResponse.novel_list
       };
     } catch (error) {
       console.error("Error fetching data:", error);
