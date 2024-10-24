@@ -142,6 +142,20 @@ function setIframeLocalStorage(key, value) {
     );
 }
 
+/* 
+  解析 header cookie 中的某个值
+*/
+function getHeaderCookieItem(cookieString, paramKey) {
+  const cookiesArray = cookieString.split("; "); // 分割每个 cookie
+  for (const cookie of cookiesArray) {
+    const [key, value] = cookie.split("="); // 分割键值对
+    if (key === paramKey) {
+      return value;
+    }
+  }
+  return null;
+}
+
 export {
   simulateClick,
   generateCustomLink,
@@ -150,5 +164,6 @@ export {
   getStarListStyle,
   getStarScore,
   getTargetDomain,
-  setIframeLocalStorage
+  setIframeLocalStorage,
+  getHeaderCookieItem
 };

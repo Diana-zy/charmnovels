@@ -1,7 +1,7 @@
 <template>
   <custom-link :to="to" class="item">
     <div class="item-top">
-      <span class="order-no">Order No.123456789123456</span>
+      <span class="order-no">Order {{ item.order_info.order_no }}</span>
       <span class="status">Paid</span>
     </div>
     <div class="item-content">
@@ -9,19 +9,19 @@
         <nuxt-img
           width="96"
           height="144"
-          :src="item.cover"
-          :alt="item.name"
+          :src="item.novel_info.cover"
+          :alt="item.novel_info.name"
           fit="cover"
           format="auto"
         />
       </div>
       <div class="right-info">
-        <p class="name">{{ item.name }}</p>
+        <p class="name">{{ item.novel_info.name }}</p>
         <div class="time-row">
           <i class="icon-time"></i>
-          <span>October 15, 2024, 3:13:26 PM</span>
+          <span>{{ item.order_info.purchase_time }}</span>
         </div>
-        <p class="price">$ 5.9</p>
+        <p class="price">$ {{ item.order_info.pay_price }}</p>
       </div>
     </div>
   </custom-link>

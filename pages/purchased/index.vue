@@ -52,10 +52,9 @@
 </template>
 <script>
 export default {
-  async asyncData({ $axios, env }) {
+  async asyncData({ $axios, env, req }) {
     try {
-      const [purchaseResponse, allBooksResponse] = await Promise.all([
-        $axios.$get("/api/novel/novel_purchase_list"),
+      const [allBooksResponse] = await Promise.all([
         $axios.$post("/api/novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
@@ -64,7 +63,6 @@ export default {
         })
       ]);
       return {
-        purchaseBooks: purchaseResponse.list,
         allBooks: allBooksResponse.novel_list
       };
     } catch (error) {
@@ -72,11 +70,20 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      purchaseBooks: []
+    };
   },
-  mounted() {},
+  mounted() {
+    this.getPurchaseList();
+  },
   beforeDestroy() {},
   methods: {
+    async getPurchaseList() {
+      await this.$axios.$get("/api/novel/novel_purchase_list").then((response) => {
+        this.purchaseBooks = response.list;
+      });
+    },
     copyToClipboard(text) {
       navigator.clipboard
         .writeText(text)
