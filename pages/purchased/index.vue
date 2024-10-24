@@ -80,9 +80,15 @@ export default {
   beforeDestroy() {},
   methods: {
     async getPurchaseList() {
-      await this.$axios.$get("/api/novel/novel_purchase_list").then((response) => {
-        this.purchaseBooks = response.list;
-      });
+      await this.$axios
+        .$get("/api/novel/novel_purchase_list", {
+          params: {
+            site_id: process.env.SITE_ID
+          }
+        })
+        .then((response) => {
+          this.purchaseBooks = response.list;
+        });
     },
     copyToClipboard(text) {
       navigator.clipboard

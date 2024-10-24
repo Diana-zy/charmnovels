@@ -1,7 +1,7 @@
 <template>
   <main>
     <custom-header />
-    <section class="module-introduce">
+    <section v-if="novelDetailInfo" class="module-introduce">
       <div class="introduce-content">
         <div class="cover-container">
           <nuxt-img
@@ -46,12 +46,12 @@
             </div>
           </div>
 
-          <div class="btn-read">
+          <custom-link :to="startReadPath" class="btn-read">
             <i class="icon-read-book"></i>
             <span>{{
               novelDetail.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
             }}</span>
-          </div>
+          </custom-link>
         </div>
       </div>
       <div class="video-container">视频占位</div>
@@ -68,7 +68,7 @@
         :page-size="4"
         :initial-items="allBooks"
         :params="{ module_id: 'all' }"
-        class="module-all-content"
+        class="module-all-content m-hidden-grid"
       >
         <template #default="{ items }">
           <item-module-all
@@ -128,10 +128,12 @@
         <i class="icon-chapters"></i>
         <span>Chapters</span>
       </div>
-      <div class="menu-item">
+      <custom-link :to="startReadPath" class="menu-item">
         <i class="icon-reading"></i>
-        <span>Start Reading</span>
-      </div>
+        <span>{{
+          novelDetail.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
+        }}</span>
+      </custom-link>
     </section>
     <common-notification />
     <ad-loading />
@@ -144,12 +146,7 @@ import { getStarListStyle, getStarScore, shuffleArray } from "~/utils/utils";
 export default {
   async asyncData({ $axios, params, env }) {
     try {
-      const novelId = Number(params.novel);
-      console.log("novel_id", novelId);
-      const [novelDetailResponse, allBooksResponse, recBooksResponse] = await Promise.all([
-        $axios.$post("/api/novel/novel_info", {
-          novel_id: novelId
-        }),
+      const [allBooksResponse, recBooksResponse] = await Promise.all([
         $axios.$post("/api/novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
@@ -163,13 +160,8 @@ export default {
           page: 1
         })
       ]);
-      const novelDetailInfo = novelDetailResponse.novel_info;
-      const novelChapterList = novelDetailResponse.chapter;
       const recBooks = shuffleArray(recBooksResponse.novel_list).slice(0, 5);
       return {
-        novelDetail: novelDetailResponse,
-        novelDetailInfo,
-        novelChapterList,
         allBooks: allBooksResponse.novel_list,
         recBooks
       };
@@ -180,6 +172,10 @@ export default {
   data() {
     return {
       isMobile: false,
+      novelDetail: {},
+      novelDetailInfo: null,
+      novelChapterList: [],
+      startReadPath: "/", // 开始阅读路径
       currentRecIndex: 0, // 移动端rec模块当前索引
       changeCurrentRecIndexTimer: null,
       changeCurrentRecIndexInterval: 3000,
@@ -196,6 +192,10 @@ export default {
       }
     }
   },
+  beforeMount() {
+    this.handleResize();
+    this.getNovelDetailInfo();
+  },
   mounted() {
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
@@ -211,6 +211,28 @@ export default {
       }
     },
 
+    async getNovelDetailInfo() {
+      const novelId = Number(this.$route.params.novel);
+      await this.$axios
+        .$post("/api/novel/novel_info", {
+          site_id: process.env.SITE_ID,
+          novel_id: novelId
+        })
+        .then((response) => {
+          const novelDetail = response;
+          this.novelDetail = novelDetail;
+          this.novelDetailInfo = novelDetail.novel_info;
+          this.novelChapterList = novelDetail.chapter;
+          // 有记录的章节，则跳转到记录的章节
+          if (novelDetail.user_last_read_chapter_num !== 0) {
+            this.startReadPath = `/novel/${novelDetail.novel_info.id}/${this.novelDetail.user_last_read_chapter_id}/`;
+          }
+          // 没有记录的章节，则跳转到第一章节
+          else {
+            this.startReadPath = `/novel/${novelDetail.novel_info.id}/${response.chapter[0].id}/`;
+          }
+        });
+    },
     // 移动端rec模块切换
     handleRecItemClick(index) {
       this.currentRecIndex = index;
@@ -349,7 +371,6 @@ export default {
     line-height: 21px;
     font-family: "seb";
     color: $color1;
-    cursor: pointer;
     .icon-read-book {
       @include icon(24px, 24px, "icon-read-book.png");
       margin-right: 8px;
@@ -401,6 +422,7 @@ export default {
       max-width: unset;
       font-size: vw(32);
       line-height: vw(42);
+      text-align: center;
       margin-top: vw(24);
       padding: 0 vw(24);
     }

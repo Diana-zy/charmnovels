@@ -28,7 +28,7 @@
             :class="['chapter-item', item.id === currentChapterId ? 'chapter-item-active' : '']"
           >
             <div class="tag-current"><i class="icon-chapter-current"></i></div>
-            <span>{{ item.chapter_num }} {{ item.name }}</span>
+            <span>Chapter {{ item.chapter_num }}</span>
             <i v-if="item.chapter_num > 8" class="icon-lock"></i>
           </custom-link>
         </div>
@@ -78,9 +78,13 @@ export default {
   data() {
     return {
       chaptersList: this.chapters,
-      currentChapter: 6,
       sortType: "asc" // asc: 正序, desc: 倒序
     };
+  },
+  watch: {
+    chapters(newVal) {
+      this.chaptersList = newVal;
+    }
   },
   mounted() {
     this.scrollToActiveChapter();

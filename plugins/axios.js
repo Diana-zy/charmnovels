@@ -6,8 +6,8 @@ export default function ({ $axios, redirect }) {
       // do something before request is sent
       /* 客户端请求 */
       if (!process.server) {
-        config.headers.token = Storage.getItem("token") || "ezp480ijmjq6f9rphi43bgbrylbg1tc5";
-        config.headers.userId = Storage.getItem("userId") || 1;
+        config.headers.token = Storage.getItem("token") || "1cp49j8vpdfr8xq48mw1i5vb8lrk8oc9";
+        config.headers.userId = Storage.getItem("userId") || 11;
       }
       return config;
     },
@@ -49,7 +49,11 @@ export default function ({ $axios, redirect }) {
     const code = parseInt(error.response && error.response.status);
     if (code === 400) {
       redirect("/404");
-    } else if (code === 500) {
+    }
+    if (code === 401) {
+      /* session过期 */
+    }
+    if (code === 500) {
       redirect("/500");
     }
   });
