@@ -1,8 +1,14 @@
+import Storage from "@/utils/storage";
 export default function ({ $axios, redirect }) {
   // request interceptor
   $axios.interceptors.request.use(
     (config) => {
       // do something before request is sent
+      /* 客户端请求 */
+      if (!process.server) {
+        config.headers.token = Storage.getItem("token") || "ezp480ijmjq6f9rphi43bgbrylbg1tc5";
+        config.headers.userId = Storage.getItem("userId") || 1;
+      }
       return config;
     },
     (error) => {
