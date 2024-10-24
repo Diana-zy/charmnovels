@@ -1,23 +1,25 @@
 <template>
-  <section class="read-container">
+  <section v-if="currentChapterDetail" class="read-container">
     <!-- 只有第一章节才展示 top-info-->
     <div class="top-info">
       <div class="cover">
         <nuxt-img
-          :src="currentApp.icon"
-          :alt="currentApp.name"
+          :src="currentChapterDetail.novel_info.cover"
+          :alt="currentChapterDetail.novel_info.name"
           width="200"
           height="300"
           format="auto"
           fit="cover"
         />
       </div>
-      <p class="name">{{ currentApp.desc }}</p>
-      <span class="author">By Writer Name</span>
+      <p class="name">{{ currentChapterDetail.novel_info.intro }}</p>
+      <span class="author">{{ currentChapterDetail.novel_info.author }}</span>
     </div>
     <article class="read-content" @click="handleShowMenuSetting">
-      <h3>Chapter 0001</h3>
-      <p>{{ currentApp.desc }}</p>
+      <h3
+        >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
+      </h3>
+      <p>{{ currentChapterDetail.content }}</p>
     </article>
     <section class="bottom-operation">
       <div class="pay-box">
@@ -26,7 +28,7 @@
           <span>Unlock</span>
         </div>
         <div class="row-info">
-          <span>$5.9</span>
+          <span>${{ currentChapterDetail.novel_info.price }}</span>
           <span>Enjoy reading this novel</span>
         </div>
       </div>
@@ -59,8 +61,9 @@
 import Storage from "@/utils/storage";
 export default {
   props: {
-    currentApp: {
-      type: Object,
+    currentChapterDetail: {
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Object | null,
       required: true
     },
     allApps: {
@@ -230,6 +233,7 @@ export default {
 @media screen and (max-width: 750px) {
   .read-container {
     max-width: unset;
+    min-height: 100vh;
     margin: 0;
     padding: 0 vw(46) vw(48);
     background: var(--read-bg-color);

@@ -42,29 +42,7 @@ export default {
   props: {
     chapters: {
       type: Array,
-      default: () => [
-        {
-          id: 1144,
-          novel_id: 4,
-          chapter_num: 1,
-          name: "Filling In",
-          content: ""
-        },
-        {
-          id: 1145,
-          novel_id: 4,
-          chapter_num: 2,
-          name: "Bambi",
-          content: ""
-        },
-        {
-          id: 1146,
-          novel_id: 4,
-          chapter_num: 3,
-          name: "Sold",
-          content: ""
-        }
-      ]
+      default: () => []
     },
     currentChapterId: {
       type: Number,

@@ -9,12 +9,12 @@
         <span>Chapters</span>
       </div>
       <div v-show="isShowChapters" class="fixed-chapter-list">
-        <module-read-chapter ref="fixedChapterList" />
+        <module-read-chapter ref="fixedChapterList" :chapters="novelChapterList" />
       </div>
     </section>
 
     <module-read-content
-      :current-app="currentApp"
+      :current-chapter-detail="currentChapterDetail"
       :all-apps="allApps"
       @show-menu-setting="handleShowMenuSetting"
     />
@@ -31,6 +31,7 @@
         <transition name="slide">
           <module-read-chapter
             v-show="isShowChapterPopup"
+            :chapters="novelChapterList"
             theme="dark"
             @close-chapter-popup="handleHideChapterPopup"
           />
@@ -46,6 +47,7 @@
 export default {
   async asyncData({ $axios, params, env }) {
     try {
+      console.log("Fetching data for readId page", params);
       const path = params.read;
       const lastDashIndex = path.lastIndexOf("-");
       const id = path.substring(lastDashIndex + 1, path.length);
@@ -74,11 +76,17 @@ export default {
   },
   data() {
     return {
+      currentChapterDetail: null, // 当前阅读章节详情
+      novelChapterList: [], // 章节列表
       isShowChapters: false, // PC端悬浮章节列表
       isShowHeader: false,
       isShowChapterPopup: false, // 移动端章节弹窗
       distanceFromTop: 0 // body距离顶部距离
     };
+  },
+  beforeMount() {
+    this.getCurrentChapterDetail();
+    this.getCurrentNovelDetail();
   },
   mounted() {
     document.addEventListener("click", this.handleUserClickEvent);
@@ -87,6 +95,39 @@ export default {
     document.removeEventListener("click", this.handleUserClickEvent);
   },
   methods: {
+    async getCurrentChapterDetail() {
+      const chapterId = this.$route.params.readId;
+      await this.$axios
+        .$post("/api/novel/novel_chapter_content", {
+          site_id: process.env.SITE_ID,
+          chapter_id: Number(chapterId)
+        })
+        .then((response) => {
+          const chapterDetail = response;
+          this.currentChapterDetail = chapterDetail;
+        });
+    },
+    async getCurrentNovelDetail() {
+      const novelId = this.$route.params.read;
+      await this.$axios
+        .$post("/api/novel/novel_info", {
+          site_id: process.env.SITE_ID,
+          novel_id: Number(novelId)
+        })
+        .then((response) => {
+          const novelDetail = response;
+          this.novelChapterList = novelDetail.chapter;
+
+          // // 有记录的章节，则跳转到记录的章节
+          // if (novelDetail.user_last_read_chapter_num !== 0) {
+          //   this.startReadPath = `/novel/${novelDetail.novel_info.id}/${this.novelDetail.user_last_read_chapter_id}/`;
+          // }
+          // // 没有记录的章节，则跳转到第一章节
+          // else {
+          //   this.startReadPath = `/novel/${novelDetail.novel_info.id}/${response.chapter[0].id}/`;
+          // }
+        });
+    },
     changeShowChapters() {
       this.isShowChapters = !this.isShowChapters;
       if (this.isShowChapters) {

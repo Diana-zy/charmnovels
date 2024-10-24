@@ -193,7 +193,6 @@ export default {
     }
   },
   beforeMount() {
-    this.handleResize();
     this.getNovelDetailInfo();
   },
   mounted() {
@@ -212,11 +211,11 @@ export default {
     },
 
     async getNovelDetailInfo() {
-      const novelId = Number(this.$route.params.novel);
+      const novelId = this.$route.params.novel;
       await this.$axios
         .$post("/api/novel/novel_info", {
           site_id: process.env.SITE_ID,
-          novel_id: novelId
+          novel_id: Number(novelId)
         })
         .then((response) => {
           const novelDetail = response;
