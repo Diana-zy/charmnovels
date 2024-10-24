@@ -51,6 +51,7 @@
   </main>
 </template>
 <script>
+import Storage from "@/utils/storage";
 export default {
   async asyncData({ $axios, env, req }) {
     try {
@@ -74,10 +75,9 @@ export default {
       purchaseBooks: []
     };
   },
-  mounted() {
-    this.getPurchaseList();
+  beforeMount() {
+    Storage.getItem("token") && this.getPurchaseList();
   },
-  beforeDestroy() {},
   methods: {
     async getPurchaseList() {
       await this.$axios

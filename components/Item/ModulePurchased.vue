@@ -62,6 +62,7 @@ export default {
   font-size: 12px;
   line-height: 16px;
   color: rgba($color2, 0.6);
+  @include ellipsis;
 }
 .status {
   width: 37px;
