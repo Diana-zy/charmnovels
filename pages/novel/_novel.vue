@@ -226,7 +226,15 @@ export default {
           this.novelChapterList = novelDetail.chapter;
           // 有记录的章节，则跳转到记录的章节
           if (novelDetail.user_last_read_chapter_num !== 0) {
-            this.startReadPath = `/novel/${novelDetail.novel_info.id}/${this.novelDetail.user_last_read_chapter_id}/`;
+            /* 查一下是否有该章节 */
+            const chapter = this.novelChapterList.find(
+              (item) => item.id === novelDetail.user_last_read_chapter_id
+            );
+            if (chapter) {
+              this.startReadPath = `/novel/${novelDetail.novel_info.id}/${novelDetail.user_last_read_chapter_id}/`;
+            } else {
+              this.startReadPath = `/novel/${novelDetail.novel_info.id}/${response.chapter[0].id}/`;
+            }
           }
           // 没有记录的章节，则跳转到第一章节
           else {
