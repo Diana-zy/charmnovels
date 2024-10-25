@@ -1,5 +1,5 @@
 <template>
-  <a :href="customLink || to">
+  <a :href="customLink || to" :class="{ 'prevent-click': customLink === '#' }">
     <slot></slot>
   </a>
 </template>
@@ -23,11 +23,18 @@ export default {
   // 监听to的变化，更新customLink
   watch: {
     to(val) {
-      this.customLink = generateCustomLink(val);
+      this.customLink = val === "#" ? "#" : generateCustomLink(val);
     }
   },
   mounted() {
-    this.customLink = generateCustomLink(this.to);
-  }
+    this.customLink = this.to === "#" ? "#" : generateCustomLink(this.to);
+  },
+  methods: {}
 };
 </script>
+
+<style lang="scss" scoped>
+.prevent-click {
+  pointer-events: none;
+}
+</style>

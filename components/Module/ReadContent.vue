@@ -1,7 +1,7 @@
 <template>
   <section v-if="currentChapterDetail" class="read-container">
-    <!-- 只有第一章节才展示 top-info-->
-    <div class="top-info">
+    <!-- 第一章节才展示 top-info-->
+    <div v-if="currentChapterDetail.chapter_num === 1" class="top-info">
       <div class="cover">
         <nuxt-img
           :src="currentChapterDetail.novel_info.cover"
@@ -15,6 +15,7 @@
       <p class="name">{{ currentChapterDetail.novel_info.intro }}</p>
       <span class="author">{{ currentChapterDetail.novel_info.author }}</span>
     </div>
+    <!-- 文章内容模块 -->
     <article class="read-content" @click="handleShowMenuSetting">
       <h3
         >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
@@ -22,35 +23,59 @@
       <p>{{ currentChapterDetail.content }}</p>
     </article>
     <section class="bottom-operation">
-      <div class="pay-box">
+      <!-- 支付模块 -->
+      <div
+        v-if="currentChapterDetail.purchase_status !== 2"
+        class="pay-box"
+        @click="createPaymentOrder(currentChapterDetail.purchase_status)"
+      >
         <div class="row-status">
           <i class="icon-lock"></i>
           <span>Unlock</span>
         </div>
         <div class="row-info">
           <span>${{ currentChapterDetail.novel_info.price }}</span>
-          <span>Enjoy reading this novel</span>
+          <span>{{
+            currentChapterDetail.purchase_status === 1
+              ? "Continue payment"
+              : "Enjoy reading this novel"
+          }}</span>
         </div>
       </div>
+      <div
+        v-if="currentChapterDetail.purchase_status === 1"
+        class="status-paid"
+        @click="getOrderUnlockStatus"
+      >
+        Paid(Not unlocked)</div
+      >
+      <!-- 分页模块 -->
       <div class="pagination-box">
-        <div class="btn-change btn-disable">
+        <custom-link
+          :to="preChapterPath"
+          :class="['btn-change', { 'btn-disable': preChapterPath === '#' }]"
+        >
           <i class="icon-prev"></i>
           <span>Previous Chapter</span>
-        </div>
-        <div class="btn-change">
+        </custom-link>
+        <custom-link
+          :to="nextChapterPath"
+          :class="['btn-change', { 'btn-disable': nextChapterPath === '#' }]"
+        >
           <span>Next Chapter</span>
           <i class="icon-next"></i>
-        </div>
+        </custom-link>
       </div>
     </section>
-    <section class="module-related-chapters">
+    <!-- 相关章节模块 -->
+    <section v-if="currentChapterDetail.chapter.length !== 0" class="module-related-chapters">
       <common-title-label title="Related Chapters" />
       <div class="module-related-chapters-content">
         <item-module-related-chapter
-          v-for="(item, i) in allApps"
+          v-for="(item, i) in currentChapterDetail.chapter"
           :key="i"
           :item="item"
-          :to="`/read/${item.path}/`"
+          :to="`/novel/${item.novel_id}/${item.id}/`"
         />
       </div>
     </section>
@@ -66,9 +91,13 @@ export default {
       type: Object | null,
       required: true
     },
-    allApps: {
-      type: Array,
-      required: true
+    preChapterPath: {
+      type: String,
+      default: "#"
+    },
+    nextChapterPath: {
+      type: String,
+      default: "#"
     }
   },
   data() {
@@ -94,6 +123,20 @@ export default {
         Storage.setItem("novel_cssReadTextColor", "#41414c");
       Storage.getItem("novel_cssReadLastTheme") ||
         Storage.setItem("novel_cssReadLastTheme", "light");
+    },
+
+    // 创建or支付订单
+    createPaymentOrder(purchaseStatus) {
+      if (purchaseStatus === 0) {
+        // 创建新订单
+      } else if (purchaseStatus === 1) {
+        // 继续支付
+      }
+    },
+
+    // 获取订单解锁状态
+    getOrderUnlockStatus() {
+      // 调用接口获取订单解锁状态
     },
 
     handleShowMenuSetting() {
@@ -152,7 +195,7 @@ export default {
     font-size: 20px;
     line-height: 26px;
     font-family: serif;
-    margin: 24px 0 16px;
+    padding: 24px 0 16px;
   }
   p {
     font-size: 16px;
@@ -191,6 +234,15 @@ export default {
       margin-right: 4px;
     }
   }
+}
+.status-paid {
+  font-size: 14px;
+  line-height: 19px;
+  color: $color3;
+  text-align: center;
+  text-decoration: underline;
+  margin-top: 8px;
+  cursor: pointer;
 }
 .pagination-box {
   margin-top: 16px;
@@ -264,7 +316,7 @@ export default {
     h3 {
       font-size: vw(40);
       line-height: vw(54);
-      margin: vw(16) 0 vw(32);
+      padding: vw(16) 0 vw(32);
     }
     p {
       font-size: var(--read-font-size);
@@ -294,6 +346,11 @@ export default {
         margin-right: vw(8);
       }
     }
+  }
+  .status-paid {
+    font-size: vw(28);
+    line-height: vw(38);
+    margin-top: vw(16);
   }
   .pagination-box {
     margin-top: vw(32);

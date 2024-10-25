@@ -1,12 +1,11 @@
 <template>
   <custom-link :to="to" class="item">
     <div class="row">
-      <span class="num">Chapter 0001</span>
-      <p>{{ item.name }}{{ item.name }}</p>
+      <span class="num">Chapter {{ item.chapter_num }}</span>
+      <p>{{ item.name }}</p>
     </div>
     <p class="content">
-      I never thought that the courage I mustered to put on that sexy lingerie... would eventually
-      be undone …
+      {{ item.content }}
     </p>
   </custom-link>
 </template>

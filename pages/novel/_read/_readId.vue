@@ -15,7 +15,8 @@
 
     <module-read-content
       :current-chapter-detail="currentChapterDetail"
-      :all-apps="allApps"
+      :pre-chapter-path="preChapterPath"
+      :next-chapter-path="nextChapterPath"
       @show-menu-setting="handleShowMenuSetting"
     />
     <module-read-sidebar
@@ -45,38 +46,11 @@
 
 <script>
 export default {
-  async asyncData({ $axios, params, env }) {
-    try {
-      console.log("Fetching data for readId page", params);
-      const path = params.read;
-      const lastDashIndex = path.lastIndexOf("-");
-      const id = path.substring(lastDashIndex + 1, path.length);
-      const [currentAppResponse, allAppsResponse] = await Promise.all([
-        $axios.$get("/api/game/detail", {
-          params: {
-            site_id: env.SITE_ID,
-            game_id: id
-          }
-        }),
-        $axios.$get("/api/game/all_app", {
-          params: {
-            site_id: env.SITE_ID,
-            size: 5,
-            page: 1
-          }
-        })
-      ]);
-      return {
-        currentApp: currentAppResponse,
-        allApps: allAppsResponse.list
-      };
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  },
   data() {
     return {
       currentChapterDetail: null, // 当前阅读章节详情
+      preChapterPath: "#",
+      nextChapterPath: "#",
       novelChapterList: [], // 章节列表
       isShowChapters: false, // PC端悬浮章节列表
       isShowHeader: false,
@@ -109,6 +83,7 @@ export default {
     },
     async getCurrentNovelDetail() {
       const novelId = this.$route.params.read;
+      const chapterId = this.$route.params.readId;
       await this.$axios
         .$post("/api/novel/novel_info", {
           site_id: process.env.SITE_ID,
@@ -117,15 +92,18 @@ export default {
         .then((response) => {
           const novelDetail = response;
           this.novelChapterList = novelDetail.chapter;
-
-          // // 有记录的章节，则跳转到记录的章节
-          // if (novelDetail.user_last_read_chapter_num !== 0) {
-          //   this.startReadPath = `/novel/${novelDetail.novel_info.id}/${this.novelDetail.user_last_read_chapter_id}/`;
-          // }
-          // // 没有记录的章节，则跳转到第一章节
-          // else {
-          //   this.startReadPath = `/novel/${novelDetail.novel_info.id}/${response.chapter[0].id}/`;
-          // }
+          // 计算上一章和下一章路径
+          const currentChapterIndex = novelDetail.chapter.findIndex(
+            (chapter) => chapter.id === Number(chapterId)
+          );
+          this.preChapterPath =
+            currentChapterIndex === 0
+              ? "#"
+              : `/novel/${novelId}/${this.novelChapterList[currentChapterIndex - 1].id}/`;
+          this.nextChapterPath =
+            currentChapterIndex === this.novelChapterList.length - 1
+              ? "#"
+              : `/novel/${novelId}/${this.novelChapterList[currentChapterIndex + 1].id}/`;
         });
     },
     changeShowChapters() {
