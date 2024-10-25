@@ -28,7 +28,7 @@
               :type="showPassword ? 'text' : 'password'"
               name="password"
               placeholder="Enter password"
-              @input="validateForm"
+              @input="validatePassword"
             />
             <i
               class="icon-visible"
@@ -109,7 +109,8 @@ export default {
       passwordConfirmError: "",
       globalError: "",
       emailValid: false,
-      isFormValid: false
+      isFormValid: false,
+      registering: false
     };
   },
   methods: {
@@ -124,6 +125,15 @@ export default {
       }
       this.validateForm();
     },
+    validatePassword() {
+      const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,18}$/;
+
+      if (!passwordPattern.test(this.password)) {
+        this.passwordFormatError = "6 to 18 digits and letters";
+      } else {
+        this.passwordFormatError = ""; // 清除错误信息
+      }
+    },
     validateForm() {
       // 校验表单有效性：邮箱有效、密码匹配且同意协议
       this.passwordConfirmError =
@@ -132,7 +142,8 @@ export default {
         this.emailValid &&
         this.password !== "" &&
         this.password === this.confirmPassword &&
-        this.agreement;
+        this.agreement &&
+        this.emailCode !== "";
     },
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
@@ -154,10 +165,14 @@ export default {
       }, 1000);
     },
     handleSubmit() {
+      this.validateForm();
+      if (!this.isFormValid && !this.registering) {
+        return;
+      }
       // 可以在这里处理表单提交的逻辑
       // 比如发起API请求
       console.log("Registering with", this.email, this.password, this.emailCode);
-
+      this.register();
       // 假如是发送登录请求
       // this.$axios.post('/api/login', { email: this.email, password: this.password })
       //   .then(response => {
@@ -166,6 +181,17 @@ export default {
       //   .catch(error => {
       //     // 处理错误
       //   });
+    },
+    async register() {
+      this.registering = true;
+      const registerResponse = await this.$axios.$post("/api/user/signup", {
+        site_id: process.env.SITE_ID,
+        email: this.email,
+        password: this.password,
+        code: this.emailCode
+      });
+      console.log("Register response:", registerResponse);
+      this.registering = false;
     }
   }
 };
