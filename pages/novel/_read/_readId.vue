@@ -26,6 +26,7 @@
     />
     <module-read-sidebar
       ref="readSidebar"
+      :current-read-progress="currentReadProgress"
       @show-chapter-popup="handleShowChapterPopup"
       @hide-menu-setting="handleHideHeader"
       @hide-style-setting="handleHideHeader"
@@ -56,6 +57,7 @@ export default {
   data() {
     return {
       currentChapterDetail: null, // 当前阅读章节详情
+      currentReadProgress: 0, // 当前阅读进度
       preChapterPath: "#",
       nextChapterPath: "#",
       novelChapterList: [], // 章节列表
@@ -86,6 +88,11 @@ export default {
         .then((response) => {
           const chapterDetail = response;
           this.currentChapterDetail = chapterDetail;
+          const readProgress =
+            (this.currentChapterDetail.chapter_num / this.currentChapterDetail.novel_info.chapter) *
+            100;
+          this.currentReadProgress =
+            readProgress % 1 === 0 ? readProgress : readProgress.toFixed(1);
         });
     },
     async getCurrentNovelDetail() {

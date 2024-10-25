@@ -116,14 +116,16 @@
         <transition name="slide">
           <module-read-chapter
             v-show="isShowChapterPopup"
+            ref="mobileChapterPopup"
             :chapters="novelChapterList"
-            :current-chapter-id="novelDetail.user_last_read_chapter_id"
+            :current-chapter-id="novelDetail?.user_last_read_chapter_id"
             @close-chapter-popup="handleHideChapterPopup"
           />
         </transition>
       </div>
     </transition>
-    <section class="bottom-menu pc-hidden-flex">
+    <!-- 底部菜单 -->
+    <section v-if="novelDetail" class="bottom-menu pc-hidden-flex">
       <div class="menu-item" @click="handleShowChapterPopup">
         <i class="icon-chapters"></i>
         <span>Chapters</span>
@@ -131,7 +133,7 @@
       <custom-link :to="startReadPath" class="menu-item">
         <i class="icon-reading"></i>
         <span>{{
-          novelDetail.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
+          novelDetail?.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
         }}</span>
       </custom-link>
     </section>
@@ -172,7 +174,7 @@ export default {
   data() {
     return {
       isMobile: false,
-      novelDetail: {},
+      novelDetail: null,
       novelDetailInfo: null,
       novelChapterList: [],
       startReadPath: "/", // 开始阅读路径
@@ -253,6 +255,9 @@ export default {
       this.distanceFromTop = document.documentElement.scrollTop;
       document.body.classList.add("no-scroll");
       document.body.style.top = `-${this.distanceFromTop}px`;
+      this.$nextTick(() => {
+        this.$refs.mobileChapterPopup.scrollToActiveChapter();
+      });
     },
     handleHideChapterPopup() {
       this.isShowChapterPopup = false;

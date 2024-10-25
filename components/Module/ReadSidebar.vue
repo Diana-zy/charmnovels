@@ -6,8 +6,8 @@
         <transition name="slide">
           <div v-show="isShowMenuSetting" class="content">
             <div class="progress-box">
-              <span>{{ readProgress }}%</span>
-              <div :style="`--progress-width:${readProgress}%`" class="progress-bar"></div>
+              <span>{{ currentReadProgress }}%</span>
+              <div :style="`--progress-width:${currentReadProgress}%`" class="progress-bar"></div>
             </div>
             <div class="menu-box">
               <div class="menu-item" @click="showChapterPopup"
@@ -84,11 +84,16 @@
 <script>
 import Storage from "@/utils/storage";
 export default {
+  props: {
+    currentReadProgress: {
+      type: [String, Number],
+      default: 0
+    }
+  },
   data() {
     return {
       isShowMenuSetting: false,
       isShowStyleSetting: false,
-      readProgress: 88.8,
       isDarkTheme: false,
       themeColor: [
         /* dark */

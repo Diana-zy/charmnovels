@@ -12,9 +12,7 @@
       <span v-if="item.purchase_status === 2" class="tag-status">Purchased</span>
     </div>
     <p class="name">{{ item.novel_info.name }}</p>
-    <p class="progress"
-      >Read {{ ((item.last_read_chapter_num / item.novel_info.chapter) * 100).toFixed(1) }}%</p
-    >
+    <p class="progress">Read {{ currentReadProgress }}%</p>
   </custom-link>
 </template>
 
@@ -28,6 +26,13 @@ export default {
     to: {
       type: String,
       required: true
+    }
+  },
+  computed: {
+    currentReadProgress() {
+      const readProgress = (this.item.last_read_chapter_num / this.item.novel_info.chapter) * 100;
+      const currentReadProgress = readProgress % 1 === 0 ? readProgress : readProgress.toFixed(1);
+      return currentReadProgress;
     }
   }
 };
