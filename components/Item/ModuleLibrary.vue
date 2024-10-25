@@ -4,15 +4,17 @@
       <nuxt-img
         width="180"
         height="270"
-        :src="item.cover"
-        :alt="item.name"
+        :src="item.novel_info.cover"
+        :alt="item.novel_info.name"
         fit="cover"
         format="auto"
       />
-      <span class="tag-status">Purchased</span>
+      <span v-if="item.purchase_status === 2" class="tag-status">Purchased</span>
     </div>
-    <p class="name">{{ item.name }}</p>
-    <p class="progress">Read 78%</p>
+    <p class="name">{{ item.novel_info.name }}</p>
+    <p class="progress"
+      >Read {{ ((item.last_read_chapter_num / item.novel_info.chapter) * 100).toFixed(1) }}%</p
+    >
   </custom-link>
 </template>
 

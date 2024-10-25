@@ -61,6 +61,7 @@
   </main>
 </template>
 <script>
+import Storage from "@/utils/storage";
 export default {
   async asyncData({ $axios, env }) {
     try {
@@ -104,7 +105,10 @@ export default {
   data() {
     return {};
   },
-  mounted() {},
+  mounted() {
+    Storage.setItem("token", "1cp49j8vpdfr8xq48mw1i5vb8lrk8oc9");
+    Storage.setItem("userId", "11");
+  },
   beforeDestroy() {},
   methods: {}
 };

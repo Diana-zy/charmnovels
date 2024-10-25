@@ -9,7 +9,7 @@
           v-for="(item, i) in libraryList"
           :key="i"
           :item="item"
-          :to="`/novel/${item.id}/`"
+          :to="`/novel/${item.novel_info.id}/`"
         />
         <custom-link to="/" class="add-book">
           <i class="icon-add"></i>

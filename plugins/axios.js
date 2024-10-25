@@ -6,8 +6,8 @@ export default function ({ $axios, redirect }) {
       // do something before request is sent
       /* 客户端请求 */
       if (!process.server) {
-        config.headers.token = Storage.getItem("token") || "1cp49j8vpdfr8xq48mw1i5vb8lrk8oc9";
-        config.headers.userId = Storage.getItem("userId") || 11;
+        config.headers.token = Storage.getItem("token") || "";
+        config.headers.userId = Storage.getItem("userId") || "";
       }
       return config;
     },
@@ -33,7 +33,7 @@ export default function ({ $axios, redirect }) {
       if (res.success === true) {
         return res;
       } else {
-        redirect("/404");
+        redirect("/");
         // if the custom code is not 200, it is judged as an error.
       }
       return Promise.reject(new Error(res.msg || "Error"));

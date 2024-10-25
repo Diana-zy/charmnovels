@@ -9,7 +9,12 @@
         <span>Chapters</span>
       </div>
       <div v-show="isShowChapters" class="fixed-chapter-list">
-        <module-read-chapter ref="fixedChapterList" :chapters="novelChapterList" />
+        <module-read-chapter
+          ref="fixedChapterList"
+          :chapters="novelChapterList"
+          :current-chapter-id="currentChapterDetail?.chapter_id"
+          theme="dark"
+        />
       </div>
     </section>
 
@@ -32,7 +37,9 @@
         <transition name="slide">
           <module-read-chapter
             v-show="isShowChapterPopup"
+            ref="mobileChapterPopup"
             :chapters="novelChapterList"
+            :current-chapter-id="currentChapterDetail?.chapter_id"
             theme="dark"
             @close-chapter-popup="handleHideChapterPopup"
           />
@@ -134,6 +141,9 @@ export default {
     },
     handleShowChapterPopup() {
       this.isShowChapterPopup = true;
+      this.$nextTick(() => {
+        this.$refs.mobileChapterPopup.scrollToActiveChapter();
+      });
     },
     handleHideChapterPopup() {
       this.handleHideHeader();
