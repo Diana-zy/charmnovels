@@ -33,10 +33,9 @@ export default function ({ $axios, redirect }) {
       if (res.success === true) {
         return res;
       } else {
-        redirect("/");
         // if the custom code is not 200, it is judged as an error.
       }
-      return Promise.reject(new Error(res.msg || "Error"));
+      return Promise.reject(res);
     },
     (error) => {
       console.log("err" + error); // for debug

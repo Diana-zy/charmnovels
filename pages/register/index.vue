@@ -90,6 +90,7 @@
       </div>
     </div>
     <common-notification />
+    <common-loading v-if="loading" />
   </main>
 </template>
 
@@ -110,7 +111,8 @@ export default {
       globalError: "",
       emailValid: false,
       isFormValid: false,
-      registering: false
+      registering: false,
+      loading: false
     };
   },
   methods: {
@@ -184,6 +186,7 @@ export default {
     },
     async register() {
       this.registering = true;
+      this.loading = true;
       const registerResponse = await this.$axios.$post("/api/user/signup", {
         site_id: process.env.SITE_ID,
         email: this.email,
@@ -192,6 +195,7 @@ export default {
       });
       console.log("Register response:", registerResponse);
       this.registering = false;
+      this.loading = false;
     }
   }
 };
