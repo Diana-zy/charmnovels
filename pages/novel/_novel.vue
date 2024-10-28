@@ -447,9 +447,8 @@ export default {
   }
 }
 .video-container {
-  height: 160px;
+  height: 400px;
   margin-bottom: 19px;
-  background: $color3;
   @include center;
 }
 .desc {
@@ -554,6 +553,11 @@ export default {
     .btn-read {
       display: none;
     }
+  }
+
+  .video-container {
+    height: vw(440);
+    margin-bottom: vw(38);
   }
 
   .module-rec-mobile {

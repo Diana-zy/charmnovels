@@ -15,13 +15,15 @@ export default {
     interval: 100,
     async routes() {
       const pathData = await fetch(
-        `${process.env.PROD_API_URL}/api/rec_article/get_all_path?site_id=${process.env.SITE_ID}`
+        `${process.env.TEST_API_URL}/api/novel/novel_chapter_path?site_id=${process.env.SITE_ID}`
       );
       const path = await pathData.json();
-      const categoryPaths = path.data.category.map((item) => `/category/${item}`);
-      const detailPaths = path.data.detail.map((item) => `/detail/${item}`);
-      const modulePaths = ["top", "choose", "trending"].map((item) => `/module/${item}`);
-      const urls = [...categoryPaths, ...detailPaths, ...modulePaths];
+
+      const novelPaths = path.data.list.map((item) => `/novel/${item.novel_id}`);
+      const chapterPaths = path.data.list.flatMap((item) =>
+        item.chapters.map((chapter) => `/novel/${item.novel_id}/${chapter}`)
+      );
+      const urls = [...novelPaths, ...chapterPaths];
       return urls;
     }
   },

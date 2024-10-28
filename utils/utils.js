@@ -135,11 +135,13 @@ function getTargetDomain() {
 function setIframeLocalStorage(key, value) {
   const targetDomain = getTargetDomain();
   const iframe = document.getElementById("storage-iframe");
-  iframe &&
-    iframe.contentWindow.postMessage(
-      { type: "send-localStorage-message", name: key, data: value },
-      `https://${targetDomain}`
-    );
+  setTimeout(() => {
+    iframe &&
+      iframe.contentWindow.postMessage(
+        { type: "send-localStorage-message", name: key, data: value },
+        `https://${targetDomain}`
+      );
+  }, 0);
 }
 
 /* 
