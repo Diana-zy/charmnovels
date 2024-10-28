@@ -10,7 +10,7 @@
         <i class="logo-login"></i>
         <h1 class="title">Welcome to CharmNovels!</h1>
 
-        <form class="form" @submit.prevent="handleSubmit">
+        <form class="form" @submit.prevent="handleLogin">
           <div class="form-item">
             <label for="email">Email</label>
             <input
@@ -48,6 +48,7 @@
       </div>
     </div>
     <common-notification />
+    <common-loading v-if="loading" />
   </main>
 </template>
 
@@ -60,7 +61,8 @@ export default {
       emailError: "",
       showPassword: false,
       globalError: "",
-      isFormValid: false
+      isFormValid: false,
+      loading: false
     };
   },
   methods: {
@@ -81,20 +83,26 @@ export default {
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
     },
-    handleSubmit() {
+    async handleLogin() {
       // 可以在这里处理表单提交的逻辑
       // 比如发起API请求
       console.log("Email:", this.email);
       console.log("Password:", this.password);
 
-      // 假如是发送登录请求
-      // this.$axios.post('/api/login', { email: this.email, password: this.password })
-      //   .then(response => {
-      //     // 处理响应
-      //   })
-      //   .catch(error => {
-      //     // 处理错误
-      //   });
+      this.loading = true;
+      try {
+        const loginResponse = await this.$axios.$post("/api/user/login", {
+          site_id: process.env.SITE_ID,
+          email: this.email,
+          password: this.password
+        });
+        console.log("Login response:", loginResponse);
+      } catch (error) {
+        console.error("Login error:", error);
+        this.globalError = "Invalid email or password";
+      }
+      this.registering = false;
+      this.loading = false;
     }
   }
 };
