@@ -48,7 +48,7 @@
       </div>
     </div>
     <common-notification />
-    <common-loading v-if="loading" />
+    <common-loading-max v-if="loading" />
   </main>
 </template>
 
@@ -98,8 +98,8 @@ export default {
         });
         console.log("Login response:", loginResponse);
       } catch (error) {
-        console.error("Login error:", error);
-        this.globalError = "Invalid email or password";
+        console.log("Login error:", error.msg);
+        this.globalError = error.msg || "Login error";
       }
       this.registering = false;
       this.loading = false;
