@@ -10,7 +10,7 @@
         <i class="logo-login"></i>
         <h1 class="title">Welcome to CharmNovels!</h1>
 
-        <form class="form" @submit.prevent="handleLogin">
+        <form class="form" @submit.prevent="handleSubmit">
           <div class="form-item">
             <label for="email">Email</label>
             <input
@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import { simulateClick } from "~/utils/utils";
+
 export default {
   data() {
     return {
@@ -83,12 +85,7 @@ export default {
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
     },
-    async handleLogin() {
-      // 可以在这里处理表单提交的逻辑
-      // 比如发起API请求
-      console.log("Email:", this.email);
-      console.log("Password:", this.password);
-
+    async handleSubmit() {
       this.loading = true;
       try {
         const loginResponse = await this.$axios.$post("/api/user/login", {
@@ -97,6 +94,8 @@ export default {
           password: this.password
         });
         console.log("Login response:", loginResponse);
+
+        simulateClick("/", "from", "login");
       } catch (error) {
         console.log("Login error:", error.msg);
         this.globalError = error.msg || "Login error";

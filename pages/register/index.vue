@@ -90,7 +90,7 @@
       </div>
     </div>
     <common-notification />
-    <common-loading v-if="loading" />
+    <common-loading-max v-if="loading" />
   </main>
 </template>
 
@@ -150,11 +150,24 @@ export default {
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
     },
-    sendVerificationCode() {
+    async sendVerificationCode() {
       if (this.emailValid && this.countdown === 0) {
         // 模拟发送验证码
         console.log("Sending verification code to", this.email);
-        this.startCountdown();
+
+        this.loading = true;
+        try {
+          const loginResponse = await this.$axios.$post("/api/user/get_code", {
+            site_id: process.env.SITE_ID,
+            email: this.email
+          });
+          console.log("Login response:", loginResponse);
+          this.startCountdown();
+        } catch (error) {
+          console.log("Login error:", error.msg);
+          this.globalError = error.msg || "Login error";
+        }
+        this.loading = false;
       }
     },
     startCountdown() {
@@ -171,29 +184,27 @@ export default {
       if (!this.isFormValid && !this.registering) {
         return;
       }
-      // 可以在这里处理表单提交的逻辑
-      // 比如发起API请求
       console.log("Registering with", this.email, this.password, this.emailCode);
       this.register();
-      // 假如是发送登录请求
-      // this.$axios.post('/api/login', { email: this.email, password: this.password })
-      //   .then(response => {
-      //     // 处理响应
-      //   })
-      //   .catch(error => {
-      //     // 处理错误
-      //   });
     },
     async register() {
       this.registering = true;
       this.loading = true;
-      const registerResponse = await this.$axios.$post("/api/user/signup", {
-        site_id: process.env.SITE_ID,
-        email: this.email,
-        password: this.password,
-        code: this.emailCode
-      });
-      console.log("Register response:", registerResponse);
+
+      try {
+        const registerResponse = await this.$axios.$post("/api/user/signup", {
+          site_id: process.env.SITE_ID,
+          email: this.email,
+          password: this.password,
+          code: this.emailCode
+        });
+        console.log("Register response:", registerResponse);
+        return this.$router.push("/login/");
+      } catch (error) {
+        console.log("Register error:", error.msg);
+        this.globalError = error.msg || "Register error";
+      }
+
       this.registering = false;
       this.loading = false;
     }
