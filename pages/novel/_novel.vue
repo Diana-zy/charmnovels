@@ -54,7 +54,17 @@
           </custom-link>
         </div>
       </div>
-      <div class="video-container">视频占位</div>
+      <div class="video-container">
+        <video
+          width="100%"
+          height="100%"
+          controls
+          muted
+          :src="novelDetailInfo.intro_video"
+          @play="handlePlayVideo"
+        >
+        </video>
+      </div>
       <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
       <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
     </section>
@@ -177,6 +187,7 @@ export default {
       novelDetail: null,
       novelDetailInfo: null,
       novelChapterList: [],
+      isShowAdBreak: false, // 是否展示了adbreak广告
       startReadPath: "/", // 开始阅读路径
       currentRecIndex: 0, // 移动端rec模块当前索引
       changeCurrentRecIndexTimer: null,
@@ -198,6 +209,7 @@ export default {
     this.getNovelDetailInfo();
   },
   mounted() {
+    this.configAdBreak();
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
   },
@@ -271,6 +283,51 @@ export default {
       this.isShowChapterPopup = false;
       document.body.classList.remove("no-scroll");
       window.scrollTo(0, this.distanceFromTop); // 恢复body滚动位置
+    },
+
+    // 视频播放
+    configAdBreak() {
+      const pushAds = function (ad) {
+        window.adsbygoogle = window.adsbygoogle || [];
+        window.adsbygoogle.push(ad);
+      };
+      window.adBreak = window.adBreak || pushAds;
+      window.adConfig = window.adConfig || pushAds;
+      try {
+        window.adConfig({
+          preloadAdBreaks: "on",
+          sound: "off",
+          onReady: function () {
+            console.log("adBreak ready");
+          }
+        });
+      } catch (error) {
+        console.error("adConfig error=", error);
+      }
+    },
+    handlePlayVideo() {
+      console.log("Ad start :>>", window.adBreak);
+      if (this.isShowAdBreak) {
+        return;
+      }
+      const _this = this;
+      try {
+        window.adBreak({
+          type: "preroll",
+          name: "charmnovels_preroll",
+          // 广告展示前的回调
+          beforeAd: function () {
+            // eslint-disable-next-line no-undef
+            dataLayer.push({ event: "C_AB" });
+            _this.isShowAdBreak = true;
+          },
+          adBreakDone: function (n) {
+            console.log("Ad end :>>", n.breakStatus);
+          }
+        });
+      } catch (error) {
+        console.error("Ad error :>>", error);
+      }
     }
   }
 };
