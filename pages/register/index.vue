@@ -28,6 +28,7 @@
               :type="showPassword ? 'text' : 'password'"
               name="password"
               placeholder="Enter password"
+              autocomplete="off"
               @input="validatePassword"
             />
             <i
@@ -45,6 +46,7 @@
               :type="showPassword ? 'text' : 'password'"
               name="confirmPassword"
               placeholder="Enter password"
+              autocomplete="off"
               @input="validateForm"
             />
             <i

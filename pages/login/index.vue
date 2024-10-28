@@ -30,6 +30,7 @@
               :type="showPassword ? 'text' : 'password'"
               name="password"
               placeholder="Enter password"
+              autocomplete="on"
               @input="validateForm"
             />
             <i
@@ -54,6 +55,7 @@
 
 <script>
 import { simulateClick } from "~/utils/utils";
+import Storage from "@/utils/storage";
 
 export default {
   data() {
@@ -94,6 +96,9 @@ export default {
           password: this.password
         });
         console.log("Login response:", loginResponse);
+
+        Storage.setItem("token", loginResponse.token);
+        Storage.setItem("userId", loginResponse.user_id);
 
         simulateClick("/", "from", "login");
       } catch (error) {

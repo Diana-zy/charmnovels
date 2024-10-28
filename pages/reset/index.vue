@@ -27,6 +27,7 @@
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               name="password"
+              autocomplete="off"
               placeholder="Enter password"
               @input="validatePassword"
             />
@@ -45,6 +46,7 @@
               :type="showPassword ? 'text' : 'password'"
               name="confirmPassword"
               placeholder="Enter password"
+              autocomplete="off"
               @input="validateForm"
             />
             <i
