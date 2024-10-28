@@ -299,7 +299,6 @@ header {
     .icon-logout {
       width: vw(48);
       height: vw(48);
-      @include icon(24px, 24px, "icon-user-order.png");
       margin-left: vw(20);
       margin-right: vw(24);
     }
