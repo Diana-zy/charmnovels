@@ -62,6 +62,7 @@
               type="text"
               name="code"
               placeholder="Enter Verification code"
+              @input="validateForm"
             />
             <button
               class="send-email"
@@ -95,6 +96,8 @@
 </template>
 
 <script>
+import { simulateClick } from "~/utils/utils";
+
 export default {
   data() {
     return {
@@ -111,7 +114,6 @@ export default {
       globalError: "",
       emailValid: false,
       isFormValid: false,
-      registering: false,
       loading: false
     };
   },
@@ -181,14 +183,13 @@ export default {
     },
     handleSubmit() {
       this.validateForm();
-      if (!this.isFormValid && !this.registering) {
+      if (!this.isFormValid) {
         return;
       }
       console.log("Registering with", this.email, this.password, this.emailCode);
       this.register();
     },
     async register() {
-      this.registering = true;
       this.loading = true;
 
       try {
@@ -199,13 +200,12 @@ export default {
           code: this.emailCode
         });
         console.log("Register response:", registerResponse);
-        return this.$router.push("/login/");
+        simulateClick("/", "from", "register");
       } catch (error) {
         console.log("Register error:", error.msg);
         this.globalError = error.msg || "Register error";
       }
 
-      this.registering = false;
       this.loading = false;
     }
   }
