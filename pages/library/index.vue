@@ -71,7 +71,7 @@ export default {
     };
   },
   beforeMount() {
-    Storage.getItem("token") && this.getLibraryList();
+    Storage.getCookie("token") && this.getLibraryList();
   },
   mounted() {},
   methods: {

@@ -67,7 +67,6 @@ export default {
   },
 
   setCookie(name, value, daysToExpire) {
-    console.log(this.getMainDomain());
     const date = new Date();
     date.setTime(date.getTime() + daysToExpire * 24 * 60 * 60 * 1000); // 设置过期时间为指定的天数之后
     const expires = "; expires=" + date.toUTCString(); // 转换为GMT格式的字符串

@@ -108,21 +108,21 @@ export default {
     this.initStorageReadSetting();
 
     const root = document.documentElement;
-    root.style.setProperty("--read-font-size", Storage.getItem("novel_cssReadFontSize") + "px");
-    root.style.setProperty("--read-font-space", Storage.getItem("novel_cssReadFontSpace"));
-    root.style.setProperty("--read-bg-color", Storage.getItem("novel_cssReadBackgroundColor"));
-    root.style.setProperty("--read-text-color", Storage.getItem("novel_cssReadTextColor"));
+    root.style.setProperty("--read-font-size", Storage.getCookie("novel_cssReadFontSize") + "px");
+    root.style.setProperty("--read-font-space", Storage.getCookie("novel_cssReadFontSpace"));
+    root.style.setProperty("--read-bg-color", Storage.getCookie("novel_cssReadBackgroundColor"));
+    root.style.setProperty("--read-text-color", Storage.getCookie("novel_cssReadTextColor"));
   },
   methods: {
     initStorageReadSetting() {
-      Storage.getItem("novel_cssReadFontSize") || Storage.setItem("novel_cssReadFontSize", 15);
-      Storage.getItem("novel_cssReadFontSpace") || Storage.setItem("novel_cssReadFontSpace", 1);
-      Storage.getItem("novel_cssReadBackgroundColor") ||
-        Storage.setItem("novel_cssReadBackgroundColor", "#fffcf7");
-      Storage.getItem("novel_cssReadTextColor") ||
-        Storage.setItem("novel_cssReadTextColor", "#41414c");
-      Storage.getItem("novel_cssReadLastTheme") ||
-        Storage.setItem("novel_cssReadLastTheme", "light");
+      Storage.getCookie("novel_cssReadFontSize") || Storage.setCookie("novel_cssReadFontSize", 15);
+      Storage.getCookie("novel_cssReadFontSpace") || Storage.setCookie("novel_cssReadFontSpace", 1);
+      Storage.getCookie("novel_cssReadBackgroundColor") ||
+        Storage.setCookie("novel_cssReadBackgroundColor", "#fffcf7");
+      Storage.getCookie("novel_cssReadTextColor") ||
+        Storage.setCookie("novel_cssReadTextColor", "#41414c");
+      Storage.getCookie("novel_cssReadLastTheme") ||
+        Storage.setCookie("novel_cssReadLastTheme", "light");
     },
 
     // 创建or支付订单

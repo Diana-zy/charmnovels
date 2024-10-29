@@ -6,8 +6,8 @@ export default function ({ $axios, redirect }) {
       // do something before request is sent
       /* 客户端请求 */
       if (!process.server) {
-        config.headers.token = Storage.getItem("token") || "";
-        config.headers.userId = Storage.getItem("userId") || "";
+        config.headers.token = Storage.getCookie("token") || "";
+        config.headers.userId = Storage.getCookie("userId") || "";
       }
       return config;
     },

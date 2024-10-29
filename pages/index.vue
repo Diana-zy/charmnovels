@@ -106,8 +106,8 @@ export default {
     return {};
   },
   mounted() {
-    Storage.setItem("token", "1cp49j8vpdfr8xq48mw1i5vb8lrk8oc9");
-    Storage.setItem("userId", "11");
+    Storage.setCookie("token", "1cp49j8vpdfr8xq48mw1i5vb8lrk8oc9");
+    Storage.setCookie("userId", "11");
   },
   beforeDestroy() {},
   methods: {}

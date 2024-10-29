@@ -127,7 +127,7 @@ export default {
   mounted() {},
   methods: {
     getReadThemeColor() {
-      const readThemeColor = Storage.getItem("novel_cssReadBackgroundColor");
+      const readThemeColor = Storage.getCookie("novel_cssReadBackgroundColor");
       if (readThemeColor) {
         this.isDarkTheme = readThemeColor === this.themeColor[0].bgColor;
         this.themeColorIndex = this.themeColor.findIndex((item) => item.bgColor === readThemeColor);
@@ -136,11 +136,11 @@ export default {
       }
     },
     getReadFontSize() {
-      const readFontSize = Storage.getItem("novel_cssReadFontSize");
+      const readFontSize = Storage.getCookie("novel_cssReadFontSize");
       this.currentFontSize = readFontSize || 16;
     },
     getReadFontSpace() {
-      const readFontSpace = Storage.getItem("novel_cssReadFontSpace");
+      const readFontSpace = Storage.getCookie("novel_cssReadFontSpace");
       this.currentFontSpace = readFontSpace || 1;
     },
     initReadSetting() {
@@ -154,9 +154,9 @@ export default {
       const root = document.documentElement;
       root.style.setProperty("--read-bg-color", item.bgColor);
       root.style.setProperty("--read-text-color", item.textColor);
-      Storage.setItem("novel_cssReadBackgroundColor", item.bgColor);
-      Storage.setItem("novel_cssReadTextColor", item.textColor);
-      Storage.setItem("novel_cssReadLastTheme", item.theme);
+      Storage.setCookie("novel_cssReadBackgroundColor", item.bgColor);
+      Storage.setCookie("novel_cssReadTextColor", item.textColor);
+      Storage.setCookie("novel_cssReadLastTheme", item.theme);
     },
     /* 字体大小 */
     handleChangeFontSize(value) {
@@ -166,14 +166,14 @@ export default {
       }
       this.currentFontSize = value;
       root.style.setProperty("--read-font-size", value + "px");
-      Storage.setItem("novel_cssReadFontSize", value);
+      Storage.setCookie("novel_cssReadFontSize", value);
     },
     /* 字体间距 */
     handleChangeSpace(value) {
       const root = document.documentElement;
       this.currentFontSpace = value;
       root.style.setProperty("--read-font-space", value);
-      Storage.setItem("novel_cssReadFontSpace", value);
+      Storage.setCookie("novel_cssReadFontSpace", value);
     },
 
     /* 切换昼夜主题 */
@@ -187,7 +187,7 @@ export default {
       }
       // 日间模式
       else {
-        const lastTheme = Storage.getItem("novel_cssReadLastTheme");
+        const lastTheme = Storage.getCookie("novel_cssReadLastTheme");
         themeIndex = this.themeColor.findIndex((item) => item.theme === lastTheme);
       }
 
@@ -195,8 +195,8 @@ export default {
       const themeTextColor = this.themeColor[themeIndex].textColor;
       root.style.setProperty("--read-bg-color", themeBgColor);
       root.style.setProperty("--read-text-color", themeTextColor);
-      Storage.setItem("novel_cssReadBackgroundColor", themeBgColor);
-      Storage.setItem("novel_cssReadTextColor", themeTextColor);
+      Storage.setCookie("novel_cssReadBackgroundColor", themeBgColor);
+      Storage.setCookie("novel_cssReadTextColor", themeTextColor);
     },
 
     /* 显示设置 */
