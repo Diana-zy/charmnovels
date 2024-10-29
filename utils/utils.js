@@ -135,13 +135,22 @@ function getTargetDomain() {
 function setIframeLocalStorage(key, value) {
   const targetDomain = getTargetDomain();
   const iframe = document.getElementById("storage-iframe");
-  setTimeout(() => {
-    iframe &&
-      iframe.contentWindow.postMessage(
-        { type: "send-localStorage-message", name: key, data: value },
-        `https://${targetDomain}`
-      );
-  }, 0);
+
+  const sendMessage = () => {
+    iframe.contentWindow.postMessage(
+      { type: "send-localStorage-message", name: key, data: value },
+      `https://${targetDomain}`
+    );
+  };
+
+  const checkIframeLoaded = () => {
+    if (window.isIframeLoaded) {
+      sendMessage();
+      clearInterval(intervalId); // 清除轮询
+    }
+  };
+
+  const intervalId = setInterval(checkIframeLoaded, 100); // 每100毫秒检查一次
 }
 
 /* 
