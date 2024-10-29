@@ -89,6 +89,7 @@
 
 <script>
 import { simulateClick } from "~/utils/utils";
+import Storage from "@/utils/storage";
 
 export default {
   data() {
@@ -191,6 +192,9 @@ export default {
           code: this.emailCode
         });
         console.log("Register response:", submitResponse);
+
+        Storage.setItem("token", submitResponse.token);
+        Storage.setItem("userId", submitResponse.user_id);
         simulateClick("/", "from", "reset");
       } catch (error) {
         console.log("Register error:", error.msg);

@@ -30,7 +30,7 @@
               :type="showPassword ? 'text' : 'password'"
               name="password"
               placeholder="Enter password"
-              autocomplete="on"
+              autocomplete="off"
               @input="validateForm"
             />
             <i

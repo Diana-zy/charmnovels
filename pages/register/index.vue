@@ -99,6 +99,7 @@
 
 <script>
 import { simulateClick } from "~/utils/utils";
+import Storage from "@/utils/storage";
 
 export default {
   data() {
@@ -202,6 +203,10 @@ export default {
           code: this.emailCode
         });
         console.log("Register response:", registerResponse);
+
+        Storage.setItem("token", registerResponse.token);
+        Storage.setItem("userId", registerResponse.user_id);
+
         simulateClick("/", "from", "register");
       } catch (error) {
         console.log("Register error:", error.msg);
