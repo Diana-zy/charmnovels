@@ -22,9 +22,15 @@
 
     <div class="header-right">
       <common-search-input @handle-search="handleSearch" />
-      <custom-link to="/login/" class="btn-login m-hidden-flex">Login</custom-link>
+      <custom-link
+        v-if="!isLogin"
+        to="/login/"
+        class="btn-login m-hidden-flex"
+        @click.native="handleLogin"
+        >Login</custom-link
+      >
       <div class="avatar-container">
-        <custom-link v-if="!isLogin" to="/login/">
+        <custom-link v-if="!isLogin" to="/login/" @click.native="handleLogin">
           <i class="avatar"></i>
         </custom-link>
         <i v-if="isLogin" ref="avatarContainer" class="avatar-a" @click.stop="toggleUserMenu"></i>
@@ -34,7 +40,7 @@
             <span>Purchased novels</span>
           </custom-link>
           <div class="line"></div>
-          <div class="menu-item">
+          <div class="menu-item" @click="handleLogout">
             <i class="icon-logout"></i>
             <span>Log out</span>
           </div>
@@ -45,7 +51,8 @@
 </template>
 
 <script>
-import { simulateClick } from "~/utils/utils";
+import Storage from "@/utils/storage";
+import { simulateClick, filterFromPath } from "~/utils/utils";
 
 export default {
   props: {
@@ -70,11 +77,12 @@ export default {
           path: "/library/"
         }
       ],
-      isLogin: true,
+      isLogin: false,
       isShowMenu: false
     };
   },
   mounted() {
+    this.isLogin = Boolean(Storage.getCookie("novel_token"));
     document.addEventListener("click", this.hideUserMenu);
   },
   beforeDestroy() {
@@ -84,12 +92,23 @@ export default {
     handleSearch(inputValue) {
       simulateClick("/search/", "text", inputValue);
     },
+    handleLogin() {
+      const currenPagePath = window.location.pathname + window.location.search;
+      Storage.setCookie("novel_preLoginPath", currenPagePath);
+    },
+    handleLogout() {
+      const currenPagePath = window.location.pathname + window.location.search;
+      Storage.setCookie("novel_preLoginPath", currenPagePath);
+      Storage.clearCookie("novel_token");
+      Storage.clearCookie("novel_userId");
+      simulateClick("/login/", "from", filterFromPath(window.location.pathname));
+    },
     toggleUserMenu() {
       this.isShowMenu = !this.isShowMenu;
     },
     hideUserMenu(event) {
       const avatarContainer = this.$refs.avatarContainer;
-      if (!avatarContainer.contains(event.target)) {
+      if (avatarContainer && !avatarContainer.contains(event.target)) {
         this.isShowMenu = false;
       }
     }

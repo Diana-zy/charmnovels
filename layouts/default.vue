@@ -8,13 +8,13 @@
 
 <script>
 import Storage from "@/utils/storage";
-import { simulateClick } from "@/utils/utils";
+import { simulateClick, filterFromPath } from "@/utils/utils";
 export default {
   methods: {
     onConfirm() {
       const currenPagePath = window.location.pathname + window.location.search;
       Storage.setCookie("novel_preLoginPath", currenPagePath);
-      simulateClick("/login/");
+      simulateClick("/login/", "from", filterFromPath(window.location.pathname));
       this.clearUserInfo();
     },
     onCancel() {
@@ -27,4 +27,3 @@ export default {
   }
 };
 </script>
-

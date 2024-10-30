@@ -41,18 +41,7 @@ function generateCustomLink(url) {
   const currentParams = new URLSearchParams(window.location.search);
   const currentPathname = window.location.pathname;
 
-  // 定义路径与类型的映射关系
-  const pathTypeMappings = [
-    { pattern: /^\/collection\/[\w-]+\/$/, type: "collection-detail" },
-    { pattern: /^\/collection\/$/, type: "collection" },
-    { pattern: /^\/app\/.*/, type: "app" },
-    { pattern: /^\/download\/.*/, type: "download" },
-    { pattern: /^\/$/, type: "home" }
-  ];
-
-  // 查找匹配的路径类型
-  const matchedPathType = pathTypeMappings.find((mapping) => mapping.pattern.test(currentPathname));
-  const from = matchedPathType ? matchedPathType.type : currentPathname.replaceAll("/", "");
+  const from = filterFromPath(currentPathname);
   // 删除不需要的查询参数
   currentParams.delete("from");
   if (currentPathname === "/search/") {
@@ -68,6 +57,21 @@ function generateCustomLink(url) {
   return `${protocol}//${targetDomain}${targetPath}?${queryString}${
     queryString ? "&" : ""
   }from=${encodeURIComponent(from)}`;
+}
+
+// 过滤from
+function filterFromPath(path) {
+  // 定义路径与类型的映射关系
+  const pathTypeMappings = [
+    { pattern: /^\/novel\/[\w-]+\/$/, type: "novel" },
+    { pattern: /^\/app\/.*/, type: "app" },
+    { pattern: /^\/download\/.*/, type: "download" },
+    { pattern: /^\/$/, type: "home" }
+  ];
+  // 查找匹配的路径类型
+  const matchedPathType = pathTypeMappings.find((mapping) => mapping.pattern.test(path));
+  const from = matchedPathType ? matchedPathType.type : path.replaceAll("/", "");
+  return from;
 }
 
 // 校验邮箱格式
@@ -172,6 +176,7 @@ function getHeaderCookieItem(cookieString, paramKey) {
 export {
   simulateClick,
   generateCustomLink,
+  filterFromPath,
   validateEmail,
   shuffleArray,
   getStarListStyle,

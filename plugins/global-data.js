@@ -4,7 +4,6 @@ import Vue from "vue";
 export default ({ app }, inject) => {
   // 创建一个响应式的全局数据对象
   const globalData = Vue.observable({
-    isNavigationVisible: false,
     notification: {
       show: false,
       message: "",
@@ -20,9 +19,6 @@ export default ({ app }, inject) => {
 
   // 创建一个全局方法对象并注入
   inject("globalMethod", {
-    toggleNavigation: () => {
-      globalData.isNavigationVisible = !globalData.isNavigationVisible;
-    },
     // 显示通知
     showNotification: ({ message, type }) => {
       globalData.notification.show = true;
