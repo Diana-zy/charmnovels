@@ -118,6 +118,10 @@ export default {
   span:first-child {
     color: $color3;
   }
+  span {
+    width: 100%;
+    @include ellipsis();
+  }
 }
 .desc {
   margin-top: 4px;
