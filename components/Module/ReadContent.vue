@@ -129,18 +129,44 @@ export default {
     createPaymentOrder(purchaseStatus) {
       if (purchaseStatus === 0) {
         // 创建新订单
+        this.unlockNovel();
       } else if (purchaseStatus === 1) {
         // 继续支付
+        this.confirmUnlockNovel(true);
       }
     },
-
     // 获取订单解锁状态
     getOrderUnlockStatus() {
       // 调用接口获取订单解锁状态
+      this.confirmUnlockNovel(true);
     },
-
     handleShowMenuSetting() {
       this.$emit("show-menu-setting");
+    },
+    async unlockNovel() {
+      // 调用接口解锁小说
+      try {
+        const res = await this.$axios.$post("/api/payment/unlock_novel", {
+          site_id: process.env.SITE_ID,
+          novel_id: this.currentChapterDetail.novel_info.id,
+          redirect_url: window.location.href
+        });
+        console.log(" response:", res);
+      } catch (error) {
+        console.log(" error:", error.msg);
+      }
+    },
+    async confirmUnlockNovel(isRedirect) {
+      try {
+        const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
+          site_id: process.env.SITE_ID,
+          novel_id: this.currentChapterDetail.novel_info.id,
+          is_redirect: isRedirect
+        });
+        console.log(" response:", res);
+      } catch (error) {
+        console.log(" error:", error.msg);
+      }
     }
   }
 };
