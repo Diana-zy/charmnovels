@@ -9,6 +9,10 @@ export default ({ app }, inject) => {
       show: false,
       message: "",
       type: ""
+    },
+    dialog: {
+      show: false,
+      message: ""
     }
   });
   // 注入响应式的 globalData 对象
@@ -34,6 +38,16 @@ export default ({ app }, inject) => {
       globalData.notification.show = false;
       globalData.notification.message = "";
       globalData.notification.type = "";
+    },
+    // 显示对话框
+    showDialog: (message) => {
+      globalData.dialog.show = true;
+      globalData.dialog.message = message;
+    },
+    // 隐藏对话框
+    hideDialog: () => {
+      globalData.dialog.show = false;
+      globalData.dialog.message = "";
     }
   });
 };

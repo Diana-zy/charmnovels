@@ -1,5 +1,5 @@
 import Storage from "@/utils/storage";
-export default function ({ $axios, redirect }) {
+export default function ({ $axios, $globalData, $globalMethod, redirect }) {
   // request interceptor
   $axios.interceptors.request.use(
     (config) => {
@@ -51,6 +51,9 @@ export default function ({ $axios, redirect }) {
     }
     if (code === 401) {
       /* session过期 */
+      if (!process.server) {
+        $globalMethod.showDialog("Your session has expired. Please log in again.");
+      }
     }
     if (code === 500) {
       redirect("/500");

@@ -77,8 +77,8 @@ export default {
   },
   plugins: [
     { src: "~/plugins/vue-infinite-scroll", ssr: false },
-    "~/plugins/axios",
-    "~/plugins/global-data"
+    "~/plugins/global-data",
+    "~/plugins/axios"
   ],
   components: true,
   buildModules: ["@nuxtjs/style-resources", "@nuxt/image", "@nuxtjs/pwa", "@nuxtjs/sitemap"],
