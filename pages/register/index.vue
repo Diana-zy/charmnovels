@@ -204,8 +204,8 @@ export default {
         });
         console.log("Register response:", registerResponse);
 
-        Storage.setItem("token", registerResponse.token);
-        Storage.setItem("userId", registerResponse.user_id);
+        Storage.setCookie("token", registerResponse.token);
+        Storage.setCookie("userId", registerResponse.user_id);
 
         simulateClick("/", "from", "register");
       } catch (error) {
