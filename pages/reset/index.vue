@@ -193,8 +193,8 @@ export default {
         });
         console.log("Register response:", submitResponse);
 
-        Storage.setItem("token", submitResponse.token);
-        Storage.setItem("userId", submitResponse.user_id);
+        Storage.setCookie("token", submitResponse.token);
+        Storage.setCookie("userId", submitResponse.user_id);
         simulateClick("/", "from", "reset");
       } catch (error) {
         console.log("Register error:", error.msg);
