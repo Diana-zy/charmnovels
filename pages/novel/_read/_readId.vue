@@ -168,12 +168,11 @@ export default {
       document.body.classList.remove("no-scroll");
       window.scrollTo(0, this.distanceFromTop); // 恢复滚动位置
     },
-    async confirmUnlockNovel(isRedirect) {
+    async confirmUnlockNovel() {
       try {
         const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
           site_id: process.env.SITE_ID,
-          novel_id: this.currentChapterDetail.novel_info.id,
-          is_redirect: isRedirect
+          novel_id: this.currentChapterDetail.novel_info.id
         });
         console.log(" response:", res);
       } catch (error) {

@@ -134,13 +134,13 @@ export default {
         this.unlockNovel();
       } else if (purchaseStatus === 1) {
         // 继续支付
-        this.confirmUnlockNovel(true);
+        this.confirmUnlockNovel();
       }
     },
     // 获取订单解锁状态
     getOrderUnlockStatus() {
       // 调用接口获取订单解锁状态
-      this.confirmUnlockNovel(true);
+      this.confirmUnlockNovel();
     },
     handleShowMenuSetting() {
       this.$emit("show-menu-setting");
@@ -161,16 +161,17 @@ export default {
         this.loading = false;
       }
     },
-    async confirmUnlockNovel(isRedirect) {
+    async confirmUnlockNovel() {
       this.loading = true;
       try {
         const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
           site_id: process.env.SITE_ID,
-          novel_id: this.currentChapterDetail.novel_info.id,
-          is_redirect: isRedirect
+          novel_id: this.currentChapterDetail.novel_info.id
         });
         console.log(" response:", res);
-        window.location.href = res.order_info.url;
+        if (res.unlock_status === "create_success" || res.unlock_status === "already_pending") {
+          window.location.href = res.order_info.url;
+        }
       } catch (error) {
         console.log(" error:", error.msg);
         this.loading = false;
