@@ -187,26 +187,28 @@ export default {
   object-fit: cover;
 }
 
-::v-deep .swiper-pagination-bullets {
-  width: auto;
-  display: flex;
-  align-items: center;
-  bottom: 16px;
-  right: 16px;
-  left: auto;
-}
-::v-deep .swiper-pagination-bullet {
-  width: 10px;
-  height: 10px;
-  background: rgba($color1, 0.8);
-  border-radius: 50%;
-  margin: 0 4px;
-  opacity: 1;
-}
-::v-deep .swiper-pagination-bullet-active {
-  background: $color3;
-  border: 2px solid $color1;
-  box-sizing: content-box;
+.swiper-box {
+  ::v-deep .swiper-pagination-bullets {
+    width: auto;
+    display: flex;
+    align-items: center;
+    bottom: 16px;
+    right: 16px;
+    left: auto;
+  }
+  ::v-deep .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: rgba($color1, 0.8);
+    border-radius: 50%;
+    margin: 0 4px;
+    opacity: 1;
+  }
+  ::v-deep .swiper-pagination-bullet-active {
+    background: $color3;
+    border: 2px solid $color1;
+    box-sizing: content-box;
+  }
 }
 
 @media (max-width: 800px) {
@@ -266,17 +268,19 @@ export default {
     }
   }
 
-  ::v-deep .swiper-pagination-bullets {
-    bottom: vw(20);
-    right: vw(20);
-  }
-  ::v-deep .swiper-pagination-bullet {
-    width: vw(20);
-    height: vw(20);
-    margin: 0 vw(8) !important;
-  }
-  ::v-deep .swiper-pagination-bullet-active {
-    border: vw(4) solid $color1;
+  .swiper-box {
+    ::v-deep .swiper-pagination-bullets {
+      bottom: vw(20);
+      right: vw(20);
+    }
+    ::v-deep .swiper-pagination-bullet {
+      width: vw(20);
+      height: vw(20);
+      margin: 0 vw(8) !important;
+    }
+    ::v-deep .swiper-pagination-bullet-active {
+      border: vw(4) solid $color1;
+    }
   }
 }
 </style>
