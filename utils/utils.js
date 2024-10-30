@@ -10,11 +10,13 @@ function simulateClick(route, key, value) {
     newURLSearchParams.append(key, value);
   }
 
-  // 添加新链接中的参数，确保替换重复属性
-  if (key === "text") {
-    newURLSearchParams.set(key, value);
-  } else {
-    newURLSearchParams.set(key, encodeURIComponent(value));
+  if (key) {
+    // 添加新链接中的参数，确保替换重复属性
+    if (key === "text") {
+      newURLSearchParams.set(key, value);
+    } else {
+      newURLSearchParams.set(key, encodeURIComponent(value));
+    }
   }
 
   // 创建新的 URL 对象

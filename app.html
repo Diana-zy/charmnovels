@@ -149,36 +149,5 @@
         }
       });
     </script>
-    <iframe id="storage-iframe" style="display: none"></iframe>
-    <script>
-      const currentDomain = window.location.host;
-      let targetDomain = "";
-      const domainPattern = /^(www[0-9]*|[0-9]*)\.?([^\.]+)\.([a-z]{2,})$/;
-      const match = currentDomain.match(domainPattern);
-      if (match) {
-        const prefix = match[1];
-        if (!prefix) {
-          targetDomain = `www.${currentDomain}`;
-        } else if (prefix.startsWith("www")) {
-          if (prefix === "www") {
-            targetDomain = currentDomain.substring(4);
-          } else {
-            targetDomain = currentDomain.substring(3);
-          }
-        } else {
-          targetDomain = `www${currentDomain}`;
-        }
-      } else {
-        targetDomain = currentDomain;
-      }
-      let targetUrl = `https://${targetDomain}/storage.html`;
-      var targetIframe = document.getElementById("storage-iframe");
-      targetIframe.src = targetUrl;
-
-      window.isIframeLoaded = false;
-      targetIframe.addEventListener("load", () => {
-        window.isIframeLoaded = true;
-      });
-    </script>
   </body>
 </html>

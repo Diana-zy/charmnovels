@@ -84,5 +84,10 @@ export default {
       if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
+  },
+
+  // 清除cookie
+  clearCookie(name) {
+    this.setCookie(name, "", -1);
   }
 };

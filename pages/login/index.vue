@@ -97,8 +97,8 @@ export default {
         });
         console.log("Login response:", loginResponse);
 
-        Storage.setCookie("token", loginResponse.token);
-        Storage.setCookie("userId", loginResponse.user_id);
+        Storage.setCookie("novel_token", loginResponse.token);
+        Storage.setCookie("novel_userId", loginResponse.user_id);
 
         simulateClick("/", "from", "login");
       } catch (error) {

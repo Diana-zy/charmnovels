@@ -61,7 +61,6 @@
   </main>
 </template>
 <script>
-import Storage from "@/utils/storage";
 export default {
   async asyncData({ $axios, env }) {
     try {
@@ -105,10 +104,7 @@ export default {
   data() {
     return {};
   },
-  mounted() {
-    // Storage.setCookie("token", "1cp49j8vpdfr8xq48mw1i5vb8lrk8oc9");
-    // Storage.setCookie("userId", "11");
-  },
+  mounted() {},
   beforeDestroy() {},
   methods: {}
 };

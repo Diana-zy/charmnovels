@@ -76,7 +76,7 @@ export default {
     };
   },
   beforeMount() {
-    Storage.getCookie("token") && this.getPurchaseList();
+    Storage.getCookie("novel_token") && this.getPurchaseList();
   },
   methods: {
     async getPurchaseList() {
