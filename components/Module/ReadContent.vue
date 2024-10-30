@@ -79,6 +79,7 @@
         />
       </div>
     </section>
+    <common-loading-max v-if="loading" />
   </section>
 </template>
 
@@ -101,7 +102,9 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      loading: false
+    };
   },
   mounted() {
     this.initStorageReadSetting();
@@ -143,6 +146,7 @@ export default {
       this.$emit("show-menu-setting");
     },
     async unlockNovel() {
+      this.loading = true;
       // 调用接口解锁小说
       try {
         const res = await this.$axios.$post("/api/payment/unlock_novel", {
@@ -154,9 +158,11 @@ export default {
         window.location.href = res.order_info.url;
       } catch (error) {
         console.log(" error:", error.msg);
+        this.loading = false;
       }
     },
     async confirmUnlockNovel(isRedirect) {
+      this.loading = true;
       try {
         const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
           site_id: process.env.SITE_ID,
@@ -164,8 +170,10 @@ export default {
           is_redirect: isRedirect
         });
         console.log(" response:", res);
+        window.location.href = res.order_info.url;
       } catch (error) {
         console.log(" error:", error.msg);
+        this.loading = false;
       }
     }
   }

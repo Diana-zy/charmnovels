@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import { getQueryParam } from "~/utils/utils";
+
 export default {
   data() {
     return {
@@ -67,13 +69,12 @@ export default {
       distanceFromTop: 0 // body距离顶部距离
     };
   },
-  beforeMount() {
-    this.getCurrentChapterDetail();
-    this.getCurrentNovelDetail();
-  },
+  beforeMount() {},
   created() {
     if (process.client) {
-      console.log("created", process.client);
+      this.getCurrentChapterDetail();
+      this.getCurrentNovelDetail();
+      getQueryParam("pay_status") === "success" && this.confirmUnlockNovel(false);
     }
   },
   mounted() {
@@ -166,6 +167,18 @@ export default {
       this.isShowHeader = false;
       document.body.classList.remove("no-scroll");
       window.scrollTo(0, this.distanceFromTop); // 恢复滚动位置
+    },
+    async confirmUnlockNovel(isRedirect) {
+      try {
+        const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
+          site_id: process.env.SITE_ID,
+          novel_id: this.currentChapterDetail.novel_info.id,
+          is_redirect: isRedirect
+        });
+        console.log(" response:", res);
+      } catch (error) {
+        console.log(" error:", error.msg);
+      }
     }
   }
 };
