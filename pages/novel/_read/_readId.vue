@@ -71,6 +71,11 @@ export default {
     this.getCurrentChapterDetail();
     this.getCurrentNovelDetail();
   },
+  created() {
+    if (process.client) {
+      console.log("created", process.client);
+    }
+  },
   mounted() {
     document.addEventListener("click", this.handleUserClickEvent);
   },

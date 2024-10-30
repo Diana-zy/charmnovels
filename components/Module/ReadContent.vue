@@ -103,7 +103,6 @@ export default {
   data() {
     return {};
   },
-  created() {},
   mounted() {
     this.initStorageReadSetting();
 
@@ -152,6 +151,7 @@ export default {
           redirect_url: window.location.href
         });
         console.log(" response:", res);
+        window.location.href = res.order_info.url;
       } catch (error) {
         console.log(" error:", error.msg);
       }

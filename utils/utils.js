@@ -173,6 +173,16 @@ function getHeaderCookieItem(cookieString, paramKey) {
   return null;
 }
 
+function getQueryParam(paramName, url = window.location.href) {
+  try {
+    const params = new URL(url).searchParams;
+    return params.get(paramName) || null;
+  } catch (error) {
+    console.error("Invalid URL", error);
+    return null;
+  }
+}
+
 export {
   simulateClick,
   generateCustomLink,
@@ -183,5 +193,6 @@ export {
   getStarScore,
   getTargetDomain,
   setIframeLocalStorage,
-  getHeaderCookieItem
+  getHeaderCookieItem,
+  getQueryParam
 };

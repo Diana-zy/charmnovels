@@ -196,6 +196,9 @@ export default {
       distanceFromTop: 0 // body距离顶部距离
     };
   },
+  fetch() {
+    console.log("fetch");
+  },
   watch: {
     isMobile(newVal) {
       if (newVal) {
@@ -205,7 +208,11 @@ export default {
       }
     }
   },
+  created() {
+    console.log("created");
+  },
   beforeMount() {
+    console.log("beforeMount");
     this.getNovelDetailInfo();
   },
   mounted() {
