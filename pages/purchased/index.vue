@@ -83,7 +83,9 @@ export default {
       await this.$axios
         .$get("/api/novel/novel_purchase_list", {
           params: {
-            site_id: process.env.SITE_ID
+            site_id: process.env.SITE_ID,
+            page: 1,
+            page_size: 99
           }
         })
         .then((response) => {
