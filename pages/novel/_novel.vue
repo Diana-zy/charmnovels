@@ -128,6 +128,7 @@
             v-show="isShowChapterPopup"
             ref="mobileChapterPopup"
             :chapters="novelChapterList"
+            :purchase-status="novelDetail?.purchase_status"
             :current-chapter-id="novelDetail?.user_last_read_chapter_id"
             @close-chapter-popup="handleHideChapterPopup"
           />

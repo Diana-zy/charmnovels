@@ -12,6 +12,7 @@
         <module-read-chapter
           ref="fixedChapterList"
           :chapters="novelChapterList"
+          :purchase-status="currentChapterDetail?.purchase_status"
           :current-chapter-id="currentChapterDetail?.chapter_id"
           theme="dark"
         />
@@ -40,6 +41,7 @@
             v-show="isShowChapterPopup"
             ref="mobileChapterPopup"
             :chapters="novelChapterList"
+            :purchase-status="currentChapterDetail?.purchase_status"
             :current-chapter-id="currentChapterDetail?.chapter_id"
             theme="dark"
             @close-chapter-popup="handleHideChapterPopup"
