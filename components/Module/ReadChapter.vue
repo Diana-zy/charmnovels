@@ -24,7 +24,7 @@
           :ref="item.id === currentChapterId ? 'activeChapter' : ''"
         >
           <custom-link
-            :to="`/novel/${item.novel_id}/${item.id}/`"
+            :to="`/read/?ch=${item.id}`"
             :class="['chapter-item', item.id === currentChapterId ? 'chapter-item-active' : '']"
           >
             <div class="tag-current"><i class="icon-chapter-current"></i></div>

@@ -75,7 +75,7 @@
           v-for="(item, i) in currentChapterDetail.chapter"
           :key="i"
           :item="item"
-          :to="`/novel/${item.novel_id}/${item.id}/`"
+          :to="`/read/?ch=${item.id}`"
         />
       </div>
     </section>

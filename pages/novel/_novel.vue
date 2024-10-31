@@ -154,6 +154,7 @@
 </template>
 
 <script>
+import Storage from "~/utils/storage";
 import { getStarListStyle, getStarScore, shuffleArray } from "~/utils/utils";
 export default {
   async asyncData({ $axios, params, env }) {
@@ -196,9 +197,6 @@ export default {
       distanceFromTop: 0 // body距离顶部距离
     };
   },
-  fetch() {
-    console.log("fetch");
-  },
   watch: {
     isMobile(newVal) {
       if (newVal) {
@@ -209,11 +207,9 @@ export default {
     }
   },
   created() {
-    console.log("created");
-  },
-  beforeMount() {
-    console.log("beforeMount");
-    this.getNovelDetailInfo();
+    if (process.client) {
+      this.getNovelDetailInfo();
+    }
   },
   mounted() {
     this.configAdBreak();
@@ -241,6 +237,11 @@ export default {
         .then((response) => {
           const novelDetail = response;
           this.novelDetail = novelDetail;
+          /* 登录过期 */
+          if (!novelDetail.is_login && Storage.getCookie("novel_token")) {
+            this.$globalMethod.showDialog("Your session has expired. Please log in again.");
+          }
+
           this.novelDetailInfo = novelDetail.novel_info;
           this.novelChapterList = novelDetail.chapter;
           // 有记录的章节，则跳转到记录的章节
@@ -250,14 +251,14 @@ export default {
               (item) => item.id === novelDetail.user_last_read_chapter_id
             );
             if (chapter) {
-              this.startReadPath = `/novel/${novelDetail.novel_info.id}/${novelDetail.user_last_read_chapter_id}/`;
+              this.startReadPath = `/read/?ch=${novelDetail.user_last_read_chapter_id}`;
             } else {
-              this.startReadPath = `/novel/${novelDetail.novel_info.id}/${response.chapter[0].id}/`;
+              this.startReadPath = `/read/?ch=${response.chapter[0].id}`;
             }
           }
           // 没有记录的章节，则跳转到第一章节
           else {
-            this.startReadPath = `/novel/${novelDetail.novel_info.id}/${response.chapter[0].id}/`;
+            this.startReadPath = `/read/?ch=${response.chapter[0].id}`;
           }
         });
     },

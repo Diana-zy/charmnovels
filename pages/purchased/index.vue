@@ -18,7 +18,7 @@
           v-for="(item, i) in purchaseBooks"
           :key="i"
           :item="item"
-          :to="`/novel/${item.id}/`"
+          :to="`/novel/${item.novel_info.id}/`"
         />
       </div>
     </section>

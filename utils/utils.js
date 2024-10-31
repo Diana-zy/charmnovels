@@ -2,12 +2,22 @@
 function simulateClick(route, key, value) {
   // 获取当前页面的 URL 参数
   const currentURLSearchParams = new URLSearchParams(window.location.search);
+  const currentPathname = window.location.pathname;
+  const from = filterFromPath(currentPathname);
+
   // 创建一个新的 URLSearchParams 对象
   const newURLSearchParams = new URLSearchParams();
 
   // 将当前页面的 URL 参数添加到新对象中
   for (const [key, value] of currentURLSearchParams) {
-    newURLSearchParams.append(key, value);
+    // 过滤掉章节ID
+    if (key !== "ch" && key !== "from") {
+      newURLSearchParams.append(key, value);
+    }
+    // 添加新的 from 参数
+    if (key === "from") {
+      newURLSearchParams.append(key, encodeURIComponent(from));
+    }
   }
 
   if (key) {
@@ -37,20 +47,31 @@ function simulateClick(route, key, value) {
 }
 
 function generateCustomLink(url) {
-  const targetPath = url;
+  let targetPath = url;
+  let chapterId = "";
+  if (url.includes("?ch=")) {
+    targetPath = url.split("?ch=")[0];
+    chapterId = url.split("?ch=")[1];
+  }
+
   const currentParams = new URLSearchParams(window.location.search);
   const currentPathname = window.location.pathname;
+  const targetDomain = getTargetDomain();
+  const protocol = window.location.protocol;
 
   const from = filterFromPath(currentPathname);
   // 删除不需要的查询参数
   currentParams.delete("from");
+  currentParams.delete("ch");
+
   if (currentPathname === "/search/") {
     currentParams.delete("text");
   }
 
-  const targetDomain = getTargetDomain();
-
-  const protocol = window.location.protocol;
+  /* 处理小说章节页面传参 */
+  if (targetPath === "/read/") {
+    currentParams.append("ch", chapterId);
+  }
 
   // 生成新的查询参数字符串
   const queryString = currentParams.toString();
@@ -64,8 +85,6 @@ function filterFromPath(path) {
   // 定义路径与类型的映射关系
   const pathTypeMappings = [
     { pattern: /^\/novel\/[\w-]+\/$/, type: "novel" },
-    { pattern: /^\/app\/.*/, type: "app" },
-    { pattern: /^\/download\/.*/, type: "download" },
     { pattern: /^\/$/, type: "home" }
   ];
   // 查找匹配的路径类型
@@ -117,6 +136,7 @@ function getStarScore(score) {
 function getTargetDomain() {
   const currentDomain = window.location.host;
   let targetDomain = "";
+  // eslint-disable-next-line no-useless-escape
   const domainPattern = /^(www[0-9]*|[0-9]*)\.?([^\.]+)\.([a-z]{2,})$/;
   const match = currentDomain.match(domainPattern);
   if (match) {
@@ -138,41 +158,6 @@ function getTargetDomain() {
   return targetDomain;
 }
 
-function setIframeLocalStorage(key, value) {
-  const targetDomain = getTargetDomain();
-  const iframe = document.getElementById("storage-iframe");
-
-  const sendMessage = () => {
-    iframe.contentWindow.postMessage(
-      { type: "send-localStorage-message", name: key, data: value },
-      `https://${targetDomain}`
-    );
-  };
-
-  const checkIframeLoaded = () => {
-    if (window.isIframeLoaded) {
-      sendMessage();
-      clearInterval(intervalId); // 清除轮询
-    }
-  };
-
-  const intervalId = setInterval(checkIframeLoaded, 100); // 每100毫秒检查一次
-}
-
-/* 
-  解析 header cookie 中的某个值
-*/
-function getHeaderCookieItem(cookieString, paramKey) {
-  const cookiesArray = cookieString.split("; "); // 分割每个 cookie
-  for (const cookie of cookiesArray) {
-    const [key, value] = cookie.split("="); // 分割键值对
-    if (key === paramKey) {
-      return value;
-    }
-  }
-  return null;
-}
-
 function getQueryParam(paramName, url = window.location.href) {
   try {
     const params = new URL(url).searchParams;
@@ -192,7 +177,5 @@ export {
   getStarListStyle,
   getStarScore,
   getTargetDomain,
-  setIframeLocalStorage,
-  getHeaderCookieItem,
   getQueryParam
 };

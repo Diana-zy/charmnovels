@@ -1,5 +1,3 @@
-import { setIframeLocalStorage } from "~/utils/utils";
-
 // utils/storage.js
 export default {
   /**
@@ -11,7 +9,6 @@ export default {
     try {
       const serializedValue = JSON.stringify(value);
       localStorage.setItem(key, serializedValue);
-      setIframeLocalStorage(key, serializedValue);
     } catch (error) {
       console.error("Error setting item in localStorage", error);
     }

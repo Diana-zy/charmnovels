@@ -18,12 +18,8 @@ export default {
         `${process.env.TEST_API_URL}/api/novel/novel_chapter_path?site_id=${process.env.SITE_ID}`
       );
       const path = await pathData.json();
-
       const novelPaths = path.data.list.map((item) => `/novel/${item.novel_id}`);
-      const chapterPaths = path.data.list.flatMap((item) =>
-        item.chapters.map((chapter) => `/novel/${item.novel_id}/${chapter}`)
-      );
-      const urls = [...novelPaths, ...chapterPaths];
+      const urls = [...novelPaths];
       return urls;
     }
   },
