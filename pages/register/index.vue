@@ -77,7 +77,13 @@
           </div>
 
           <div class="form-item form-item-terms">
-            <input v-model="agreement" type="checkbox" name="terms" @change="validateForm" />
+            <input
+              v-model="agreement"
+              type="checkbox"
+              name="terms"
+              class="btn-agreement"
+              @change="validateForm"
+            />
             <label for="terms" class="terms">
               I have read and agree to the
               <CustomLink to="/eula.html" target="_blank" class="link-terms"
