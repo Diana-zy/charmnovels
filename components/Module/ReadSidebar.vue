@@ -51,7 +51,7 @@
                     'icon-font-size-minus',
                     { 'icon-font-size-disabled': currentFontSize === 14 }
                   ]"
-                  @click="handleChangeFontSize(currentFontSize - 1)"
+                  @click="handleChangeFontSize(Number(currentFontSize) - 1)"
                 ></i>
                 <span>{{ currentFontSize }}</span>
                 <i
@@ -59,7 +59,7 @@
                     'icon-font-size-plus',
                     { 'icon-font-size-disabled': currentFontSize === 28 }
                   ]"
-                  @click="handleChangeFontSize(currentFontSize + 1)"
+                  @click="handleChangeFontSize(Number(currentFontSize) + 1)"
                 ></i>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default {
     },
     getReadFontSpace() {
       const readFontSpace = Storage.getCookie("novel_cssReadFontSpace");
-      this.currentFontSpace = readFontSpace || 1;
+      this.currentFontSpace = readFontSpace ? Number(readFontSpace) : 1;
     },
     initReadSetting() {
       this.getReadThemeColor();
@@ -160,6 +160,7 @@ export default {
     },
     /* 字体大小 */
     handleChangeFontSize(value) {
+      console.log(value);
       const root = document.documentElement;
       if (value < 14 || value > 28) {
         return;
