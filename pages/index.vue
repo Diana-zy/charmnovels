@@ -14,6 +14,7 @@
           :index="i"
           :eager="3"
           :to="`/novel/${item.id}/`"
+          :is-show-tag="true"
         />
       </div>
     </section>
@@ -28,7 +29,6 @@
           :index="i"
           :eager="3"
           :to="`/novel/${item.id}/`"
-          :is-show-tag="true"
         />
       </div>
     </section>

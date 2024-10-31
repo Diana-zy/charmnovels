@@ -33,8 +33,8 @@ $color8: #eee; //字体颜色
     height: 100%;
     background-color: $color2;
     mix-blend-mode: multiply;
-    opacity: 0.3;
-    filter: blur($width);
+    opacity: 0.8;
+    filter: blur(calc($width / 1.5));
   }
   &::after {
     position: absolute;
@@ -46,9 +46,9 @@ $color8: #eee; //字体颜色
     width: $width;
     height: 100%;
     background-color: $color1;
-    // mix-blend-mode: lighten;
-    opacity: 0.4;
-    filter: blur($width);
+    mix-blend-mode: lighten;
+    opacity: 0.8;
+    filter: blur(calc($width / 1.5));
   }
 }
 

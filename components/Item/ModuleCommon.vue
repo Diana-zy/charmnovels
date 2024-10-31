@@ -160,12 +160,12 @@ export default {
   .icon-tag {
     position: absolute;
     top: 0;
-    left: vw(16);
+    left: vw(4);
   }
   $tagIcons: ("icon-tag-1", "icon-tag-2", "icon-tag-3");
   @each $icon in $tagIcons {
     .#{$icon} {
-      @include icon(vw(56), vw(78), "#{$icon}.png");
+      @include icon(vw(80), vw(98), "#{$icon}.png");
     }
   }
 
