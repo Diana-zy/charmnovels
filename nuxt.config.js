@@ -31,7 +31,7 @@ export default {
     trailingSlash: true
   },
   head: {
-    title: "charmnovels－Carefully selected - Each one is filled with surprises and inspiration.",
+    title: "CharmNovels - Read Web NovelStories & Fiction Online",
     meta: [
       {
         name: "version",
@@ -54,13 +54,12 @@ export default {
         hid: "description",
         name: "description",
         content:
-          "We are committed to providing you with a variety of high-quality wallpapers and collections, making every unlock a surprise and inspiration."
+          "Welcome to CharmNovels! We are dedicated to building the best content platform, bringing readers as many great novels as possible—making good stories timeless!"
       },
       {
         hid: "keywords",
         name: "keywords",
-        content:
-          "Anime, 3D Dynamic, 4K HD, Scenery, Shoujo, Technological, Two-Dimensional, Personalized"
+        content: "Werewolf, Romance, Rebirth, Supernatural, Billionaire, Gaming, Sci-Fi, Demon, War"
       }
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
@@ -88,10 +87,10 @@ export default {
   },
   pwa: {
     manifest: {
-      name: "charmnovels", // 应用名称
-      short_name: "charmnovels", // 应用短名称
+      name: "CharmNovels", // 应用名称
+      short_name: "CharmNovels", // 应用短名称
       description:
-        "We are committed to providing you with a variety of high-quality wallpapers and collections, making every unlock a surprise and inspiration.",
+        "Welcome to CharmNovels! We are dedicated to building the best content platform, bringing readers as many great novels as possible—making good stories timeless!",
       icons: [
         {
           src: "/icons/32.png",

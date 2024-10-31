@@ -1,20 +1,22 @@
 <template>
   <footer>
     <div class="introduction">
-      charmnovels.com is a wallpaper aggregation platform. Through this platform, you can download
-      beautiful wallpapers on various devices that support Android and iOS. Our team’s goal is to
-      help all users find wallpapers they love. <br />
-      We offer a variety of wallpaper types, including but not limited to 3D dynamic, 4K ultra HD,
-      anime animations, football stars, pink aesthetics, component parts, fluid effects, and
-      personalized wallpapers. charmnovels.com has collected the hottest, most classic, and most
-      interesting wallpapers, each carefully selected by us, along with collections to meet your
-      needs. <br />
-      charmnovels.com is a website that provides high-quality wallpaper options. The site does not
-      offer downloads for wallpaper applications; the download links for wallpapers will redirect to
-      official platforms like Google Play and the Apple Store. Users can quickly find the wallpapers
-      that suit them best on charmnovels.com. <br />
-      We hope you find wallpapers you love on the charmnovels.com platform. If you have any feedback
-      for us, please feel free to contact us via email:
+      CharmNovels is an online novel reading platform dedicated to providing readers with a rich
+      variety of novel choices, ensuring that everyone can find a story they love. <br />
+      At CharmNovels, you can explore thousands of novels covering a wide range of genres, such as
+      werewolves, billionaires, romance, fantasy adventures, sci-fi futures, urban life, mystery and
+      suspense, rebirth and time travel, gaming competition, and more. Whether you enjoy sweet love
+      stories or crave thrilling adventures, there's something for you here. Our platform brings
+      together talented authors from around the world, offering fresh creations and exciting
+      storylines. <br />
+      We provide a user-friendly interface that allows you to easily browse and search for novels.
+      Based on your reading habits and preferences, we recommend personalized books to ensure you
+      always find content that interests you. Additionally, you can create a personal bookshelf for
+      convenient access to your favorite novels whenever you want to continue reading. <br />
+      We believe that reading is not only a pleasure but also a way of life. Whether you are an avid
+      reader or an occasional one, CharmNovels welcomes you to join our community. Start your
+      journey of storytelling and explore an endless world of novels! If you have any suggestions or
+      feedback, please feel free to contact us at:
       <a href="mailto:Service@charmnovels.com">Service@charmnovels.com</a>
     </div>
 
