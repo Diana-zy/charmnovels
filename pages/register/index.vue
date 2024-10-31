@@ -79,10 +79,9 @@
           <div class="form-item form-item-terms">
             <input v-model="agreement" type="checkbox" name="terms" @change="validateForm" />
             <label for="terms" class="terms">
-              I accept the conditions of the
-              <CustomLink to="/eula.html" target="_blank">Terms of Service</CustomLink>
-              and agree to the processing of my personal data according to the
-              <CustomLink to="/privacy.html" target="_blank">Privacy Policy</CustomLink>.
+              I have read and agree to the
+              <CustomLink to="/eula.html" target="_blank">Terms of Use</CustomLink>
+              and <CustomLink to="/privacy.html" target="_blank"> Privacy Policy</CustomLink>.
             </label>
           </div>
 
