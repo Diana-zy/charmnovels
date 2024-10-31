@@ -80,8 +80,13 @@
             <input v-model="agreement" type="checkbox" name="terms" @change="validateForm" />
             <label for="terms" class="terms">
               I have read and agree to the
-              <CustomLink to="/eula.html" target="_blank">Terms of Use</CustomLink>
-              and <CustomLink to="/privacy.html" target="_blank"> Privacy Policy</CustomLink>.
+              <CustomLink to="/eula.html" target="_blank" class="link-terms"
+                >Terms of Use</CustomLink
+              >
+              and
+              <CustomLink to="/privacy.html" target="_blank" class="link-privacy"
+                >Privacy Policy</CustomLink
+              >.
             </label>
           </div>
 
