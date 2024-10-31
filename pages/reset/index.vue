@@ -195,7 +195,12 @@ export default {
 
         Storage.setCookie("novel_token", submitResponse.token);
         Storage.setCookie("novel_userId", submitResponse.user_id);
-        simulateClick("/", "from", "reset");
+        if (Storage.getCookie("novel_preLoginPath")) {
+          const newHref = window.location.origin + Storage.getCookie("novel_preLoginPath");
+          window.location.href = newHref;
+        } else {
+          simulateClick("/", "from", "reset");
+        }
       } catch (error) {
         console.log("Register error:", error.msg);
         this.globalError = error.msg || "Register error";

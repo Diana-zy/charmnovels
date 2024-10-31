@@ -3,7 +3,7 @@
     <custom-header class="login-page" />
     <div class="m-header">
       <div class="header-title">Join or Login</div>
-      <custom-link to="/" class="btn-skip">Skip<i class="icon-skip"></i></custom-link>
+      <div class="btn-skip" @click="handleSkip">Skip<i class="icon-skip"></i></div>
     </div>
     <div class="container">
       <div class="form-container">
@@ -100,13 +100,21 @@ export default {
         Storage.setCookie("novel_token", loginResponse.token);
         Storage.setCookie("novel_userId", loginResponse.user_id);
 
-        simulateClick("/", "from", "login");
+        this.handleSkip();
       } catch (error) {
         console.log("Login error:", error.msg);
         this.globalError = error.msg || "Login error";
       }
       this.registering = false;
       this.loading = false;
+    },
+    handleSkip() {
+      if (Storage.getCookie("novel_preLoginPath")) {
+        const newHref = window.location.origin + Storage.getCookie("novel_preLoginPath");
+        window.location.href = newHref;
+      } else {
+        simulateClick("/", "from", "login");
+      }
     }
   }
 };
