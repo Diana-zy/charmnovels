@@ -22,6 +22,9 @@
       </h3>
       <p>{{ currentChapterDetail.content }}</p>
     </article>
+
+    <google-ad class="ad-1" ad-slot="7045171250" />
+
     <section class="bottom-operation">
       <!-- 支付模块 -->
       <div
@@ -237,6 +240,9 @@ export default {
     line-height: 26px;
   }
 }
+.ad-1 {
+  margin-top: 16px;
+}
 .bottom-operation {
   margin-top: 16px;
 }
@@ -357,6 +363,11 @@ export default {
       font-size: var(--read-font-size);
       line-height: var(--read-font-space);
     }
+  }
+  .ad-1 {
+    width: 100vw;
+    margin-left: vw(-46);
+    margin-top: vw(32);
   }
   .bottom-operation {
     margin-top: vw(32);

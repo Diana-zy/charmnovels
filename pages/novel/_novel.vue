@@ -54,6 +54,10 @@
           </custom-link>
         </div>
       </div>
+
+      <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
+      <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
+
       <div class="video-container">
         <video
           width="100%"
@@ -65,8 +69,6 @@
         >
         </video>
       </div>
-      <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
-      <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
     </section>
     <section class="module-all">
       <common-title-label title="Rec Books" />
@@ -457,7 +459,7 @@ export default {
 }
 .video-container {
   height: 400px;
-  margin-bottom: 19px;
+  margin-top: 19px;
   @include center;
 }
 .desc {
@@ -566,7 +568,7 @@ export default {
 
   .video-container {
     height: vw(440);
-    margin-bottom: vw(38);
+    margin-top: vw(38);
   }
 
   .module-rec-mobile {

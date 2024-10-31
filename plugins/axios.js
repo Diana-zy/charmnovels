@@ -5,7 +5,7 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
     (config) => {
       // do something before request is sent
       /* 客户端请求 */
-      if (!process.server) {
+      if (process.client) {
         config.headers.token = Storage.getCookie("novel_token") || "";
         config.headers.userId = Storage.getCookie("novel_userId") || "";
       }
@@ -51,7 +51,7 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
     }
     if (code === 401) {
       /* session过期 */
-      if (!process.server) {
+      if (process.client) {
         $globalMethod.showDialog("Your session has expired. Please log in again.");
       }
     }

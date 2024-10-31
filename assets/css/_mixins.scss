@@ -14,7 +14,7 @@ $color7: #0f0f0f; //背景颜色
 $color8: #eee; //字体颜色
 
 /* 书边效果 */
-@mixin book-edge($width: 2px, $left: 4px) {
+@mixin book-edge($width: 2px, $left: 3px) {
   position: relative;
   overflow: hidden;
   img {

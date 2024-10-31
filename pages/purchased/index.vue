@@ -1,7 +1,7 @@
 <template>
   <main>
     <custom-header />
-    <google-ad class="ad-1" ad-slot="" />
+    <google-ad class="ad-1" ad-slot="4363167594" />
     <div class="feedback-info">
       <i class="icon-clock"></i>
       For payment issues, please contact
@@ -75,9 +75,12 @@ export default {
       purchaseBooks: []
     };
   },
-  beforeMount() {
-    Storage.getCookie("novel_token") && this.getPurchaseList();
+  created() {
+    if (process.client) {
+      Storage.getCookie("novel_token") && this.getPurchaseList();
+    }
   },
+  beforeMount() {},
   methods: {
     async getPurchaseList() {
       await this.$axios

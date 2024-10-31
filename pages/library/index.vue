@@ -4,7 +4,7 @@
 
     <section class="module-common module-library">
       <div class="module-library-content">
-        <google-ad class="ad-1" ad-slot="" />
+        <google-ad class="ad-1" ad-slot="4419007919" />
         <item-module-library
           v-for="(item, i) in libraryList"
           :key="i"
@@ -70,10 +70,11 @@ export default {
       libraryList: []
     };
   },
-  beforeMount() {
-    Storage.getCookie("novel_token") && this.getLibraryList();
+  created() {
+    if (process.client) {
+      Storage.getCookie("novel_token") && this.getLibraryList();
+    }
   },
-  mounted() {},
   methods: {
     async getLibraryList() {
       await this.$axios
