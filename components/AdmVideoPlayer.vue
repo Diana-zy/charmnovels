@@ -200,7 +200,7 @@ export default {
 #main-container {
   position: relative;
   width: 600px;
-  height: 470px;
+  height: 450px;
   margin: 19px auto 0;
 }
 
