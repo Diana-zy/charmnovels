@@ -3,9 +3,11 @@
     <div id="content">
       <video
         id="content-element"
-        webkit-playsinline="true"
-        playsinline="true"
+        webkit-playsinline="webkit-playsinline"
+        playsinline="playsinline"
         x5-video-player-type="h5-page"
+        preload="metadata"
+        data-object-fit="cover"
       >
         <source :src="videoDetail" />
       </video>
