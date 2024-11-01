@@ -243,7 +243,6 @@ export default {
   #main-container {
     width: 100%;
     height: vw(493.5);
-    height: vw(553.5);
     margin-top: vw(38);
   }
   .icon-play {
