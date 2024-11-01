@@ -15,7 +15,11 @@
         v-for="(tab, i) in tabsArr"
         :key="i"
         :to="tab.path"
-        :class="['tab-item', { 'tab-item-active': currentPage === tab.name }]"
+        :class="[
+          'tab-item',
+          `tab-item-${tab.name}`,
+          { 'tab-item-active': currentPage === tab.name }
+        ]"
         >{{ tab.name }}</custom-link
       >
     </div>
@@ -35,7 +39,7 @@
         </custom-link>
         <i v-if="isLogin" ref="avatarContainer" class="avatar-a" @click.stop="toggleUserMenu"></i>
         <div v-show="isShowMenu" ref="userMenu" class="user-menu">
-          <custom-link to="/purchased/" class="menu-item">
+          <custom-link to="/purchased/" class="menu-item menu-purchased">
             <i class="icon-order"></i>
             <span>Purchased novels</span>
           </custom-link>
@@ -105,7 +109,7 @@ export default {
       Storage.setCookie("novel_preLoginPath", currenPagePath);
       Storage.clearCookie("novel_token");
       Storage.clearCookie("novel_userId");
-      simulateClick("/login/", "from", filterFromPath(window.location.pathname));
+      simulateClick("/login/", "from", filterFromPath(window.location.pathname), "logout-button");
     },
     toggleUserMenu() {
       this.isShowMenu = !this.isShowMenu;

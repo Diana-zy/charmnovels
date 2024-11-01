@@ -31,6 +31,7 @@ export default {
         this.distanceFromTop = document.documentElement.scrollTop;
         document.body.classList.add("no-scroll");
         document.body.style.top = `-${this.distanceFromTop}px`;
+        window.dataLayer.push({ event: "Login_expired_Window" });
       } else {
         document.body.classList.remove("no-scroll");
         window.scrollTo(0, this.distanceFromTop); // 恢复滚动位置
@@ -46,8 +47,7 @@ export default {
     cancel() {
       this.$emit("cancel");
       this.$globalMethod.hideDialog();
-    },
-
+    }
   }
 };
 </script>

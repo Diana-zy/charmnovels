@@ -56,14 +56,14 @@
       <div class="pagination-box">
         <custom-link
           :to="preChapterPath"
-          :class="['btn-change', { 'btn-disable': preChapterPath === '#' }]"
+          :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterPath === '#' }]"
         >
           <i class="icon-prev"></i>
           <span>Previous Chapter</span>
         </custom-link>
         <custom-link
           :to="nextChapterPath"
-          :class="['btn-change', { 'btn-disable': nextChapterPath === '#' }]"
+          :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterPath === '#' }]"
         >
           <span>Next Chapter</span>
           <i class="icon-next"></i>
@@ -132,6 +132,11 @@ export default {
 
     // 创建or支付订单
     createPaymentOrder(purchaseStatus) {
+      if (!Storage.getCookie("novel_token")) {
+        this.$globalMethod.showDialog("Your account is not logged in, please log in.");
+        return;
+      }
+
       if (purchaseStatus === 0) {
         // 创建新订单
         this.unlockNovel();

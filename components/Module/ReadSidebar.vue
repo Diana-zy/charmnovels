@@ -10,13 +10,13 @@
               <div :style="`--progress-width:${currentReadProgress}%`" class="progress-bar"></div>
             </div>
             <div class="menu-box">
-              <div class="menu-item" @click="showChapterPopup"
+              <div class="menu-item menu-chapters" @click="showChapterPopup"
                 ><i class="icon-sidebar-chapter"></i
               ></div>
-              <div class="menu-item" @click="showStyleSetting">
+              <div class="menu-item menu-style" @click="showStyleSetting">
                 <i class="icon-sidebar-theme"></i>
               </div>
-              <div class="menu-item" @click="handleChangeDarkTheme"
+              <div class="menu-item menu-theme" @click="handleChangeDarkTheme"
                 ><i :class="[isDarkTheme ? 'icon-sidebar-light' : 'icon-sidebar-dark']"></i
               ></div>
             </div>

@@ -139,11 +139,11 @@
     </transition>
     <!-- 底部菜单 -->
     <section v-if="novelDetail" class="bottom-menu pc-hidden-flex">
-      <div class="menu-item" @click="handleShowChapterPopup">
+      <div class="menu-item menu-chapters" @click="handleShowChapterPopup">
         <i class="icon-chapters"></i>
         <span>Chapters</span>
       </div>
-      <custom-link :to="startReadPath" class="menu-item">
+      <custom-link :to="startReadPath" class="menu-item menu-read">
         <i class="icon-reading"></i>
         <span>{{
           novelDetail?.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"

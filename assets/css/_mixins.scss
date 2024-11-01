@@ -47,7 +47,7 @@ $color8: #eee; //字体颜色
     height: 100%;
     background-color: $color1;
     mix-blend-mode: lighten;
-    opacity: 0.8;
+    opacity: 0.5;
     filter: blur(calc($width / 1.5));
   }
 }
