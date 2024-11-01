@@ -12,7 +12,7 @@
           fit="cover"
         />
       </div>
-      <p class="name">{{ currentChapterDetail.novel_info.intro }}</p>
+      <p class="name">{{ currentChapterDetail.novel_info.name }}</p>
       <span class="author">{{ currentChapterDetail.novel_info.author }}</span>
     </div>
     <!-- 文章内容模块 -->
