@@ -58,7 +58,7 @@
       <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
       <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
 
-      <div class="video-container">
+      <!-- <div class="video-container">
         <video
           width="100%"
           height="100%"
@@ -68,7 +68,8 @@
           @play="handlePlayVideo"
         >
         </video>
-      </div>
+      </div> -->
+      <adm-video-player :video-detail="novelDetailInfo.intro_video"></adm-video-player>
     </section>
     <section class="module-all">
       <common-title-label title="Rec Books" />
@@ -215,7 +216,7 @@ export default {
     }
   },
   mounted() {
-    this.configAdBreak();
+    // this.configAdBreak();
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
   },
