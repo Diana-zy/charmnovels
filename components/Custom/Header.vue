@@ -90,11 +90,15 @@ export default {
   },
   methods: {
     handleSearch(inputValue) {
-      simulateClick("/search/", "text", inputValue);
+      simulateClick("/search/", "text", inputValue, "search-button");
     },
     handleLogin() {
       const currenPagePath = window.location.pathname + window.location.search;
-      Storage.setCookie("novel_preLoginPath", currenPagePath);
+      // 过滤登录注册页存储
+      const filterPath = ["/login/", "/register/", "/reset/"];
+      if (!filterPath.includes(window.location.pathname)) {
+        Storage.setCookie("novel_preLoginPath", currenPagePath);
+      }
     },
     handleLogout() {
       const currenPagePath = window.location.pathname + window.location.search;

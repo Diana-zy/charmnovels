@@ -1,5 +1,5 @@
 // 模拟点击链接
-function simulateClick(route, key, value) {
+function simulateClick(route, key, value, className) {
   // 获取当前页面的 URL 参数
   const currentURLSearchParams = new URLSearchParams(window.location.search);
   const currentPathname = window.location.pathname;
@@ -37,6 +37,7 @@ function simulateClick(route, key, value) {
   const link = document.createElement("a");
   link.href = newURL.toString();
   link.style.display = "none";
+  className && link.classList.add(className);
   document.body.appendChild(link);
 
   // 模拟点击
