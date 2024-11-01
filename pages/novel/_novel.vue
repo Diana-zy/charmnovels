@@ -458,8 +458,9 @@ export default {
   }
 }
 .video-container {
+  width: 600px;
   height: 400px;
-  margin-top: 19px;
+  margin: 19px auto 0;
   @include center;
 }
 .desc {
@@ -567,6 +568,7 @@ export default {
   }
 
   .video-container {
+    width: 100%;
     height: vw(440);
     margin-top: vw(38);
   }

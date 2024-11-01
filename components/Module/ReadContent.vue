@@ -229,10 +229,10 @@ export default {
   opacity: 0.6;
 }
 .read-content {
+  font-family: serif;
   h3 {
     font-size: 20px;
     line-height: 26px;
-    font-family: serif;
     padding: 24px 0 16px;
   }
   p {
