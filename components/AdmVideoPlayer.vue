@@ -1,7 +1,12 @@
 <template>
   <div id="main-container">
     <div id="content">
-      <video id="content-element">
+      <video
+        id="content-element"
+        webkit-playsinline="true"
+        playsinline="true"
+        x5-video-player-type="h5-page"
+      >
         <source :src="videoDetail" />
       </video>
       <div id="ad-container"></div>
@@ -202,6 +207,12 @@ export default {
   width: 600px;
   height: 450px;
   margin: 19px auto 0;
+  z-index: 0;
+  overflow: hidden;
+}
+video {
+  position: relative;
+  z-index: 1;
 }
 
 #content {
@@ -235,6 +246,7 @@ export default {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  z-index: 1;
 }
 .icon-play {
   @include icon(144px, 144px, "icon-play.png");
