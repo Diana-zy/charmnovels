@@ -28,7 +28,7 @@
     <section class="bottom-operation">
       <!-- 支付模块 -->
       <div
-        v-if="currentChapterDetail.purchase_status !== 2"
+        v-if="currentChapterDetail.purchase_status !== 2 && currentChapterDetail.chapter_num > 8"
         class="pay-box"
         @click="createPaymentOrder(currentChapterDetail.purchase_status)"
       >
@@ -46,7 +46,7 @@
         </div>
       </div>
       <div
-        v-if="currentChapterDetail.purchase_status === 1"
+        v-if="currentChapterDetail.purchase_status === 1 && currentChapterDetail.chapter_num > 8"
         class="status-paid"
         @click="getOrderUnlockStatus"
       >
