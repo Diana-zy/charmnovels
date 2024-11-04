@@ -9,7 +9,7 @@
         preload="metadata"
         data-object-fit="cover"
       >
-        <source :src="videoBlobUrl" />
+        <source :src="videoDetail" />
       </video>
       <div id="ad-container"></div>
     </div>
@@ -53,27 +53,27 @@ export default {
       videoBlobUrl: ""
     };
   },
-  async mounted() {
+  mounted() {
     console.log("mounted");
-    try {
-      // 替换成实际的 CDN 视频地址
-      const videoUrl = this.videoDetail;
+    // try {
+    //   // 替换成实际的 CDN 视频地址
+    //   const videoUrl = this.videoDetail;
 
-      // 使用 fetch 加载视频数据
-      const response = await fetch(videoUrl, {
-        // mode: "no-cors" // 确保支持跨域请求
-      });
-      console.log("response", response, videoUrl);
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.statusText}`);
-      }
+    //   // 使用 fetch 加载视频数据
+    //   const response = await fetch(videoUrl, {
+    //     // mode: "no-cors" // 确保支持跨域请求
+    //   });
+    //   console.log("response", response, videoUrl);
+    //   if (!response.ok) {
+    //     throw new Error(`Network response was not ok: ${response.statusText}`);
+    //   }
 
-      // 转换视频数据为 Blob
-      const videoBlob = await response.blob();
-      this.videoBlobUrl = URL.createObjectURL(videoBlob); // 生成 Blob URL
-    } catch (error) {
-      console.error("Error loading video:", error);
-    }
+    //   // 转换视频数据为 Blob
+    //   const videoBlob = await response.blob();
+    //   this.videoBlobUrl = URL.createObjectURL(videoBlob); // 生成 Blob URL
+    // } catch (error) {
+    //   console.error("Error loading video:", error);
+    // }
     this.init();
   },
   methods: {
