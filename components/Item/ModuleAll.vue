@@ -131,7 +131,7 @@ export default {
 }
 .desc {
   margin-top: 8px;
-  @include ellipsis(2);
+  @include ellipsis(3);
 }
 .info-bottom {
   margin-top: auto;
@@ -176,8 +176,6 @@ export default {
     margin-bottom: vw(8);
     line-height: vw(42);
     font-size: vw(32);
-    @include ellipsis(2);
-    white-space: unset;
   }
   .info-row {
     display: flex;
