@@ -14,6 +14,15 @@
       <div id="ad-container"></div>
     </div>
     <div v-if="playBtn" id="play-button" @click="playBtn = false">
+      <nuxt-img
+        width="600"
+        height="450"
+        class="video-cover"
+        :src="videoCover"
+        fit="cover"
+        format="auto"
+        alt="video-cover"
+      />
       <i class="icon-play"></i>
     </div>
   </div>
@@ -30,6 +39,10 @@ let videoContent;
 export default {
   props: {
     videoDetail: {
+      type: String,
+      required: true
+    },
+    videoCover: {
       type: String,
       required: true
     }
@@ -244,14 +257,29 @@ video {
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include center;
   cursor: pointer;
   z-index: 1;
+  &::before {
+    position: absolute;
+    z-index: 1;
+    display: inline-block;
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color6, 0.4);
+    backdrop-filter: blur(10px);
+  }
+}
+.video-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .icon-play {
-  @include icon(144px, 144px, "icon-play.png");
+  position: absolute;
+  z-index: 2;
+  @include icon(72px, 72px, "icon-play.png");
 }
 @media (max-width: 750px) {
   #main-container {
@@ -260,7 +288,7 @@ video {
     margin-top: vw(38);
   }
   .icon-play {
-    @include icon(vw(144), vw(144), "icon-play.png");
+    @include icon(vw(72), vw(72), "icon-play.png");
   }
 }
 </style>

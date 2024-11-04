@@ -69,7 +69,10 @@
         >
         </video>
       </div> -->
-      <adm-video-player :video-detail="novelDetailInfo.intro_video"></adm-video-player>
+      <adm-video-player
+        :video-detail="novelDetailInfo.intro_video"
+        :video-cover="novelDetailInfo.cover"
+      ></adm-video-player>
     </section>
     <section class="module-all">
       <common-title-label title="Rec Books" />
