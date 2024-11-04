@@ -66,12 +66,12 @@
             <!-- 文本行高 -->
             <div class="font-space-box">
               <div
-                v-for="item in 3"
+                v-for="(item, i) in [1.5, 2, 2.5]"
                 :key="item"
                 :class="['space-item', { 'space-item-active': item === currentFontSpace }]"
                 @click="handleChangeSpace(item)"
               >
-                <i :class="`icon-light-height-${item}`"></i>
+                <i :class="`icon-light-height-${i + 1}`"></i>
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default {
       ],
       themeColorIndex: 1,
       currentFontSize: 15,
-      currentFontSpace: 1
+      currentFontSpace: 2
     };
   },
   mounted() {},

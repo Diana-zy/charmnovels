@@ -169,13 +169,13 @@ export default {
   .item-right {
     width: vw(444);
     padding: vw(4) 0;
-    font-size: vw(24);
-    line-height: vw(32);
+    font-size: vw(28);
+    line-height: vw(38);
   }
   .name {
     margin-bottom: vw(8);
-    line-height: vw(38);
-    font-size: vw(28);
+    line-height: vw(42);
+    font-size: vw(32);
     @include ellipsis(2);
     white-space: unset;
   }

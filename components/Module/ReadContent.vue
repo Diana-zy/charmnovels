@@ -20,7 +20,7 @@
       <h3
         >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
       </h3>
-      <p>{{ currentChapterDetail.content }}</p>
+      <p class="content-text" v-html="chapterContent"></p>
     </article>
 
     <google-ad class="ad-1" ad-slot="7045171250" />
@@ -109,6 +109,13 @@ export default {
       loading: false
     };
   },
+  computed: {
+    chapterContent() {
+      let content = this.currentChapterDetail.content;
+      content = content.replace(/\n/g, "<p></p>");
+      return content;
+    }
+  },
   mounted() {
     this.initStorageReadSetting();
 
@@ -121,7 +128,7 @@ export default {
   methods: {
     initStorageReadSetting() {
       Storage.getCookie("novel_cssReadFontSize") || Storage.setCookie("novel_cssReadFontSize", 15);
-      Storage.getCookie("novel_cssReadFontSpace") || Storage.setCookie("novel_cssReadFontSpace", 1);
+      Storage.getCookie("novel_cssReadFontSpace") || Storage.setCookie("novel_cssReadFontSpace", 2);
       Storage.getCookie("novel_cssReadBackgroundColor") ||
         Storage.setCookie("novel_cssReadBackgroundColor", "#fffcf7");
       Storage.getCookie("novel_cssReadTextColor") ||
@@ -243,6 +250,11 @@ export default {
   p {
     font-size: 16px;
     line-height: 26px;
+  }
+}
+.content-text {
+  ::v-deep p {
+    height: 16px;
   }
 }
 .ad-1 {
@@ -367,6 +379,11 @@ export default {
     p {
       font-size: var(--read-font-size);
       line-height: var(--read-font-space);
+    }
+  }
+  .content-text {
+    ::v-deep p {
+      height: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
     }
   }
   .ad-1 {
