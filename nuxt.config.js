@@ -15,7 +15,7 @@ export default {
     interval: 100,
     async routes() {
       const pathData = await fetch(
-        `${process.env.TEST_API_URL}/api/novel/novel_chapter_path?site_id=${process.env.SITE_ID}`
+        `${process.env.PROD_API_URL}/api/novel/novel_chapter_path?site_id=${process.env.SITE_ID}`
       );
       const path = await pathData.json();
       const novelPaths = path.data.list.map((item) => `/novel/${item.novel_id}`);
