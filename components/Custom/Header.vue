@@ -109,7 +109,7 @@ export default {
       Storage.setCookie("novel_preLoginPath", currenPagePath);
       Storage.clearCookie("novel_token");
       Storage.clearCookie("novel_userId");
-      simulateClick("/login/", "from", filterFromPath(window.location.pathname), "logout-button");
+      simulateClick("/", "from", filterFromPath(window.location.pathname), "logout-button");
     },
     toggleUserMenu() {
       this.isShowMenu = !this.isShowMenu;
