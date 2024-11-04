@@ -26,6 +26,7 @@
           <div class="form-item">
             <label for="password">Password</label>
             <input
+              id="passwordId"
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               name="password"
@@ -68,6 +69,20 @@ export default {
       isFormValid: false,
       loading: false
     };
+  },
+  mounted() {
+    const timer = setInterval(() => {
+      if (
+        window.getComputedStyle(document.getElementById("passwordId")).backgroundColor ===
+        "rgb(232, 240, 254)"
+      ) {
+        this.isFormValid = true;
+        clearInterval(timer);
+      }
+    }, 20);
+    setTimeout(() => {
+      clearInterval(timer);
+    }, 1000);
   },
   methods: {
     validateEmail() {
