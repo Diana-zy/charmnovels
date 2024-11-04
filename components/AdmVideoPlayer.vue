@@ -23,7 +23,10 @@
         format="auto"
         alt="video-cover"
       />
-      <i class="icon-play"></i>
+      <div class="play-top">
+        <i class="icon-play"></i>
+        <p class="video-tip">Novel introduction video</p>
+      </div>
     </div>
   </div>
 </template>
@@ -296,10 +299,20 @@ video {
   height: 100%;
   object-fit: cover;
 }
-.icon-play {
+.play-top {
   position: absolute;
   z-index: 2;
+  @include center;
+  flex-direction: column;
+}
+.video-tip {
+  color: $color1;
+  font-size: 16px;
+  line-height: 21px;
+}
+.icon-play {
   @include icon(72px, 72px, "icon-play.png");
+  margin-bottom: 8px;
 }
 @media (max-width: 750px) {
   #main-container {
@@ -307,8 +320,13 @@ video {
     height: vw(493.5);
     margin-top: vw(38);
   }
+  .video-tip {
+    font-size: vw(28);
+    line-height: vw(32);
+  }
   .icon-play {
     @include icon(vw(72), vw(72), "icon-play.png");
+    margin-bottom: vw(16);
   }
 }
 </style>
