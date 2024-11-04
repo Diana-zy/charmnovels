@@ -161,7 +161,7 @@ export default {
   $tagIcons: ("icon-tag-1", "icon-tag-2", "icon-tag-3");
   @each $icon in $tagIcons {
     .#{$icon} {
-      @include icon(vw(80), vw(98), "#{$icon}.png");
+      @include icon(vw(60), vw(73), "#{$icon}.png");
     }
   }
 
