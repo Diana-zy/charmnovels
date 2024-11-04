@@ -131,7 +131,7 @@ export default {
 }
 .desc {
   margin-top: 8px;
-  @include ellipsis(3);
+  @include ellipsis(2);
 }
 .info-bottom {
   margin-top: auto;
