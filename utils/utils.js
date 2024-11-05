@@ -64,6 +64,7 @@ function generateCustomLink(url) {
   // 删除不需要的查询参数
   currentParams.delete("from");
   currentParams.delete("ch");
+  currentParams.delete("pay_status");
 
   if (currentPathname === "/search/") {
     currentParams.delete("text");

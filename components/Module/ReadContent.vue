@@ -219,6 +219,7 @@ export default {
         } else {
           // unlock_success
           this.$emit("reload");
+          this.loading = false;
         }
       } catch (error) {
         console.log(" error:", error.msg);
