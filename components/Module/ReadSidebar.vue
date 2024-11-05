@@ -121,7 +121,7 @@ export default {
       ],
       themeColorIndex: 1,
       currentFontSize: 18,
-      currentFontSpace: 2
+      currentFontSpace: 1.5
     };
   },
   mounted() {},
@@ -141,7 +141,7 @@ export default {
     },
     getReadFontSpace() {
       const readFontSpace = Storage.getCookie("novel_cssReadFontSpace");
-      this.currentFontSpace = readFontSpace ? Number(readFontSpace) : 2;
+      this.currentFontSpace = readFontSpace ? Number(readFontSpace) : 1.5;
     },
     initReadSetting() {
       this.getReadThemeColor();

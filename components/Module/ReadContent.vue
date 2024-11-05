@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <section v-if="currentChapterDetail" class="read-container">
     <!-- 第一章节才展示 top-info-->
@@ -20,7 +21,7 @@
       <h3
         >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
       </h3>
-      <p class="content-text" v-html="chapterContent"></p>
+      <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
     </article>
 
     <google-ad class="ad-1" ad-slot="7045171250" />
@@ -37,7 +38,9 @@
           <span>Unlock</span>
         </div>
         <div class="row-info">
-          <span>${{ currentChapterDetail.novel_info.price }}</span>
+          <span v-if="currentChapterDetail.purchase_status !== 1"
+            >${{ currentChapterDetail.novel_info.price }}</span
+          >
           <span>{{
             currentChapterDetail.purchase_status === 1
               ? "Continue payment"
@@ -87,7 +90,9 @@
 </template>
 
 <script>
+import Vue from "vue";
 import Storage from "@/utils/storage";
+import googleAd from "@/components/GoogleAd";
 export default {
   props: {
     currentChapterDetail: {
@@ -111,9 +116,33 @@ export default {
   },
   computed: {
     chapterContent() {
-      let content = this.currentChapterDetail.content;
-      content = content.replace(/\n/g, "<p></p>");
+      let content = this.currentChapterDetail?.content;
+      content = content?.replace(/\n/g, "<p class='br'></p>");
       return content;
+    }
+  },
+  watch: {
+    chapterContent(newContent) {
+      if (newContent) {
+        this.$nextTick(() => {
+          const contentText = this.$refs.contentTextRef;
+          const firstParagraph = contentText.querySelector("p");
+
+          if (firstParagraph) {
+            // 创建组件实例
+            const componentInstance = new (Vue.extend(googleAd))({
+              propsData: {
+                adSlot: "1231412313"
+              }
+            });
+            componentInstance.$mount();
+            firstParagraph.insertAdjacentElement("afterend", componentInstance.$el);
+            this.$nextTick(() => {
+              console.log("componentInstance:", componentInstance);
+            });
+          }
+        });
+      }
     }
   },
   mounted() {
@@ -127,8 +156,9 @@ export default {
   },
   methods: {
     initStorageReadSetting() {
-      Storage.getCookie("novel_cssReadFontSize") || Storage.setCookie("novel_cssReadFontSize", 15);
-      Storage.getCookie("novel_cssReadFontSpace") || Storage.setCookie("novel_cssReadFontSpace", 2);
+      Storage.getCookie("novel_cssReadFontSize") || Storage.setCookie("novel_cssReadFontSize", 18);
+      Storage.getCookie("novel_cssReadFontSpace") ||
+        Storage.setCookie("novel_cssReadFontSpace", 1.5);
       Storage.getCookie("novel_cssReadBackgroundColor") ||
         Storage.setCookie("novel_cssReadBackgroundColor", "#fffcf7");
       Storage.getCookie("novel_cssReadTextColor") ||
@@ -256,7 +286,7 @@ export default {
   }
 }
 .content-text {
-  ::v-deep p {
+  ::v-deep .br {
     height: 16px;
   }
 }
@@ -385,7 +415,7 @@ export default {
     }
   }
   .content-text {
-    ::v-deep p {
+    ::v-deep .br {
       height: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
     }
   }
