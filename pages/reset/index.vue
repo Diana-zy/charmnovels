@@ -146,6 +146,7 @@ export default {
     },
     async sendVerificationCode() {
       if (this.emailValid && this.countdown === 0) {
+        this.globalError = "";
         // 模拟发送验证码
         console.log("Sending verification code to", this.email);
 
@@ -153,7 +154,8 @@ export default {
         try {
           const loginResponse = await this.$axios.$post("/api/user/get_code", {
             site_id: process.env.SITE_ID,
-            email: this.email
+            email: this.email,
+            is_forget_pwd: true
           });
           console.log("Login response:", loginResponse);
           this.startCountdown();
