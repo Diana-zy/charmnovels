@@ -186,6 +186,9 @@ export default {
         console.log(" response:", res);
         if (res.unlock_status === "create_success" || res.unlock_status === "already_pending") {
           window.location.href = res.order_info.url;
+        } else {
+          // unlock_success
+          this.$emit("reload");
         }
       } catch (error) {
         console.log(" error:", error.msg);

@@ -24,6 +24,7 @@
       :pre-chapter-path="preChapterPath"
       :next-chapter-path="nextChapterPath"
       @show-menu-setting="handleShowMenuSetting"
+      @reload="getCurrentChapterDetail"
     />
     <module-read-sidebar
       ref="readSidebar"
@@ -180,6 +181,9 @@ export default {
           novel_id: this.currentChapterDetail.novel_info.id
         });
         console.log(" response:", res);
+        if (res === "unlock_success") {
+          this.getCurrentChapterDetail();
+        }
       } catch (error) {
         console.log(" error:", error.msg);
       }
