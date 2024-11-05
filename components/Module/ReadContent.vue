@@ -24,7 +24,7 @@
       <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
     </article>
 
-    <google-ad class="ad-1" ad-slot="7045171250" />
+    <google-ad class="ad-1" ad-slot="7793230426" />
 
     <section class="bottom-operation">
       <!-- 支付模块 -->
@@ -129,13 +129,13 @@ export default {
           const firstParagraph = contentText.querySelector("p");
 
           if (firstParagraph) {
-            // 创建组件实例
             const componentInstance = new (Vue.extend(googleAd))({
               propsData: {
-                adSlot: "1231412313"
+                adSlot: "7045171250"
               }
             });
             componentInstance.$mount();
+            componentInstance.$el?.classList.add("content-ad-1");
             firstParagraph.insertAdjacentElement("afterend", componentInstance.$el);
             this.$nextTick(() => {
               console.log("componentInstance:", componentInstance);
@@ -290,7 +290,13 @@ export default {
   ::v-deep .br {
     height: 16px;
   }
+  // 正文第一个广告位
+  ::v-deep .content-ad-1 {
+    margin-bottom: 16px;
+    font-family: "se";
+  }
 }
+
 .ad-1 {
   margin-top: 16px;
 }
@@ -419,7 +425,13 @@ export default {
     ::v-deep .br {
       height: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
     }
+    ::v-deep .content-ad-1 {
+      width: 100vw;
+      margin-left: vw(-46);
+      margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+    }
   }
+
   .ad-1 {
     width: 100vw;
     margin-left: vw(-46);

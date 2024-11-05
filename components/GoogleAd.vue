@@ -18,13 +18,13 @@ export default {
     };
   },
   mounted() {
-    console.log("google-ad mounted", this.adSlot);
     this.observer = new IntersectionObserver(this.handleIntersection);
-    this.observer.observe(this.$refs.googleAdStyle);
+    setTimeout(() => {
+      this.observer.observe(this.$refs.googleAdStyle);
+    }, 0);
   },
   methods: {
     handleIntersection(entries) {
-      console.log("google-adhandleIntersection", entries);
       if (entries[0].isIntersecting) {
         const adScript = document.createElement("script");
         adScript.innerHTML = `(adsbygoogle = window.adsbygoogle || []).push({});`;
