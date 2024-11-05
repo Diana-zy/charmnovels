@@ -24,7 +24,16 @@
       <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
     </article>
 
-    <google-ad class="ad-1" ad-slot="7793230426" />
+    <!-- PC端未解锁状态隐藏该位置广告 -->
+    <google-ad
+      v-if="
+        currentChapterDetail.purchase_status == 2 ||
+        currentChapterDetail.chapter_num <= 8 ||
+        isMobile
+      "
+      class="ad-1"
+      ad-slot="7793230426"
+    />
 
     <section class="bottom-operation">
       <!-- 支付模块 -->
@@ -111,7 +120,8 @@ export default {
   },
   data() {
     return {
-      loading: false
+      loading: false,
+      isMobile: false
     };
   },
   computed: {
@@ -126,26 +136,30 @@ export default {
       if (newContent) {
         this.$nextTick(() => {
           const contentText = this.$refs.contentTextRef;
-          const firstParagraph = contentText.querySelector("p");
 
+          // 首段下方插入广告位
+          const firstParagraph = contentText.querySelector("p");
           if (firstParagraph) {
-            const componentInstance = new (Vue.extend(googleAd))({
-              propsData: {
-                adSlot: "7045171250"
-              }
-            });
-            componentInstance.$mount();
-            componentInstance.$el?.classList.add("content-ad-1");
-            firstParagraph.insertAdjacentElement("afterend", componentInstance.$el);
-            this.$nextTick(() => {
-              console.log("componentInstance:", componentInstance);
-            });
+            this.insertContentAd(firstParagraph, "content-ad-1", "7045171250");
+          }
+
+          // 免费章节或解锁章节，插入中间段落广告
+          if (
+            this.currentChapterDetail.purchase_status === 2 ||
+            this.currentChapterDetail.chapter_num <= 8
+          ) {
+            const allParagraph = contentText.querySelectorAll("p");
+            const middleIndex = Math.floor(allParagraph.length / 2);
+            if (allParagraph[middleIndex]) {
+              this.insertContentAd(allParagraph[middleIndex], "content-ad-2", "8358252927");
+            }
           }
         });
       }
     }
   },
   mounted() {
+    this.isMobile = window.innerWidth <= 750;
     this.initStorageReadSetting();
 
     const root = document.documentElement;
@@ -165,6 +179,18 @@ export default {
         Storage.setCookie("novel_cssReadTextColor", "#41414c");
       Storage.getCookie("novel_cssReadLastTheme") ||
         Storage.setCookie("novel_cssReadLastTheme", "light");
+    },
+
+    // 动态添加广告
+    insertContentAd(markEl, className, adSlot) {
+      const componentInstance = new (Vue.extend(googleAd))({
+        propsData: {
+          adSlot
+        }
+      });
+      componentInstance.$mount();
+      componentInstance.$el?.classList.add(className);
+      markEl.insertAdjacentElement("afterend", componentInstance.$el);
     },
 
     // 创建or支付订单
@@ -294,6 +320,10 @@ export default {
   ::v-deep .content-ad-1 {
     margin-bottom: 16px;
     font-family: "se";
+  }
+  // 正文第二个广告位
+  ::v-deep .content-ad-2 {
+    display: none;
   }
 }
 
@@ -426,6 +456,12 @@ export default {
       height: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
     }
     ::v-deep .content-ad-1 {
+      width: 100vw;
+      margin-left: vw(-46);
+      margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+    }
+    ::v-deep .content-ad-2 {
+      display: block;
       width: 100vw;
       margin-left: vw(-46);
       margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
