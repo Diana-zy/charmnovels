@@ -197,7 +197,7 @@ export default {
         const res = await this.$axios.$post("/api/payment/unlock_novel", {
           site_id: process.env.SITE_ID,
           novel_id: this.currentChapterDetail.novel_info.id,
-          redirect_url: window.location.href + "?nov=" + this.currentChapterDetail.novel_info.id
+          redirect_url: `${window.location.href}&nov=${this.currentChapterDetail.novel_info.id}`
         });
         console.log(" response:", res);
         window.location.href = res.order_info.url;
