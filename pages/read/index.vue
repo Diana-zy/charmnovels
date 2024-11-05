@@ -76,6 +76,10 @@ export default {
   created() {
     if (process.client) {
       this.getCurrentChapterDetail();
+      console.log("getQueryParam('pay_status'):", getQueryParam("pay_status"));
+      // if (getQueryParam("pay_status") === "success") {
+      //   this.confirmUnlockNovel(false);
+      // }
       getQueryParam("pay_status") === "success" && this.confirmUnlockNovel(false);
     }
   },
@@ -178,14 +182,14 @@ export default {
       try {
         const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
           site_id: process.env.SITE_ID,
-          novel_id: this.currentChapterDetail.novel_info.id
+          novel_id: this.$route.query.ch
         });
         console.log(" response:", res);
         if (res === "unlock_success") {
           this.getCurrentChapterDetail();
         }
       } catch (error) {
-        console.log(" error:", error.msg);
+        console.log(" error:", error);
       }
     }
   }
