@@ -75,12 +75,12 @@ export default {
   },
   created() {
     if (process.client) {
-      this.getCurrentChapterDetail();
+      if (getQueryParam("nov") && getQueryParam("pay_status") === "success") {
+        this.confirmUnlockNovel();
+      } else {
+        this.getCurrentChapterDetail();
+      }
       console.log("getQueryParam('pay_status'):", getQueryParam("pay_status"));
-      // if (getQueryParam("pay_status") === "success") {
-      //   this.confirmUnlockNovel(false);
-      // }
-      getQueryParam("pay_status") === "success" && this.confirmUnlockNovel(false);
     }
   },
   mounted() {
@@ -182,15 +182,13 @@ export default {
       try {
         const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
           site_id: process.env.SITE_ID,
-          novel_id: this.$route.query.ch
+          novel_id: getQueryParam("nov")
         });
         console.log(" response:", res);
-        if (res === "unlock_success") {
-          this.getCurrentChapterDetail();
-        }
       } catch (error) {
         console.log(" error:", error);
       }
+      this.getCurrentChapterDetail();
     }
   }
 };
