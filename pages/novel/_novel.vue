@@ -142,7 +142,7 @@
       </div>
     </transition>
     <!-- 底部菜单 -->
-    <section v-if="novelDetail" class="bottom-menu pc-hidden-flex">
+    <section class="bottom-menu pc-hidden-flex">
       <div class="menu-item menu-chapters" @click="handleShowChapterPopup">
         <i class="icon-chapters"></i>
         <span>Chapters</span>

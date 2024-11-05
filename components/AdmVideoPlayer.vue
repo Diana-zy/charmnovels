@@ -8,6 +8,7 @@
         x5-video-player-type="h5-page"
         preload="metadata"
         data-object-fit="cover"
+        controls
       >
         <source :src="videoDetail" />
       </video>
