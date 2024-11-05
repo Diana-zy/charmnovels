@@ -120,7 +120,7 @@ export default {
         }
       ],
       themeColorIndex: 1,
-      currentFontSize: 15,
+      currentFontSize: 18,
       currentFontSpace: 2
     };
   },
@@ -137,11 +137,11 @@ export default {
     },
     getReadFontSize() {
       const readFontSize = Storage.getCookie("novel_cssReadFontSize");
-      this.currentFontSize = readFontSize || 16;
+      this.currentFontSize = readFontSize || 18;
     },
     getReadFontSpace() {
       const readFontSpace = Storage.getCookie("novel_cssReadFontSpace");
-      this.currentFontSpace = readFontSpace ? Number(readFontSpace) : 1;
+      this.currentFontSpace = readFontSpace ? Number(readFontSpace) : 2;
     },
     initReadSetting() {
       this.getReadThemeColor();

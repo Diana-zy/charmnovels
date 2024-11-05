@@ -17,15 +17,14 @@
       reader or an occasional one, CharmNovels welcomes you to join our community. Start your
       journey of storytelling and explore an endless world of novels! If you have any suggestions or
       feedback, please feel free to contact us at:
-      <a href="mailto:Service@charmnovels.com">Service@charmnovels.com</a>
+      <a href="mailto:Service@charmnovels.com">support@egames.cc</a>
     </div>
 
     <div class="copyright">
       <div>
         <CustomLink to="/eula.html" target="_blank">Terms of Service</CustomLink>
-        <CustomLink to="/privacy.html" target="_blank">Privacy Policy</CustomLink
-        ><CustomLink to="/cookies.html" target="_blank">Cookies Policy</CustomLink>
-        <a href="mailto:Service@charmnovels.com">Contact</a>
+        <CustomLink to="/privacy.html" target="_blank">Privacy Policy</CustomLink>
+        <CustomLink to="/cookies.html" target="_blank">Cookies Policy</CustomLink>
       </div>
       <span>Copyright ©&nbsp; 2024 charmnovels &nbsp;All rights reserved.</span>
     </div>
