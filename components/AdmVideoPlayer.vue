@@ -6,7 +6,7 @@
         webkit-playsinline="webkit-playsinline"
         playsinline="playsinline"
         x5-video-player-type="h5-page"
-        preload="metadata"
+        preload="auto"
         data-object-fit="cover"
         controls
       >
@@ -54,7 +54,9 @@ export default {
   data() {
     return {
       playBtn: true,
-      videoBlobUrl: ""
+      videoBlobUrl: "",
+      T_MV: false,
+      F_MV: false
     };
   },
   mounted() {
@@ -196,7 +198,10 @@ export default {
           if (!ad.isLinear()) {
             // Position AdDisplayContainer correctly for overlay.
             // Use ad.width and ad.height.
-            dataLayer.push({ event: "T_MV" });
+            if (!this.T_MV) {
+              dataLayer.push({ event: "T_MV" });
+              this.T_MV = true;
+            }
             videoContent.play();
           }
           break;
@@ -224,7 +229,10 @@ export default {
     },
     onAdError(adErrorEvent) {
       // 视频广告加载失败
-      dataLayer.push({ event: "F_MV" });
+      if (!this.F_MV) {
+        dataLayer.push({ event: "F_MV" });
+        this.F_MV = true;
+      }
       // Handle the error logging.
       console.log(adErrorEvent.getError());
       if (adsManager) {
