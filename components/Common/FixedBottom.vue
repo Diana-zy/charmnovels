@@ -65,14 +65,15 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 @media screen and (max-width: 750px) {
   .fixed-bottom {
     position: fixed;
     bottom: 0;
     left: 0;
-    right: 0;
-    height: 100px;
+    width: 100%;
+    height: vw(112);
+    z-index: 100001;
     background-color: transparent;
   }
 }
