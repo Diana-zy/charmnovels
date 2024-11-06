@@ -137,10 +137,15 @@ export default {
         this.$nextTick(() => {
           const contentText = this.$refs.contentTextRef;
 
-          // 首段下方插入广告位
-          const firstParagraph = contentText.querySelector("p");
-          if (firstParagraph) {
-            this.insertContentAd(firstParagraph, "content-ad-1", "7045171250");
+          // // 首段下方插入广告位
+          // const firstParagraph = contentText.querySelector("p");
+          // if (firstParagraph) {
+          //   this.insertContentAd(firstParagraph, "content-ad-1", "7045171250");
+          // }
+
+          const cut30pTags = this.getContentPTagesToLength(30);
+          if (cut30pTags) {
+            this.insertContentAd(cut30pTags, "content-ad-1", "7045171250");
           }
 
           // 免费章节或解锁章节，插入中间段落广告
@@ -148,6 +153,7 @@ export default {
             this.currentChapterDetail.purchase_status === 2 ||
             this.currentChapterDetail.chapter_num <= 8
           ) {
+            // 获取所有p标签
             const allParagraph = contentText.querySelectorAll("p");
             const middleIndex = Math.floor(allParagraph.length / 2);
             if (allParagraph[middleIndex]) {
@@ -179,6 +185,29 @@ export default {
         Storage.setCookie("novel_cssReadTextColor", "#41414c");
       Storage.getCookie("novel_cssReadLastTheme") ||
         Storage.setCookie("novel_cssReadLastTheme", "light");
+    },
+
+    // 获取指定字符长度后的第一个p标签
+    getContentPTagesToLength(length) {
+      const contentTextRef = this.$refs.contentTextRef;
+      // 获取所有p标签
+      const allParagraph = contentTextRef.querySelectorAll("p");
+      const contentText = this.currentChapterDetail.content;
+      if (contentText.length > length) {
+        const cutContentText = contentText.slice(0, length);
+        // 截取的字符串中p标签数量
+        const pTagsLengthInCutContentText = (cutContentText.match(/\n/g) || []).length;
+        // 截取的字符串中的p标签数量等于全文p标签数量
+        if (pTagsLengthInCutContentText === allParagraph.length) {
+          return null;
+        } else {
+          return allParagraph[pTagsLengthInCutContentText];
+        }
+      }
+      // 字符数不足
+      else {
+        return null;
+      }
     },
 
     // 动态添加广告
