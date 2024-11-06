@@ -121,6 +121,8 @@ export default {
       adsRequest.nonLinearAdSlotWidth = videoContent.clientWidth;
       adsRequest.nonLinearAdSlotHeight = videoContent.clientHeight / 3;
 
+      dataLayer.push({ event: "Q_MV" });
+      // 请求广告发起
       adsLoader.requestAds(adsRequest);
     },
     createAdDisplayContainer() {
@@ -181,6 +183,9 @@ export default {
       adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, this.onAdEvent);
     },
     onAdEvent(adEvent) {
+      // 视频广告事件
+      console.log("onAdEvent", adEvent);
+
       // Retrieve the ad from the event. Some events (e.g. ALL_ADS_COMPLETED)
       // don't have ad object associated.
       const ad = adEvent.getAd();
@@ -191,6 +196,7 @@ export default {
           if (!ad.isLinear()) {
             // Position AdDisplayContainer correctly for overlay.
             // Use ad.width and ad.height.
+            dataLayer.push({ event: "T_MV" });
             videoContent.play();
           }
           break;
@@ -217,6 +223,8 @@ export default {
       }
     },
     onAdError(adErrorEvent) {
+      // 视频广告加载失败
+      dataLayer.push({ event: "F_MV" });
       // Handle the error logging.
       console.log(adErrorEvent.getError());
       if (adsManager) {
