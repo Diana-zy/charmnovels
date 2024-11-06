@@ -1,12 +1,14 @@
 <template>
-  <div v-if="loading" id="fixed-bottom" class="fixed-bottom"></div>
+  <div v-show="loading" id="fixed-bottom"></div>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      loading: true
+      loading: true,
+      timer: null,
+      mutationObserver: null
     };
   },
   mounted() {
@@ -67,12 +69,12 @@ export default {
 
 <style scoped lang="scss">
 @media screen and (max-width: 750px) {
-  .fixed-bottom {
+  #fixed-bottom {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: vw(112);
+    height: 100px;
     z-index: 100001;
     background-color: transparent;
   }
