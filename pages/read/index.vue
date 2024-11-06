@@ -52,6 +52,7 @@
     </transition>
 
     <common-notification />
+    <common-fixed-bottom />
   </main>
 </template>
 
