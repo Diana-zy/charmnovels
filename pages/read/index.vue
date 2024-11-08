@@ -77,6 +77,7 @@ export default {
   created() {
     if (process.client) {
       if (getQueryParam("nov") && getQueryParam("pay_status") === "success") {
+        dataLayer.push({ event: "Content_Pay_successful" });
         this.confirmUnlockNovel();
       } else {
         this.getCurrentChapterDetail();

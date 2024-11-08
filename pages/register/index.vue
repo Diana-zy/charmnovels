@@ -213,7 +213,7 @@ export default {
           code: this.emailCode
         });
         console.log("Register response:", registerResponse);
-
+        dataLayer.push({ event: "Register_successful" });
         Storage.setCookie("novel_token", registerResponse.token);
         Storage.setCookie("novel_userId", registerResponse.user_id);
 
