@@ -213,7 +213,17 @@ export default {
           code: this.emailCode
         });
         console.log("Register response:", registerResponse);
+        // eslint-disable-next-line no-undef
         dataLayer.push({ event: "Register_successful" });
+        // mediago Pixel Code
+        window._megoaa = window._megoaa || [];
+        window._megoaa.push({
+          type: "event",
+          name: "charmnovels_register",
+          acid: "29866",
+          pxd: "1152722870649720"
+        });
+        // End of mediago Pixel Code
         Storage.setCookie("novel_token", registerResponse.token);
         Storage.setCookie("novel_userId", registerResponse.user_id);
 

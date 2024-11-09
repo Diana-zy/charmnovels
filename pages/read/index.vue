@@ -78,6 +78,15 @@ export default {
     if (process.client) {
       if (getQueryParam("nov") && getQueryParam("pay_status") === "success") {
         dataLayer.push({ event: "Content_Pay_successful" });
+        // mediago Pixel Code
+        window._megoaa = window._megoaa || [];
+        window._megoaa.push({
+          type: "event",
+          name: "charmnovels_pay",
+          acid: "29866",
+          pxd: "1152719907106390"
+        });
+        // End of mediago Pixel Code
         this.confirmUnlockNovel();
       } else {
         this.getCurrentChapterDetail();

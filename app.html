@@ -12,6 +12,26 @@
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1853000876464912"
       crossorigin="anonymous"
     ></script>
+    <!-- mediago Pixel Code -->
+    <script type="text/javascript">
+      window._megoaa = window._megoaa || [];
+      window._megoaa.push({ type: "event", name: "pageview", acid: "29866" });
+      window._megoaa.push({ type: "nextjump", link: ["https://charmnovels.com/"] });
+      !(function (t, f, a, x) {
+        if (!document.getElementById(x)) {
+          t.async = 1;
+          t.src = a;
+          t.id = x;
+          f.parentNode.insertBefore(t, f);
+        }
+      })(
+        document.createElement("script"),
+        document.getElementsByTagName("script")[0],
+        "//cdn.mediago.io/js/pixel.js?acid=29866",
+        "pixel_megoaa_script"
+      );
+    </script>
+    <!-- End of mediago Pixel Code -->
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHEGG7L6EF"></script>
     <link rel="preload" href="https://securepubads.g.doubleclick.net/tag/js/gpt.js" as="script" />
@@ -113,6 +133,15 @@
         if (1 === window.i_like_it) {
           // 点击穿插广告
           dataLayer.push({ event: "D_AL" });
+          // mediago Pixel Code
+          window._megoaa = window._megoaa || [];
+          window._megoaa.push({
+            type: "event",
+            name: "IIEEHH",
+            acid: "29866",
+            pxd: "1152418542261306"
+          });
+          // End of mediago Pixel Code
         } else {
           dataLayer.push({ event: "D_RE" });
         }
