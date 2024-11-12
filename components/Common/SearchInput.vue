@@ -67,7 +67,7 @@ export default {
   .search-box {
     width: vw(400);
     height: vw(64);
-    border-radius: vw(16);
+    border-radius: vw(64);
   }
   .search-input {
     padding: 0 vw(124) 0 vw(24);
@@ -76,7 +76,7 @@ export default {
   .search-btn {
     width: vw(124);
     height: vw(64);
-    border-radius: vw(16);
+    border-radius: vw(64);
     i {
       width: vw(48);
       height: vw(48);
