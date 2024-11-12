@@ -9,6 +9,7 @@
         preload="auto"
         data-object-fit="cover"
         controls
+        muted
       >
         <source :src="videoDetail" />
       </video>
@@ -114,7 +115,7 @@ export default {
       // Request video ads.
 
       const adsRequest = new google.ima.AdsRequest();
-      adsRequest.adTagUrl = `https://pubads.g.doubleclick.net/gampad/ads?iu=/23197833490/charmnovels/charmnovels_video_pre&description_url=https%3A%2F%2F${window.location.hostname}${window.location.pathname}&tfcd=0&npa=0&sz=400x300&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&vpa=auto&vpmute=1&plcmt=1&correlator=`;
+      adsRequest.adTagUrl = `https://pubads.g.doubleclick.net/gampad/ads?iu=/23197833490/charmnovels/charmnovels_video_pre&description_url=https%3A%2F%2F${window.location.hostname}${window.location.pathname}&hl=en&sz=400x300&gdfp_req=1&unviewed_position_start=1&output=xml_vast4&env=vp&impl=s&vpa=auto&vpmute=1&plcmt=1&ad_rule=0&vpos=preroll&wta=1`;
 
       // Specify the linear and nonlinear slot sizes. This helps the SDK to
       // select the correct creative if multiple are returned.
