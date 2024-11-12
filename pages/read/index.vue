@@ -121,6 +121,13 @@ export default {
             readProgress % 1 === 0 ? readProgress : readProgress.toFixed(1);
 
           this.getCurrentNovelDetail(chapterDetail.novel_info.id);
+
+          // eslint-disable-next-line no-undef
+          dataLayer.push({
+            event: "Custom_Page_Content",
+            novel_id: chapterDetail.novel_info.id,
+            chapter_id: Number(chapterId)
+          });
         });
     },
     async getCurrentNovelDetail(novelId) {
