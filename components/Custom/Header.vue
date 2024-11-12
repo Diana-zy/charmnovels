@@ -26,6 +26,9 @@
 
     <div class="header-right">
       <common-search-input @handle-search="handleSearch" />
+      <div v-if="showInstallButton" class="btn-pwa" @click="installPWA">
+        <i></i>
+      </div>
       <custom-link
         v-if="!isLogin"
         to="/login/"
@@ -82,17 +85,54 @@ export default {
         }
       ],
       isLogin: false,
-      isShowMenu: false
+      isShowMenu: false,
+      deferredPrompt: null,
+      showInstallButton: false
     };
   },
   mounted() {
     this.isLogin = Boolean(Storage.getCookie("novel_token"));
     document.addEventListener("click", this.hideUserMenu);
+
+    this.getIsShowInstallButton();
   },
   beforeDestroy() {
     document.removeEventListener("click", this.hideUserMenu);
   },
   methods: {
+    // 判断是否支持 PWA
+    getIsShowInstallButton() {
+      if ("serviceWorker" in navigator && "PushManager" in window) {
+        if (window.deferredPrompt) {
+          this.deferredPrompt = window.deferredPrompt;
+          this.showInstallButton = true;
+        } else {
+          // 如果beforeinstallprompt这个事件在window.onload后 组件mounted时未触发，则重新建立监听
+          window.addEventListener("beforeinstallprompt", (e) => {
+            // console.log("page - beforeinstallprompt", e);
+            e.preventDefault();
+            this.deferredPrompt = e;
+            this.showInstallButton = true;
+          });
+        }
+      }
+    },
+    installPWA() {
+      if (this.deferredPrompt) {
+        // 触发 PWA 安装提示
+        this.deferredPrompt.prompt();
+        // 在用户做出选择后，保存结果
+        this.deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === "accepted") {
+            console.log("User accepted the A2HS prompt");
+          } else {
+            console.log("User dismissed the A2HS prompt");
+          }
+          // 重置 deferredPrompt
+          this.deferredPrompt = null;
+        });
+      }
+    },
     handleSearch(inputValue) {
       simulateClick("/search/", "text", inputValue, "search-button");
     },
@@ -190,6 +230,18 @@ header {
   display: flex;
   align-items: center;
   margin-left: auto;
+  .btn-pwa {
+    width: 40px;
+    height: 40px;
+    margin-left: 24px;
+    border-radius: 40px;
+    background: rgba($color3, 0.3);
+    @include center;
+    cursor: pointer;
+    i {
+      @include icon(30px, 30px, "icon-download.png");
+    }
+  }
   .btn-login {
     width: 91px;
     height: 40px;
@@ -303,8 +355,27 @@ header {
     display: none;
   }
 
+  .header-right {
+    width: 100%;
+    gap: vw(32);
+    ::v-deep .search-box {
+      width: auto;
+      flex: 1;
+    }
+    .btn-pwa {
+      width: vw(64);
+      height: vw(64);
+      margin-left: 0;
+      border-radius: vw(64);
+      i {
+        width: vw(48);
+        height: vw(48);
+      }
+    }
+  }
+
   .avatar-container {
-    margin-left: vw(50);
+    margin-left: 0;
     .avatar,
     .avatar-a {
       width: vw(80);
