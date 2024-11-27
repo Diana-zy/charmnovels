@@ -4,7 +4,7 @@
 
     <section class="module-common module-library">
       <div class="module-library-content">
-        <google-ad class="ad-1" ad-slot="4419007919" />
+        <google-ad-preload class="ad-1" ad-slot="4419007919" />
         <item-module-library
           v-for="(item, i) in libraryList"
           :key="i"

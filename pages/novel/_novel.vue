@@ -23,8 +23,18 @@
             <span>{{ novelDetailInfo.author }}</span>
           </div>
 
+          <div class="rating rating-mobile pc-hidden-flex">
+            <i
+              v-for="(item, i) in getStarListStyle(novelDetailInfo.score)"
+              :key="i"
+              :class="item"
+              class="rating-item"
+            ></i>
+            <span class="score">{{ getStarScore(novelDetailInfo.score) }}</span>
+          </div>
+
           <div class="info-row">
-            <div>
+            <div class="m-hidden-block">
               <div class="rating">
                 <i
                   v-for="(item, i) in getStarListStyle(novelDetailInfo.score)"
@@ -54,6 +64,8 @@
           </custom-link>
         </div>
       </div>
+
+      <google-ad-preload class="google-ad" ad-slot="2858514230" />
 
       <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
       <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
@@ -461,6 +473,11 @@ export default {
     }
   }
 }
+
+.google-ad {
+  margin-bottom: 19px;
+}
+
 .video-container {
   width: 600px;
   height: 400px;
@@ -486,8 +503,6 @@ export default {
   }
   .introduce-content {
     margin-bottom: vw(48);
-    flex-direction: column;
-    align-items: center;
   }
   .cover-container {
     width: vw(240);
@@ -500,15 +515,14 @@ export default {
     }
   }
   .introduce-info {
-    margin-left: 0;
+    display: flex;
+    flex-direction: column;
+    margin-left: vw(24);
     .name {
-      width: 100%;
+      width: vw(394);
       max-width: unset;
-      font-size: vw(32);
-      line-height: vw(42);
-      text-align: center;
-      margin-top: vw(24);
-      padding: 0 vw(24);
+      font-size: vw(40);
+      line-height: vw(54);
     }
     .line {
       display: block;
@@ -519,9 +533,8 @@ export default {
     .author-row {
       flex-direction: row;
       align-items: center;
-      justify-content: center;
       gap: vw(12);
-      margin: vw(12) 0 vw(30);
+      margin: vw(16) 0 vw(24);
       font-size: vw(24);
       line-height: vw(32);
       & span:first-child {
@@ -529,16 +542,20 @@ export default {
         font-family: "se";
       }
     }
+    .rating-mobile {
+      margin: auto 0 vw(24);
+    }
     .info-row {
       display: flex;
       gap: 0;
       height: vw(68);
       margin-bottom: 0;
       & > div {
+        width: vw(160);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         & p {
           font-size: vw(28);
           line-height: vw(32);
@@ -547,10 +564,6 @@ export default {
           font-size: vw(24);
           line-height: vw(32);
         }
-      }
-      & > div:first-child {
-        flex: 1;
-        align-items: center;
       }
       .icon-star-on,
       .icon-star-half {
@@ -561,14 +574,16 @@ export default {
         font-size: vw(24);
         line-height: vw(32);
       }
-      & > div:nth-of-type(n + 2) {
-        flex-shrink: 0;
-        width: vw(198);
-      }
     }
     .btn-read {
       display: none;
     }
+  }
+
+  .google-ad {
+    width: 100vw;
+    margin-left: vw(-46);
+    margin-bottom: vw(48);
   }
 
   .video-container {

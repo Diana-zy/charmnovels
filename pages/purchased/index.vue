@@ -1,7 +1,7 @@
 <template>
   <main>
     <custom-header />
-    <google-ad class="ad-1" ad-slot="4363167594" />
+    <google-ad-preload class="ad-1" ad-slot="4363167594" />
     <div class="feedback-info">
       <i class="icon-clock"></i>
       For payment issues, please contact

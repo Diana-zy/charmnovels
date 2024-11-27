@@ -2,7 +2,7 @@
   <main>
     <custom-header />
 
-    <google-ad class="ad-1" ad-slot="1454551777" />
+    <google-ad-preload class="ad-1" ad-slot="1454551777" />
 
     <!-- 搜索中 -->
     <section v-if="searchLoading" class="search-loading">

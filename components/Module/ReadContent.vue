@@ -25,7 +25,7 @@
     </article>
 
     <!-- PC端未解锁状态隐藏该位置广告 -->
-    <google-ad
+    <google-ad-small
       v-if="
         currentChapterDetail.purchase_status == 2 ||
         currentChapterDetail.chapter_num <= 8 ||
@@ -102,6 +102,8 @@
 import Vue from "vue";
 import Storage from "@/utils/storage";
 import googleAd from "@/components/GoogleAd";
+import googleAdPreload from "@/components/GoogleAdPreload";
+import googleAdSmall from "@/components/GoogleAdSmall";
 export default {
   props: {
     currentChapterDetail: {
@@ -121,7 +123,10 @@ export default {
   data() {
     return {
       loading: false,
-      isMobile: false
+      isMobile: false,
+      firstTagCount: 30, // 首次广告展示的字数位置
+      followingTagCount: 1200, // 后续广告展示的字数间隔
+      currentTagIndex: 0 // 当前广告展示的字数位置
     };
   },
   computed: {
@@ -135,17 +140,9 @@ export default {
     chapterContent(newContent) {
       if (newContent) {
         this.$nextTick(() => {
-          const contentText = this.$refs.contentTextRef;
-
-          // // 首段下方插入广告位
-          // const firstParagraph = contentText.querySelector("p");
-          // if (firstParagraph) {
-          //   this.insertContentAd(firstParagraph, "content-ad-1", "7045171250");
-          // }
-
           const cut30pTags = this.getContentPTagesToLength(30);
           if (cut30pTags) {
-            this.insertContentAd(cut30pTags, "content-ad-1", "7045171250");
+            this.insertContentAd(cut30pTags, "content-ad-1", "page", "7045171250", true);
           }
 
           // 免费章节或解锁章节，插入中间段落广告
@@ -153,12 +150,7 @@ export default {
             this.currentChapterDetail.purchase_status === 2 ||
             this.currentChapterDetail.chapter_num <= 8
           ) {
-            // 获取所有p标签
-            const allParagraph = contentText.querySelectorAll("p");
-            const middleIndex = Math.floor(allParagraph.length / 2);
-            if (allParagraph[middleIndex]) {
-              this.insertContentAd(allParagraph[middleIndex], "content-ad-2", "8358252927");
-            }
+            this.createCountPTagsAd();
           }
         });
       }
@@ -193,7 +185,8 @@ export default {
       // 获取所有p标签
       const allParagraph = contentTextRef.querySelectorAll("p");
       const contentText = this.currentChapterDetail.content;
-      if (contentText.length > length) {
+      /* 与最后一个广告留出间隔 */
+      if (contentText.length - this.followingTagCount > length) {
         const cutContentText = contentText.slice(0, length);
         // 截取的字符串中p标签数量
         const pTagsLengthInCutContentText = (cutContentText.match(/\n/g) || []).length;
@@ -211,15 +204,48 @@ export default {
     },
 
     // 动态添加广告
-    insertContentAd(markEl, className, adSlot) {
-      const componentInstance = new (Vue.extend(googleAd))({
+    insertContentAd(markEl, className, adType = "page", adSlot, isPreload = false) {
+      const componentInstance = new (Vue.extend(isPreload ? googleAdPreload : googleAdSmall))({
         propsData: {
-          adSlot
+          adSlot,
+          adType
         }
       });
       componentInstance.$mount();
       componentInstance.$el?.classList.add(className);
       markEl.insertAdjacentElement("afterend", componentInstance.$el);
+    },
+
+    createCountPTagsAd() {
+      this.currentTagIndex++;
+      console.log("currentTagIndex:", this.currentTagIndex);
+      const cutTextCountPTags = this.getContentPTagesToLength(
+        this.currentTagIndex * this.followingTagCount + this.firstTagCount
+      );
+
+      // 可填充且广告数量不超过9
+      if (cutTextCountPTags && this.currentTagIndex <= 9) {
+        const adSlotArr = [
+          "7313227898", // page-1
+          "6438397404", // inline-1
+          "8678382087", // multiple-1
+          "4933744044", // page-2
+          "5070207930", // inline-2
+          "4196211590", // multiple-2
+          "8770052860", // page-3
+          "2224552749", // inline-3
+          "6246825718" // multiple-3
+        ];
+        const adTypeArr = ["page", "inline", "multiple"];
+        const adType = adTypeArr[(this.currentTagIndex - 1) % 3]; // ["page","inline","multiple"]
+        this.insertContentAd(
+          cutTextCountPTags,
+          "content-ad-follow",
+          adType,
+          adSlotArr[this.currentTagIndex - 1]
+        );
+        this.createCountPTagsAd();
+      }
     },
 
     // 创建or支付订单
@@ -350,13 +376,15 @@ export default {
     margin-bottom: 16px;
     font-family: "se";
   }
-  // 正文第二个广告位
-  ::v-deep .content-ad-2 {
-    display: none;
+  ::v-deep .content-ad-follow {
+    height: 120px;
+    margin-bottom: 16px;
+    font-family: "se";
   }
 }
 
 .ad-1 {
+  height: 120px;
   margin-top: 16px;
 }
 .bottom-operation {
@@ -489,7 +517,7 @@ export default {
       margin-left: vw(-46);
       margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
     }
-    ::v-deep .content-ad-2 {
+    ::v-deep .content-ad-follow {
       display: block;
       width: 100vw;
       margin-left: vw(-46);
@@ -499,6 +527,7 @@ export default {
 
   .ad-1 {
     width: 100vw;
+    height: 120px;
     margin-left: vw(-46);
     margin-top: vw(32);
   }

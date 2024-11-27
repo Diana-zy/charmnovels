@@ -41,8 +41,8 @@ export default {
 .text-content {
   overflow: hidden;
   display: -webkit-box;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
   box-orient: vertical;
   -webkit-box-orient: vertical;
   height: auto;
