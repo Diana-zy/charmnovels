@@ -218,7 +218,6 @@ export default {
 
     createCountPTagsAd() {
       this.currentTagIndex++;
-      console.log("currentTagIndex:", this.currentTagIndex);
       const cutTextCountPTags = this.getContentPTagesToLength(
         this.currentTagIndex * this.followingTagCount + this.firstTagCount
       );
@@ -228,19 +227,19 @@ export default {
         const adSlotArr = [
           "7313227898", // page-1
           "6438397404", // inline-1
-          "8678382087", // multiple-1
+          "3151557383", // info-1
           "4933744044", // page-2
           "5070207930", // inline-2
-          "4196211590", // multiple-2
+          "6407613406", // info-2
           "8770052860", // page-3
           "2224552749", // inline-3
-          "6246825718" // multiple-3
+          "6287920834" // info-3
         ];
-        const adTypeArr = ["page", "inline", "multiple"];
-        const adType = adTypeArr[(this.currentTagIndex - 1) % 3]; // ["page","inline","multiple"]
+        const adTypeArr = ["page", "inline", "info"];
+        const adType = adTypeArr[(this.currentTagIndex - 1) % 3]; // ["page","inline","info"]
         this.insertContentAd(
           cutTextCountPTags,
-          "content-ad-follow",
+          `content-ad-${adType}`,
           adType,
           adSlotArr[this.currentTagIndex - 1]
         );
@@ -376,16 +375,22 @@ export default {
     margin-bottom: 16px;
     font-family: "se";
   }
-  ::v-deep .content-ad-follow {
-    height: 120px;
-    margin-bottom: 16px;
+  ::v-deep .content-ad-page {
+    margin: 0 auto 16px;
+    font-family: "se";
+  }
+  ::v-deep .content-ad-inline {
+    height: 50px;
+    margin: 0 auto 16px;
+  }
+  ::v-deep .content-ad-info {
+    margin: 0 auto 16px;
     font-family: "se";
   }
 }
 
 .ad-1 {
-  height: 120px;
-  margin-top: 16px;
+  margin: 0 auto 16px;
 }
 .bottom-operation {
   margin-top: 16px;
@@ -513,22 +518,21 @@ export default {
       height: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
     }
     ::v-deep .content-ad-1 {
-      width: 100vw;
-      margin-left: vw(-46);
       margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
     }
-    ::v-deep .content-ad-follow {
-      display: block;
-      width: 100vw;
-      margin-left: vw(-46);
+    ::v-deep .content-ad-page {
+      margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+    }
+    ::v-deep .content-ad-inline {
+      height: 50px;
+      margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+    }
+    ::v-deep .content-ad-info {
       margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
     }
   }
 
   .ad-1 {
-    width: 100vw;
-    height: 120px;
-    margin-left: vw(-46);
     margin-top: vw(32);
   }
   .bottom-operation {

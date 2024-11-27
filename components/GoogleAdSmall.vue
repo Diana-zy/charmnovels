@@ -1,6 +1,6 @@
 <template>
   <div ref="googleAdStyle">
-    <p class="title">Advertisement</p>
+    <p ref="titleText" class="title">Advertisement</p>
   </div>
 </template>
 
@@ -13,7 +13,7 @@ export default {
     },
     adType: {
       type: String,
-      default: "page" // ["page", "inline", "multiple"];
+      default: "page" // ["page", "inline", "info"];
     }
   },
   data() {
@@ -35,17 +35,35 @@ export default {
         const ins = document.createElement("ins");
         ins.className = "adsbygoogle";
 
+        // if (this.adType === "page") {
+        //   ins.setAttribute("style", "display: block;");
+        //   ins.setAttribute("data-ad-format", "rectangle");
+        //   ins.setAttribute("data-full-width-responsive", "true");
+        // }
+        // if (this.adType === "inline") {
+        //   ins.setAttribute("style", "display: block;text-align: center;");
+        //   ins.setAttribute("data-ad-layout", "in-article");
+        //   ins.setAttribute("data-ad-format", "fluid");
+        // }
+        // if (this.adType === "info") {
+        //   ins.setAttribute("style", "display: block;width: 100%;height: 100%;");
+        //   ins.setAttribute("data-ad-format", "autorelaxed");
+        // }
         if (this.adType === "page") {
-          ins.setAttribute("style", "display: block;width: 100%;height: 100%;");
+          ins.setAttribute("style", "display: block;");
+          ins.setAttribute("data-ad-format", "rectangle");
+          ins.setAttribute("data-full-width-responsive", "true");
         }
         if (this.adType === "inline") {
           ins.setAttribute("style", "display: block;width: 100%;height: 100%;text-align: center;");
           ins.setAttribute("data-ad-layout", "in-article");
           // ins.setAttribute("data-ad-format", "fluid");
+          this.$refs.titleText.style.display = "none";
         }
-        if (this.adType === "multiple") {
-          ins.setAttribute("style", "display: block;width: 100%;height: 100%;");
-          // ins.setAttribute("data-ad-format", "autorelaxed");
+        if (this.adType === "info") {
+          ins.setAttribute("style", "display: block;");
+          ins.setAttribute("data-ad-layout-key", "-i2-7+2w-11-86");
+          ins.setAttribute("data-ad-format", "fluid");
         }
         ins.setAttribute("data-ad-client", "ca-pub-1853000876464912");
         ins.setAttribute("data-ad-slot", this.adSlot);
