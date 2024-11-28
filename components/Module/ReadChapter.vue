@@ -26,9 +26,19 @@
           <custom-link
             :to="`/read/?ch=${item.id}`"
             :class="['chapter-item', item.id === currentChapterId ? 'chapter-item-active' : '']"
+            @click.native="(event) => handleClickChapter(event, item)"
           >
             <div class="tag-current"><i class="icon-chapter-current"></i></div>
             <span>Chapter {{ item.chapter_num }}</span>
+            <i
+              v-if="
+                !item.isUnlocked &&
+                item.chapter_num >= 2 &&
+                item.chapter_num <= 8 &&
+                purchaseStatus !== 2
+              "
+              class="icon-ad-lock"
+            ></i>
             <i v-if="item.chapter_num > 8 && purchaseStatus !== 2" class="icon-lock"></i>
           </custom-link>
         </div>
@@ -88,6 +98,12 @@ export default {
       this.$nextTick(() => {
         this.scrollToActiveChapter();
       });
+    },
+    handleClickChapter(event, item) {
+      if (!item.isUnlocked && this.purchaseStatus !== 2) {
+        event.preventDefault();
+        this.$emit("change-chapter", item);
+      }
     }
   }
 };
@@ -150,6 +166,10 @@ h3 {
 }
 .tag-current {
   display: none;
+}
+.icon-ad-lock {
+  @include icon(24px, 24px, "icon-camera.png");
+  margin-left: auto;
 }
 .icon-lock {
   @include icon(24px, 24px, "icon-chapter-lock.png");
@@ -214,6 +234,11 @@ h3 {
     width: vw(48);
     height: vw(48);
     margin-right: vw(16);
+  }
+  .icon-ad-lock,
+  .icon-lock {
+    width: vw(48);
+    height: vw(48);
   }
 
   /* 黑色主题 */

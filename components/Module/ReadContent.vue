@@ -68,14 +68,16 @@
       <div class="pagination-box">
         <custom-link
           :to="preChapterPath"
-          :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterPath === '#' }]"
+          :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
+          @click.native="(event) => handleClickPageChapter(event, preChapterItem)"
         >
           <i class="icon-prev"></i>
           <span>Previous Chapter</span>
         </custom-link>
         <custom-link
           :to="nextChapterPath"
-          :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterPath === '#' }]"
+          :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
+          @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"
         >
           <span>Next Chapter</span>
           <i class="icon-next"></i>
@@ -83,14 +85,19 @@
       </div>
     </section>
     <!-- 相关章节模块 -->
-    <section v-if="currentChapterDetail.chapter.length !== 0" class="module-related-chapters">
+    <section v-if="relatedChapterList !== 0" class="module-related-chapters">
       <common-title-label title="Related Chapters" />
       <div class="module-related-chapters-content">
         <item-module-related-chapter
-          v-for="(item, i) in currentChapterDetail.chapter"
+          v-for="(item, i) in relatedChapterList"
           :key="i"
           :item="item"
-          :to="`/read/?ch=${item.id}`"
+          :to="
+            item.isUnlocked && currentChapterDetail.purchase_status !== 2
+              ? `/read/?ch=${item.id}`
+              : ''
+          "
+          @handle-click-chapter="$emit('change-chapter', item)"
         />
       </div>
     </section>
@@ -101,7 +108,6 @@
 <script>
 import Vue from "vue";
 import Storage from "@/utils/storage";
-import googleAd from "@/components/GoogleAd";
 import googleAdPreload from "@/components/GoogleAdPreload";
 import googleAdSmall from "@/components/GoogleAdSmall";
 export default {
@@ -111,13 +117,19 @@ export default {
       type: Object | null,
       required: true
     },
-    preChapterPath: {
-      type: String,
-      default: "#"
+    relatedChapterList: {
+      type: Array,
+      required: true
     },
-    nextChapterPath: {
-      type: String,
-      default: "#"
+    preChapterItem: {
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Object | null,
+      required: true
+    },
+    nextChapterItem: {
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Object | null,
+      required: true
     }
   },
   data() {
@@ -134,6 +146,16 @@ export default {
       let content = this.currentChapterDetail?.content;
       content = content?.replace(/\n/g, "<p class='br'></p>");
       return content;
+    },
+    preChapterPath() {
+      return this.preChapterItem === null || !this.preChapterItem.isUnlocked
+        ? "#"
+        : `/read/?ch=${this.preChapterItem.id}`;
+    },
+    nextChapterPath() {
+      return this.nextChapterItem === null || !this.nextChapterItem.isUnlocked
+        ? "#"
+        : `/read/?ch=${this.nextChapterItem.id}`;
     }
   },
   watch: {
@@ -244,6 +266,16 @@ export default {
           adSlotArr[this.currentTagIndex - 1]
         );
         this.createCountPTagsAd();
+      }
+    },
+
+    handleClickPageChapter(event, item) {
+      if (item === null || !item.isUnlocked) {
+        event.preventDefault();
+        // 有章节且需要解锁
+        if (item !== null && !item.isUnlocked) {
+          this.$emit("change-chapter", item);
+        }
       }
     },
 

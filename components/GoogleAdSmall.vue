@@ -34,21 +34,6 @@ export default {
         adScript.innerHTML = `(adsbygoogle = window.adsbygoogle || []).push({});`;
         const ins = document.createElement("ins");
         ins.className = "adsbygoogle";
-
-        // if (this.adType === "page") {
-        //   ins.setAttribute("style", "display: block;");
-        //   ins.setAttribute("data-ad-format", "rectangle");
-        //   ins.setAttribute("data-full-width-responsive", "true");
-        // }
-        // if (this.adType === "inline") {
-        //   ins.setAttribute("style", "display: block;text-align: center;");
-        //   ins.setAttribute("data-ad-layout", "in-article");
-        //   ins.setAttribute("data-ad-format", "fluid");
-        // }
-        // if (this.adType === "info") {
-        //   ins.setAttribute("style", "display: block;width: 100%;height: 100%;");
-        //   ins.setAttribute("data-ad-format", "autorelaxed");
-        // }
         if (this.adType === "page") {
           ins.setAttribute("style", "display: block;");
           ins.setAttribute("data-ad-format", "rectangle");

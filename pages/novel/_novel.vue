@@ -149,6 +149,7 @@
             :purchase-status="novelDetail?.purchase_status"
             :current-chapter-id="novelDetail?.user_last_read_chapter_id"
             @close-chapter-popup="handleHideChapterPopup"
+            @change-chapter="handleOpenIncentiveAd"
           />
         </transition>
       </div>
@@ -166,6 +167,12 @@
         }}</span>
       </custom-link>
     </section>
+    <!-- 激励视频广告 -->
+    <incentive-ad
+      ref="refIncentiveAd"
+      @init-incentive-ad="initIncentiveAd"
+      @close-incentive-ad="closeIncentiveAd"
+    />
     <common-notification />
     <ad-loading />
     <common-back-top />
@@ -174,7 +181,14 @@
 
 <script>
 import Storage from "~/utils/storage";
-import { getStarListStyle, getStarScore, shuffleArray } from "~/utils/utils";
+import {
+  getStarListStyle,
+  getStarScore,
+  shuffleArray,
+  simulateClick,
+  getIsWatchedIncentiveVideo,
+  setWatchedIncentiveVideo
+} from "~/utils/utils";
 export default {
   async asyncData({ $axios, params, env }) {
     try {
@@ -206,6 +220,8 @@ export default {
       isMobile: false,
       novelDetail: null,
       novelDetailInfo: null,
+      clickChapterId: 0, // 点击章节id
+      isInitIncentiveAd: false, // 激励广告是否初始化
       novelChapterList: [],
       isShowAdBreak: false, // 是否展示了adbreak广告
       startReadPath: "/", // 开始阅读路径
@@ -262,7 +278,10 @@ export default {
           }
 
           this.novelDetailInfo = novelDetail.novel_info;
-          this.novelChapterList = novelDetail.chapter;
+          this.novelChapterList = novelDetail.chapter.map((item) => {
+            return { ...item, isUnlocked: true };
+          });
+          this.getFreeNumAndUnlocked();
           // 有记录的章节，则跳转到记录的章节
           if (novelDetail.user_last_read_chapter_num !== 0) {
             /* 查一下是否有该章节 */
@@ -310,6 +329,43 @@ export default {
       this.isShowChapterPopup = false;
       document.body.classList.remove("no-scroll");
       window.scrollTo(0, this.distanceFromTop); // 恢复body滚动位置
+    },
+
+    // 获取免费章节以及解锁状态
+    getFreeNumAndUnlocked() {
+      this.novelChapterList.forEach((item) => {
+        if (item.chapter_num >= 2 && item.chapter_num <= 8) {
+          const isUnlocked = getIsWatchedIncentiveVideo(`${item.id}`);
+          item.isUnlocked = isUnlocked;
+        } else {
+          item.isUnlocked = true;
+        }
+      });
+    },
+    // 激励广告初始化
+    initIncentiveAd(isInit) {
+      this.isInitIncentiveAd = isInit;
+    },
+    // 激励广告关闭
+    closeIncentiveAd(isGetReward) {
+      if (isGetReward) {
+        this.this.handleAfterIncentiveAd();
+      }
+    },
+    handleOpenIncentiveAd(item) {
+      this.clickChapterId = item.id;
+      // 激励视频已初始化;
+      if (this.isInitIncentiveAd) {
+        this.$refs.refIncentiveAd.showRewardedAd();
+      } else {
+        this.handleAfterIncentiveAd();
+      }
+    },
+    // 观看完激励广告，或无激励广告
+    handleAfterIncentiveAd() {
+      setWatchedIncentiveVideo(`${this.clickChapterId}`);
+      this.getFreeNumAndUnlocked();
+      simulateClick("/read/", "ch", this.clickChapterId);
     },
 
     // 视频播放

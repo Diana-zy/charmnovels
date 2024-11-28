@@ -1,5 +1,5 @@
 <template>
-  <a :href="customLink || to" :class="{ 'prevent-click': customLink === '#' }">
+  <a :href="customLink || to">
     <slot></slot>
   </a>
 </template>
@@ -33,8 +33,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.prevent-click {
-  pointer-events: none;
-}
-</style>
+<style lang="scss" scoped></style>

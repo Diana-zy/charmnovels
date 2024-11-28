@@ -1,5 +1,5 @@
 <template>
-  <custom-link :to="to" class="item">
+  <custom-link :to="to" class="item" @click.native="(event) => handleClickChapter(event, item)">
     <div class="row">
       <span class="num">Chapter {{ item.chapter_num }}</span>
       <p>{{ item.name }}</p>
@@ -20,6 +20,14 @@ export default {
     to: {
       type: String,
       required: true
+    }
+  },
+  methods: {
+    handleClickChapter(event, item) {
+      if (this.to === "") {
+        event.preventDefault();
+        this.$emit("handle-click-chapter", item);
+      }
     }
   }
 };

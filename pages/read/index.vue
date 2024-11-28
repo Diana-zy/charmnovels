@@ -15,16 +15,19 @@
           :purchase-status="currentChapterDetail?.purchase_status"
           :current-chapter-id="currentChapterDetail?.chapter_id"
           theme="dark"
+          @change-chapter="handleOpenIncentiveAd"
         />
       </div>
     </section>
 
     <module-read-content
       :current-chapter-detail="currentChapterDetail"
-      :pre-chapter-path="preChapterPath"
-      :next-chapter-path="nextChapterPath"
+      :related-chapter-list="relatedChapterList"
+      :pre-chapter-item="preChapterItem"
+      :next-chapter-item="nextChapterItem"
       @show-menu-setting="handleShowMenuSetting"
       @reload="getCurrentChapterDetail"
+      @change-chapter="handleOpenIncentiveAd"
     />
     <module-read-sidebar
       ref="readSidebar"
@@ -46,11 +49,18 @@
             :current-chapter-id="currentChapterDetail?.chapter_id"
             theme="dark"
             @close-chapter-popup="handleHideChapterPopup"
+            @change-chapter="handleOpenIncentiveAd"
           />
         </transition>
       </div>
     </transition>
 
+    <!-- 激励视频广告 -->
+    <incentive-ad
+      ref="refIncentiveAd"
+      @init-incentive-ad="initIncentiveAd"
+      @close-incentive-ad="closeIncentiveAd"
+    />
     <common-notification />
     <common-fixed-bottom />
   </main>
@@ -58,15 +68,23 @@
 
 <script>
 import Storage from "~/utils/storage";
-import { getQueryParam } from "~/utils/utils";
+import {
+  getQueryParam,
+  simulateClick,
+  getIsWatchedIncentiveVideo,
+  setWatchedIncentiveVideo
+} from "@/utils/utils";
 
 export default {
   data() {
     return {
       currentChapterDetail: null, // 当前阅读章节详情
+      relatedChapterList: [], // 相关章节列表
       currentReadProgress: 0, // 当前阅读进度
-      preChapterPath: "#",
-      nextChapterPath: "#",
+      clickChapterId: 0, // 点击章节id
+      isInitIncentiveAd: false, // 激励广告是否初始化
+      preChapterItem: null, // 上一章节数据
+      nextChapterItem: null, // 下一章节数据
       novelChapterList: [], // 章节列表
       isShowChapters: false, // PC端悬浮章节列表
       isShowHeader: false,
@@ -114,8 +132,12 @@ export default {
           if (!chapterDetail.is_login && Storage.getCookie("novel_token")) {
             this.$globalMethod.showDialog("Your session has expired. Please log in again.");
           }
-
+          // 初始化相关章节
           this.currentChapterDetail = chapterDetail;
+          this.relatedChapterList = chapterDetail.chapter.map((item) => {
+            return { ...item, isUnlocked: true };
+          });
+
           const readProgress = (chapterDetail.chapter_num / chapterDetail.novel_info.chapter) * 100;
           this.currentReadProgress =
             readProgress % 1 === 0 ? readProgress : readProgress.toFixed(1);
@@ -131,7 +153,6 @@ export default {
         });
     },
     async getCurrentNovelDetail(novelId) {
-      const chapterId = this.$route.query.ch;
       await this.$axios
         .$post("/api/novel/novel_info", {
           site_id: process.env.SITE_ID,
@@ -139,21 +160,74 @@ export default {
         })
         .then((response) => {
           const novelDetail = response;
-          this.novelChapterList = novelDetail.chapter;
-          // 计算上一章和下一章路径
-          const currentChapterIndex = novelDetail.chapter.findIndex(
-            (chapter) => chapter.id === Number(chapterId)
-          );
-          this.preChapterPath =
-            currentChapterIndex === 0
-              ? "#"
-              : `/read/?ch=${this.novelChapterList[currentChapterIndex - 1].id}`;
-          this.nextChapterPath =
-            currentChapterIndex === this.novelChapterList.length - 1
-              ? "#"
-              : `/read/?ch=${this.novelChapterList[currentChapterIndex + 1].id}`;
+          this.novelChapterList = novelDetail.chapter.map((item) => {
+            return { ...item, isUnlocked: true };
+          });
+          this.getFreeNumAndUnlocked();
         });
     },
+
+    // 获取免费章节以及解锁状态
+    getFreeNumAndUnlocked() {
+      const chapterId = this.$route.query.ch;
+
+      this.novelChapterList.forEach((item) => {
+        if (item.chapter_num >= 2 && item.chapter_num <= 8) {
+          const isUnlocked = getIsWatchedIncentiveVideo(`${item.id}`);
+          item.isUnlocked = isUnlocked;
+        } else {
+          item.isUnlocked = true;
+        }
+      });
+
+      this.relatedChapterList.forEach((item) => {
+        if (item.chapter_num >= 2 && item.chapter_num <= 8) {
+          const isUnlocked = getIsWatchedIncentiveVideo(`${item.id}`);
+          item.isUnlocked = isUnlocked;
+        } else {
+          item.isUnlocked = true;
+        }
+      });
+
+      // 计算上一章和下一章路径
+      const currentChapterIndex = this.novelChapterList.findIndex(
+        (chapter) => chapter.id === Number(chapterId)
+      );
+      this.preChapterItem =
+        currentChapterIndex === 0 ? null : this.novelChapterList[currentChapterIndex - 1];
+      this.nextChapterItem =
+        currentChapterIndex === this.novelChapterList.length - 1
+          ? null
+          : this.novelChapterList[currentChapterIndex + 1];
+    },
+
+    // 激励广告初始化
+    initIncentiveAd(isInit) {
+      this.isInitIncentiveAd = isInit;
+    },
+    // 激励广告关闭
+    closeIncentiveAd(isGetReward) {
+      if (isGetReward) {
+        this.this.handleAfterIncentiveAd();
+      }
+    },
+    handleOpenIncentiveAd(item) {
+      this.clickChapterId = item.id;
+      // 激励视频已初始化;
+      if (this.isInitIncentiveAd) {
+        this.$refs.refIncentiveAd.showRewardedAd();
+      } else {
+        this.handleAfterIncentiveAd();
+      }
+    },
+
+    // 观看完激励广告，或无激励广告
+    handleAfterIncentiveAd() {
+      setWatchedIncentiveVideo(`${this.clickChapterId}`);
+      this.getFreeNumAndUnlocked();
+      simulateClick("/read/", "ch", this.clickChapterId);
+    },
+
     changeShowChapters() {
       this.isShowChapters = !this.isShowChapters;
       if (this.isShowChapters) {
