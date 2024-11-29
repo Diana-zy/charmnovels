@@ -100,6 +100,9 @@ export default {
     showRewardedAd() {
       console.log("showRewardedAd", this.rewardedSlotEvent);
       if (this.rewardedSlotEvent) {
+        dataLayer.push({
+          event: "C_IR"
+        });
         this.rewardedSlotEvent.makeRewardedVisible();
       }
     }

@@ -45,9 +45,17 @@
       let anchorSlot;
 
       googletag.cmd.push(function () {
+        let anchorPosition = googletag.enums.OutOfPageFormat.BOTTOM_ANCHOR;
+
+        if (
+          window.location.pathname.includes("novel") ||
+          window.location.pathname.includes("read")
+        ) {
+          anchorPosition = googletag.enums.OutOfPageFormat.TOP_ANCHOR;
+        }
         anchorSlot = googletag.defineOutOfPageSlot(
           "/23197833490/charmnovels/charmnovels_anchor",
-          googletag.enums.OutOfPageFormat.TOP_ANCHOR
+          anchorPosition
         );
 
         if (anchorSlot) {

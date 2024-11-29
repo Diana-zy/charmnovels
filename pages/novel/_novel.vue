@@ -356,6 +356,9 @@ export default {
       this.clickChapterId = item.id;
       // 激励视频已初始化;
       if (this.isInitIncentiveAd) {
+        window.dataLayer.push({
+          event: "Q_IR"
+        });
         this.$refs.refIncentiveAd.showRewardedAd();
       } else {
         this.handleAfterIncentiveAd();
