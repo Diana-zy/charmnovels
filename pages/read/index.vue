@@ -208,7 +208,7 @@ export default {
     // 激励广告关闭
     closeIncentiveAd(isGetReward) {
       if (isGetReward) {
-        this.this.handleAfterIncentiveAd();
+        this.handleAfterIncentiveAd();
       }
     },
     handleOpenIncentiveAd(item) {
