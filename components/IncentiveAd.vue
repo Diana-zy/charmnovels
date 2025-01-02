@@ -3,108 +3,57 @@
 </template>
 
 <script>
-let rewardedSlot;
-let rewardPayload;
 export default {
   data() {
-    return {
-      rewardedSlotEvent: null
-    };
+    return {};
   },
-  mounted() {
-    this.initIncentiveAd();
-  },
+  mounted() {},
   methods: {
-    initIncentiveAd() {
-      googletag.cmd.push(() => {
-        rewardedSlot = googletag.defineOutOfPageSlot(
-          "/23197833490/charmnovels/charmnovels_reward",
-          googletag.enums.OutOfPageFormat.REWARDED
-        );
-
-        // Slot returns null if the page or device does not support rewarded ads.
-        if (rewardedSlot) {
-          // console.log(rewardedSlot);
-          // console.log(googletag);
-          // console.log(googletag.pubads());
-          // console.log(rewardedSlot.getSlotElementId());
-          rewardedSlot.addService(googletag.pubads());
-
-          googletag.pubads().addEventListener("rewardedSlotReady", (event) => {
-            console.log("rewardedSlotReady", event);
-            this.$emit("init-incentive-ad", true);
-            this.rewardedSlotEvent = event;
-          });
-
-          // 广告关闭
-          googletag.pubads().addEventListener("rewardedSlotClosed", () => {
-            console.log("rewardedSlotClosed");
-            this.dismissRewardedAd();
-            this.secondInitIncentiveAd();
-          });
-
-          // 广告发放奖励
-          googletag.pubads().addEventListener("rewardedSlotGranted", (event) => {
-            console.log("rewardedSlotGranted", event.payload);
-            rewardPayload = event.payload;
-          });
-
-          googletag.pubads().addEventListener("slotRenderEnded", (event) => {
-            // 未加载到广告
-            if (event.slot === rewardedSlot && event.isEmpty) {
-              console.log("slotRenderEnded", event);
-              this.$emit("init-incentive-ad", false);
-            }
-          });
-
-          googletag.enableServices();
-          googletag.display(rewardedSlot);
-        }
-      });
-    },
-
-    secondInitIncentiveAd() {
-      googletag.pubads().clear(rewardedSlot);
-      rewardedSlot = null;
-
-      googletag.cmd.push(() => {
-        rewardedSlot = googletag.defineOutOfPageSlot(
-          "/23197833490/charmnovels/charmnovels_reward",
-          googletag.enums.OutOfPageFormat.REWARDED
-        );
-        if (rewardedSlot) {
-          rewardedSlot.addService(googletag.pubads());
-
-          googletag.enableServices();
-          googletag.display(rewardedSlot);
-        }
-      });
-    },
-
-    dismissRewardedAd() {
-      // 观看完激励广告后，关闭广告
-      if (rewardPayload) {
-        this.$emit("close-incentive-ad", true);
-        rewardPayload = null;
-      }
-      // 未观看完激励广告，关闭广告
-      else {
-        this.$emit("close-incentive-ad", false);
-      }
-      if (rewardedSlot) {
-        googletag.destroySlots([rewardedSlot]);
-      }
-    },
-
     // 显示激励广告
     showRewardedAd() {
-      console.log("showRewardedAd", this.rewardedSlotEvent);
-      if (this.rewardedSlotEvent) {
-        dataLayer.push({
-          event: "C_IR"
-        });
-        this.rewardedSlotEvent.makeRewardedVisible();
+      window.dataLayer.push({
+        event: "Q_IR"
+      });
+      // eslint-disable-next-line no-undef
+      (adsbygoogle = window.adsbygoogle || []).push({
+        params: {
+          google_ad_loaded_callback: this.loadRewardedAd,
+          google_ad_slot: 6875183545,
+          google_ad_format: "rewarded"
+        }
+      });
+    },
+    loadRewardedAd(rewardedAd) {
+      if (rewardedAd == null) {
+        // 加载失败
+        this.showAdBreak();
+        return;
       }
+      rewardedAd.show((result) => {
+        const closeStatus = result.status;
+        if (closeStatus === "viewed") {
+          // 用户观看了激励广告
+          this.$emit("close-incentive-ad", true);
+          window.dataLayer.push({
+            event: "V_IR"
+          });
+        }
+        // 用户关闭广告
+        else if (closeStatus === "dismissed") {
+          this.$emit("close-incentive-ad", false);
+          window.dataLayer.push({
+            event: "F_IR"
+          });
+        }
+        // 广告异常关闭
+        else {
+          this.$emit("close-incentive-ad", false);
+        }
+      });
+      // 展示激励广告
+      window.dataLayer.push({
+        event: "C_IR"
+      });
     }
   }
 };

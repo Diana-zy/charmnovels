@@ -168,11 +168,7 @@
       </custom-link>
     </section>
     <!-- 激励视频广告 -->
-    <incentive-ad
-      ref="refIncentiveAd"
-      @init-incentive-ad="initIncentiveAd"
-      @close-incentive-ad="closeIncentiveAd"
-    />
+    <incentive-ad ref="refIncentiveAd" @close-incentive-ad="closeIncentiveAd" />
     <common-notification />
     <ad-loading />
     <common-back-top />
@@ -342,10 +338,6 @@ export default {
         }
       });
     },
-    // 激励广告初始化
-    initIncentiveAd(isInit) {
-      this.isInitIncentiveAd = isInit;
-    },
     // 激励广告关闭
     closeIncentiveAd(isGetReward) {
       if (isGetReward) {
@@ -354,15 +346,7 @@ export default {
     },
     handleOpenIncentiveAd(item) {
       this.clickChapterId = item.id;
-      // 激励视频已初始化;
-      if (this.isInitIncentiveAd) {
-        window.dataLayer.push({
-          event: "Q_IR"
-        });
-        this.$refs.refIncentiveAd.showRewardedAd();
-      } else {
-        this.handleAfterIncentiveAd();
-      }
+      this.$refs.refIncentiveAd.showRewardedAd();
     },
     // 观看完激励广告，或无激励广告
     handleAfterIncentiveAd() {
