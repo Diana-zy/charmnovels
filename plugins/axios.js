@@ -44,19 +44,5 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
     }
   );
 
-  $axios.onError((error) => {
-    const code = parseInt(error.response && error.response.status);
-    if (code === 400) {
-      redirect("/404");
-    }
-    if (code === 401) {
-      /* session过期 */
-      if (process.client) {
-        $globalMethod.showDialog("Your session has expired. Please log in again.");
-      }
-    }
-    if (code === 500) {
-      redirect("/500");
-    }
-  });
+ 
 }
