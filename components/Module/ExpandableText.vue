@@ -77,7 +77,7 @@ export default {
 @media screen and (max-width: 750px) {
   .text-content,
   .toggle-button {
-    font-size: vw(24);
+    font-size: vw(26);
     line-height: vw(32);
   }
   .icon-more {

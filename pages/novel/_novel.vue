@@ -1,7 +1,7 @@
 <template>
   <main>
     <custom-header />
-    <section v-if="novelDetailInfo" class="module-introduce">
+    <section class="module-introduce">
       <div class="introduce-content">
         <div class="cover-container">
           <nuxt-img
@@ -56,35 +56,15 @@
             </div>
           </div>
 
-          <custom-link :to="startReadPath" class="btn-read">
+          <custom-link :to="`/read/?ch=${novelDetail.chapter[0].id}`" class="btn-read">
             <i class="icon-read-book"></i>
-            <span>{{
-              novelDetail.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
-            }}</span>
+            <span>Read Now</span>
           </custom-link>
         </div>
       </div>
 
-      <google-ad-preload class="google-ad" ad-slot="2858514230" />
-
       <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
       <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
-
-      <!-- <div class="video-container">
-        <video
-          width="100%"
-          height="100%"
-          controls
-          muted
-          :src="novelDetailInfo.intro_video"
-          @play="handlePlayVideo"
-        >
-        </video>
-      </div> -->
-      <adm-video-player
-        :video-detail="novelDetailInfo.intro_video"
-        :video-cover="novelDetailInfo.cover"
-      ></adm-video-player>
     </section>
     <section class="module-all">
       <common-title-label title="Rec Books" />
@@ -136,59 +116,27 @@
         />
       </div>
     </section>
-
-    <!-- 移动端章节弹窗 -->
-    <transition name="fade">
-      <div v-show="isShowChapterPopup" class="chapter-list-popup">
-        <div class="mask" @click="handleHideChapterPopup"></div>
-        <transition name="slide">
-          <module-read-chapter
-            v-show="isShowChapterPopup"
-            ref="mobileChapterPopup"
-            :chapters="novelChapterList"
-            :purchase-status="novelDetail?.purchase_status"
-            :current-chapter-id="novelDetail?.user_last_read_chapter_id"
-            @close-chapter-popup="handleHideChapterPopup"
-            @change-chapter="handleOpenIncentiveAd"
-          />
-        </transition>
-      </div>
-    </transition>
-    <!-- 底部菜单 -->
     <section class="bottom-menu pc-hidden-flex">
-      <div class="menu-item menu-chapters" @click="handleShowChapterPopup">
-        <i class="icon-chapters"></i>
-        <span>Chapters</span>
-      </div>
-      <custom-link :to="startReadPath" class="menu-item menu-read">
+      <custom-link :to="`/read/?ch=${novelDetail.chapter[0].id}`" class="menu-item menu-read">
         <i class="icon-reading"></i>
-        <span>{{
-          novelDetail?.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
-        }}</span>
+        <span>Read Now</span>
       </custom-link>
     </section>
-    <!-- 激励视频广告 -->
-    <incentive-ad ref="refIncentiveAd" @close-incentive-ad="closeIncentiveAd" />
-    <common-notification />
-    <ad-loading />
     <common-back-top />
   </main>
 </template>
 
 <script>
-import Storage from "~/utils/storage";
-import {
-  getStarListStyle,
-  getStarScore,
-  shuffleArray,
-  simulateClick,
-  getIsWatchedIncentiveVideo,
-  setWatchedIncentiveVideo
-} from "~/utils/utils";
+import { getStarListStyle, getStarScore, shuffleArray } from "~/utils/utils";
 export default {
   async asyncData({ $axios, params, env }) {
+    const novelId = params.novel;
     try {
-      const [allBooksResponse, recBooksResponse] = await Promise.all([
+      const [novelDetailResponse, allBooksResponse, recBooksResponse] = await Promise.all([
+        $axios.$post("/api/novel/novel_info", {
+          site_id: env.SITE_ID,
+          novel_id: Number(novelId)
+        }),
         $axios.$post("/api/novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
@@ -204,6 +152,8 @@ export default {
       ]);
       const recBooks = shuffleArray(recBooksResponse.novel_list).slice(0, 5);
       return {
+        novelDetail: novelDetailResponse,
+        novelDetailInfo: novelDetailResponse.novel_info,
         allBooks: allBooksResponse.novel_list,
         recBooks
       };
@@ -219,8 +169,6 @@ export default {
       clickChapterId: 0, // 点击章节id
       isInitIncentiveAd: false, // 激励广告是否初始化
       novelChapterList: [],
-      isShowAdBreak: false, // 是否展示了adbreak广告
-      startReadPath: "/", // 开始阅读路径
       currentRecIndex: 0, // 移动端rec模块当前索引
       changeCurrentRecIndexTimer: null,
       changeCurrentRecIndexInterval: 3000,
@@ -237,13 +185,7 @@ export default {
       }
     }
   },
-  created() {
-    if (process.client) {
-      this.getNovelDetailInfo();
-    }
-  },
   mounted() {
-    // this.configAdBreak();
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
   },
@@ -258,44 +200,6 @@ export default {
       }
     },
 
-    async getNovelDetailInfo() {
-      const novelId = this.$route.params.novel;
-      await this.$axios
-        .$post("/api/novel/novel_info", {
-          site_id: process.env.SITE_ID,
-          novel_id: Number(novelId)
-        })
-        .then((response) => {
-          const novelDetail = response;
-          this.novelDetail = novelDetail;
-          /* 登录过期 */
-          if (!novelDetail.is_login && Storage.getCookie("novel_token")) {
-            this.$globalMethod.showDialog("Your session has expired. Please log in again.");
-          }
-
-          this.novelDetailInfo = novelDetail.novel_info;
-          this.novelChapterList = novelDetail.chapter.map((item) => {
-            return { ...item, isUnlocked: true };
-          });
-          this.getFreeNumAndUnlocked();
-          // 有记录的章节，则跳转到记录的章节
-          if (novelDetail.user_last_read_chapter_num !== 0) {
-            /* 查一下是否有该章节 */
-            const chapter = this.novelChapterList.find(
-              (item) => item.id === novelDetail.user_last_read_chapter_id
-            );
-            if (chapter) {
-              this.startReadPath = `/read/?ch=${novelDetail.user_last_read_chapter_id}`;
-            } else {
-              this.startReadPath = `/read/?ch=${response.chapter[0].id}`;
-            }
-          }
-          // 没有记录的章节，则跳转到第一章节
-          else {
-            this.startReadPath = `/read/?ch=${response.chapter[0].id}`;
-          }
-        });
-    },
     // 移动端rec模块切换
     handleRecItemClick(index) {
       this.currentRecIndex = index;
@@ -309,95 +213,6 @@ export default {
     },
     clearChangeCurrentRecIndexTimer() {
       clearInterval(this.changeCurrentRecIndexTimer);
-    },
-
-    // 展示菜单设置
-    handleShowChapterPopup() {
-      this.isShowChapterPopup = true;
-      this.distanceFromTop = document.documentElement.scrollTop;
-      document.body.classList.add("no-scroll");
-      document.body.style.top = `-${this.distanceFromTop}px`;
-      this.$nextTick(() => {
-        this.$refs.mobileChapterPopup.scrollToActiveChapter();
-      });
-    },
-    handleHideChapterPopup() {
-      this.isShowChapterPopup = false;
-      document.body.classList.remove("no-scroll");
-      window.scrollTo(0, this.distanceFromTop); // 恢复body滚动位置
-    },
-
-    // 获取免费章节以及解锁状态
-    getFreeNumAndUnlocked() {
-      this.novelChapterList.forEach((item) => {
-        if (item.chapter_num >= 2 && item.chapter_num <= 8) {
-          const isUnlocked = getIsWatchedIncentiveVideo(`${item.id}`);
-          item.isUnlocked = isUnlocked;
-        } else {
-          item.isUnlocked = true;
-        }
-      });
-    },
-    // 激励广告关闭
-    closeIncentiveAd(isGetReward) {
-      if (isGetReward) {
-        this.handleAfterIncentiveAd();
-      }
-    },
-    handleOpenIncentiveAd(item) {
-      this.clickChapterId = item.id;
-      this.$refs.refIncentiveAd.showRewardedAd();
-    },
-    // 观看完激励广告，或无激励广告
-    handleAfterIncentiveAd() {
-      setWatchedIncentiveVideo(`${this.clickChapterId}`);
-      this.getFreeNumAndUnlocked();
-      simulateClick("/read/", "ch", this.clickChapterId);
-    },
-
-    // 视频播放
-    configAdBreak() {
-      const pushAds = function (ad) {
-        window.adsbygoogle = window.adsbygoogle || [];
-        window.adsbygoogle.push(ad);
-      };
-      window.adBreak = window.adBreak || pushAds;
-      window.adConfig = window.adConfig || pushAds;
-      try {
-        window.adConfig({
-          preloadAdBreaks: "on",
-          sound: "off",
-          onReady: function () {
-            console.log("adBreak ready");
-          }
-        });
-      } catch (error) {
-        console.error("adConfig error=", error);
-      }
-    },
-    handlePlayVideo() {
-      console.log("Ad start :>>", window.adBreak);
-      if (this.isShowAdBreak) {
-        return;
-      }
-      const _this = this;
-      try {
-        window.adBreak({
-          type: "preroll",
-          name: "charmnovels_preroll",
-          // 广告展示前的回调
-          beforeAd: function () {
-            // eslint-disable-next-line no-undef
-            dataLayer.push({ event: "C_AB" });
-            _this.isShowAdBreak = true;
-          },
-          adBreakDone: function (n) {
-            console.log("Ad end :>>", n.breakStatus);
-          }
-        });
-      } catch (error) {
-        console.error("Ad error :>>", error);
-      }
     }
   }
 };

@@ -42,7 +42,6 @@
     <custom-footer />
     <common-notification />
     <common-back-top />
-    <ad-loading />
   </main>
 </template>
 <script>

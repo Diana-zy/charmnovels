@@ -1,6 +1,9 @@
 <template>
   <main>
-    <custom-header :class="{ 'header-active': isShowHeader }" theme="dark" />
+    <custom-read-header
+      :is-show-back="isShowHeader"
+      :current-chapter-detail="currentChapterDetail"
+    />
 
     <!-- PC端悬浮章节列表 -->
     <section class="fixed-bar">
@@ -91,16 +94,6 @@ export default {
   created() {
     if (process.client) {
       if (getQueryParam("nov") && getQueryParam("pay_status") === "success") {
-        dataLayer.push({ event: "Content_Pay_successful" });
-        // mediago Pixel Code
-        window._megoaa = window._megoaa || [];
-        window._megoaa.push({
-          type: "event",
-          name: "charmnovels_pay",
-          acid: "29866",
-          pxd: "1152719907106390"
-        });
-        // End of mediago Pixel Code
         this.confirmUnlockNovel();
       } else {
         this.getCurrentChapterDetail();
@@ -320,18 +313,6 @@ export default {
 }
 
 @media screen and (max-width: 750px) {
-  main {
-    padding-top: 0;
-  }
-  header {
-    z-index: 11;
-    transform: translate(-50%, -100%);
-    transition: transform 0.2s;
-  }
-  .header-active {
-    transform: translate(-50%, 0);
-  }
-
   /* 章节 */
   .chapter-list-popup {
     position: fixed;

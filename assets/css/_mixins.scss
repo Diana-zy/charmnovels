@@ -22,34 +22,6 @@ $color8: #eee; //字体颜色
     height: 100%;
     object-fit: cover;
   }
-  // &::before {
-  //   position: absolute;
-  //   left: $left;
-  //   top: 0;
-  //   z-index: 1;
-  //   display: inline-block;
-  //   content: "";
-  //   width: $width;
-  //   height: 100%;
-  //   background-color: $color2;
-  //   mix-blend-mode: multiply;
-  //   opacity: 0.8;
-  //   filter: blur(calc($width / 1.5));
-  // }
-  // &::after {
-  //   position: absolute;
-  //   left: calc($left + $width);
-  //   top: 0;
-  //   z-index: 1;
-  //   display: inline-block;
-  //   content: "";
-  //   width: $width;
-  //   height: 100%;
-  //   background-color: $color1;
-  //   mix-blend-mode: lighten;
-  //   opacity: 0.5;
-  //   filter: blur(calc($width / 1.5));
-  // }
 }
 
 // 定义 mixin 来实现多行文本超出隐藏效果

@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-header current-page="Home" />
+    <custom-header />
 
     <module-home-banner :data="recBooks" />
 
@@ -55,9 +55,6 @@
       </common-infinite-scroll-list>
     </section>
     <custom-footer />
-    <common-notification />
-    <common-back-top />
-    <ad-loading />
   </main>
 </template>
 <script>
@@ -119,10 +116,6 @@ export default {
 }
 
 @media screen and (max-width: 750px) {
-  main {
-    padding-top: vw(167);
-  }
-
   .module-trending-content,
   .module-popular-content {
     grid-template-columns: repeat(3, vw(198));

@@ -4,161 +4,20 @@
       <i></i>
     </custom-link>
 
-    <!-- Tab -->
-    <div
-      :class="[
-        'header-tabs',
-        { 'header-tabs-hidden': currentPage != 'Home' && currentPage != 'Library' }
-      ]"
-    >
-      <custom-link
-        v-for="(tab, i) in tabsArr"
-        :key="i"
-        :to="tab.path"
-        :class="[
-          'tab-item',
-          `tab-item-${tab.name}`,
-          { 'tab-item-active': currentPage === tab.name }
-        ]"
-        >{{ tab.name }}</custom-link
-      >
-    </div>
-
     <div class="header-right">
-      <common-search-input @handle-search="handleSearch" />
-      <div v-if="showInstallButton" class="btn-pwa" @click="installPWA">
-        <i></i>
-      </div>
-      <custom-link
-        v-if="!isLogin"
-        to="/login/"
-        class="btn-login m-hidden-flex"
-        @click.native="handleLogin"
-        >Login</custom-link
-      >
-      <div class="avatar-container">
-        <custom-link v-if="!isLogin" to="/login/" @click.native="handleLogin">
-          <i class="avatar"></i>
-        </custom-link>
-        <i v-if="isLogin" ref="avatarContainer" class="avatar-a" @click.stop="toggleUserMenu"></i>
-        <div v-show="isShowMenu" ref="userMenu" class="user-menu">
-          <custom-link to="/purchased/" class="menu-item menu-purchased">
-            <i class="icon-order"></i>
-            <span>Purchased novels</span>
-          </custom-link>
-          <div class="line"></div>
-          <div class="menu-item" @click="handleLogout">
-            <i class="icon-logout"></i>
-            <span>Log out</span>
-          </div>
-        </div>
-      </div>
+      <custom-link to="/login/">
+        <i class="avatar"></i>
+      </custom-link>
     </div>
   </header>
 </template>
 
 <script>
-import Storage from "@/utils/storage";
-import { simulateClick, filterFromPath } from "~/utils/utils";
-
 export default {
   props: {
     theme: {
       type: String,
       default: "light"
-    },
-    currentPage: {
-      type: String,
-      default: ""
-    }
-  },
-  data() {
-    return {
-      tabsArr: [
-        {
-          name: "Home",
-          path: "/"
-        },
-        {
-          name: "Library",
-          path: "/library/"
-        }
-      ],
-      isLogin: false,
-      isShowMenu: false,
-      deferredPrompt: null,
-      showInstallButton: false
-    };
-  },
-  mounted() {
-    this.isLogin = Boolean(Storage.getCookie("novel_token"));
-    document.addEventListener("click", this.hideUserMenu);
-
-    this.getIsShowInstallButton();
-  },
-  beforeDestroy() {
-    document.removeEventListener("click", this.hideUserMenu);
-  },
-  methods: {
-    // 判断是否支持 PWA
-    getIsShowInstallButton() {
-      if ("serviceWorker" in navigator && "PushManager" in window) {
-        if (window.deferredPrompt) {
-          this.deferredPrompt = window.deferredPrompt;
-          this.showInstallButton = true;
-        } else {
-          // 如果beforeinstallprompt这个事件在window.onload后 组件mounted时未触发，则重新建立监听
-          window.addEventListener("beforeinstallprompt", (e) => {
-            // console.log("page - beforeinstallprompt", e);
-            e.preventDefault();
-            this.deferredPrompt = e;
-            this.showInstallButton = true;
-          });
-        }
-      }
-    },
-    installPWA() {
-      if (this.deferredPrompt) {
-        // 触发 PWA 安装提示
-        this.deferredPrompt.prompt();
-        // 在用户做出选择后，保存结果
-        this.deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === "accepted") {
-            console.log("User accepted the A2HS prompt");
-          } else {
-            console.log("User dismissed the A2HS prompt");
-          }
-          // 重置 deferredPrompt
-          this.deferredPrompt = null;
-        });
-      }
-    },
-    handleSearch(inputValue) {
-      simulateClick("/search/", "text", inputValue, "search-button");
-    },
-    handleLogin() {
-      const currenPagePath = window.location.pathname + window.location.search;
-      // 过滤登录注册页存储
-      const filterPath = ["/login/", "/register/", "/reset/"];
-      if (!filterPath.includes(window.location.pathname)) {
-        Storage.setCookie("novel_preLoginPath", currenPagePath);
-      }
-    },
-    handleLogout() {
-      const currenPagePath = window.location.pathname + window.location.search;
-      Storage.setCookie("novel_preLoginPath", currenPagePath);
-      Storage.clearCookie("novel_token");
-      Storage.clearCookie("novel_userId");
-      simulateClick("/", "from", filterFromPath(window.location.pathname), "logout-button");
-    },
-    toggleUserMenu() {
-      this.isShowMenu = !this.isShowMenu;
-    },
-    hideUserMenu(event) {
-      const avatarContainer = this.$refs.avatarContainer;
-      if (avatarContainer && !avatarContainer.contains(event.target)) {
-        this.isShowMenu = false;
-      }
     }
   }
 };
@@ -188,41 +47,14 @@ header {
     transform: translateX(-50%);
     z-index: -1;
     background: $color4;
-    border: 1px solid rgba($color2, 0.2);
+    border-bottom: 1px solid rgba($color2, 0.2);
   }
 }
 
 .logo {
   @include center;
-  margin-right: 40px;
   i {
     @include icon(219px, 54px, "logo-pc.png");
-  }
-}
-
-.header-tabs {
-  display: flex;
-  gap: 21px;
-  .tab-item {
-    display: inline-block;
-    height: 64px;
-    line-height: 64px;
-    font-size: 20px;
-    color: rgba($color2, 0.6);
-  }
-  .tab-item-active {
-    position: relative;
-    font-family: "seb";
-    color: $color3;
-    &::before {
-      position: absolute;
-      content: "";
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: $color3;
-    }
   }
 }
 
@@ -230,88 +62,8 @@ header {
   display: flex;
   align-items: center;
   margin-left: auto;
-  .btn-pwa {
-    width: 40px;
-    height: 40px;
-    margin-left: 24px;
-    border-radius: 40px;
-    background: rgba($color3, 0.3);
-    @include center;
-    cursor: pointer;
-    i {
-      @include icon(30px, 30px, "icon-download.png");
-    }
-  }
-  .btn-login {
-    width: 91px;
-    height: 40px;
-    margin-left: 24px;
-    border-radius: 40px;
-    @include center;
-    background: $color3;
-    color: $color1;
-    font-size: 18px;
-    font-family: "seb";
-  }
-}
-
-.avatar-container {
-  position: relative;
-  margin-left: 24px;
   .avatar {
-    @include icon(48px, 48px, "icon-avatar.png");
-  }
-  .avatar-a {
     @include icon(48px, 48px, "icon-avatar-a.png");
-    // &:focus-within + .user-menu {
-    //   display: block;
-    // }
-  }
-  .user-menu {
-    position: absolute;
-    right: 0;
-    top: 56px;
-    width: 170px;
-    border-radius: 8px;
-    background: $color4;
-    box-shadow: 0px 4px 16px 0px rgba($color6, 0.15);
-  }
-  .line {
-    width: 146px;
-    height: 1px;
-    background: rgba($color2, 0.1);
-    margin: 0 auto;
-  }
-  .menu-item {
-    width: 100%;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    font-family: "sesb";
-    cursor: pointer;
-    &:hover {
-      background: rgba($color3, 0.1);
-    }
-  }
-  .icon-order {
-    @include icon(24px, 24px, "icon-user-order.png");
-    margin-left: 10px;
-    margin-right: 12px;
-  }
-  .icon-logout {
-    @include icon(24px, 24px, "icon-user-logout.png");
-    margin-left: 10px;
-    margin-right: 12px;
-  }
-}
-
-@media screen and (max-width: 950px) {
-  .logo {
-    margin-right: 20px;
-    i {
-      @include icon(54px, 54px, "logo-m.png");
-    }
   }
 }
 
@@ -320,85 +72,19 @@ header {
     height: vw(96);
     padding: 0 vw(46);
     &:before {
-      border: none;
+      border-bottom: vw(2) solid rgba($color2, 0.2);
     }
   }
   .logo {
-    margin-right: vw(48);
     i {
       @include icon(vw(80), vw(80), "logo-m.png");
     }
   }
 
-  .header-tabs {
-    position: absolute;
-    top: vw(94);
-    left: 0;
-    width: 100%;
-    padding: vw(24) vw(46) 0;
-    background: $color4;
-    gap: vw(40);
-    border-bottom: 1px solid rgba($color2, 0.1);
-    .tab-item {
-      height: vw(46);
-      line-height: vw(38);
-      font-size: vw(28);
-    }
-    .tab-item-active {
-      &::before {
-        height: vw(4);
-      }
-    }
-  }
-
-  .header-tabs-hidden {
-    display: none;
-  }
-
   .header-right {
-    width: 100%;
-    gap: vw(32);
-    ::v-deep .search-box {
-      width: auto;
-      flex: 1;
-    }
-    .btn-pwa {
-      width: vw(64);
-      height: vw(64);
-      margin-left: 0;
-      border-radius: vw(64);
-      i {
-        width: vw(48);
-        height: vw(48);
-      }
-    }
-  }
-
-  .avatar-container {
-    margin-left: 0;
-    .avatar,
-    .avatar-a {
+    .avatar {
       width: vw(80);
       height: vw(80);
-    }
-    .user-menu {
-      top: vw(88);
-      width: vw(340);
-      border-radius: vw(16);
-    }
-    .line {
-      width: vw(292);
-    }
-    .menu-item {
-      height: vw(96);
-      font-size: vw(28);
-    }
-    .icon-order,
-    .icon-logout {
-      width: vw(48);
-      height: vw(48);
-      margin-left: vw(20);
-      margin-right: vw(24);
     }
   }
 }
