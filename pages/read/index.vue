@@ -58,8 +58,6 @@
       </div>
     </transition>
 
-    <!-- 激励视频广告 -->
-    <incentive-ad ref="refIncentiveAd" @close-incentive-ad="closeIncentiveAd" />
     <common-notification />
     <common-fixed-bottom />
   </main>
@@ -67,12 +65,7 @@
 
 <script>
 import Storage from "~/utils/storage";
-import {
-  getQueryParam,
-  simulateClick,
-  getIsWatchedIncentiveVideo,
-  setWatchedIncentiveVideo
-} from "@/utils/utils";
+import { getQueryParam, getIsWatchedIncentiveVideo } from "@/utils/utils";
 
 export default {
   data() {
@@ -188,25 +181,6 @@ export default {
         currentChapterIndex === this.novelChapterList.length - 1
           ? null
           : this.novelChapterList[currentChapterIndex + 1];
-    },
-
-    // 激励广告关闭
-    closeIncentiveAd(isGetReward) {
-      if (isGetReward) {
-        this.handleAfterIncentiveAd();
-      }
-    },
-    handleOpenIncentiveAd(item) {
-      this.clickChapterId = item.id;
-      // 激励视频已初始化;
-      this.$refs.refIncentiveAd.showRewardedAd();
-    },
-
-    // 观看完激励广告，或无激励广告
-    handleAfterIncentiveAd() {
-      setWatchedIncentiveVideo(`${this.clickChapterId}`);
-      this.getFreeNumAndUnlocked();
-      simulateClick("/read/", "ch", this.clickChapterId);
     },
 
     changeShowChapters() {
