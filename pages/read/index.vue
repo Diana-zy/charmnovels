@@ -18,11 +18,11 @@
           :purchase-status="currentChapterDetail?.purchase_status"
           :current-chapter-id="currentChapterDetail?.chapter_id"
           theme="dark"
-          @change-chapter="handleOpenIncentiveAd"
         />
       </div>
     </section>
 
+    <!-- 小说内容 -->
     <module-read-content
       :current-chapter-detail="currentChapterDetail"
       :related-chapter-list="relatedChapterList"
@@ -30,8 +30,10 @@
       :next-chapter-item="nextChapterItem"
       @show-menu-setting="handleShowMenuSetting"
       @reload="getCurrentChapterDetail"
-      @change-chapter="handleOpenIncentiveAd"
     />
+
+    <module-read-reward ref="readReward" />
+
     <module-read-sidebar
       ref="readSidebar"
       :current-read-progress="currentReadProgress"
@@ -52,7 +54,6 @@
             :current-chapter-id="currentChapterDetail?.chapter_id"
             theme="dark"
             @close-chapter-popup="handleHideChapterPopup"
-            @change-chapter="handleOpenIncentiveAd"
           />
         </transition>
       </div>
@@ -294,7 +295,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 9;
+    z-index: 9999;
     .mask {
       position: absolute;
       top: 0;
@@ -308,6 +309,40 @@ export default {
       left: 0;
       bottom: 0;
       width: 100%;
+    }
+  }
+
+  .read-reward-box {
+    right: vw(24);
+    top: vw(18);
+    gap: vw(16);
+    height: vw(60);
+    padding: 0 vw(18);
+    border-radius: vw(60);
+    border: vw(2) solid rgba($color_fff, 0.6);
+    .icon-money {
+      width: vw(40);
+      height: vw(40);
+    }
+    .text-money {
+      font-size: vw(28);
+    }
+    .btn-get {
+      width: vw(64);
+      height: vw(40);
+      border-radius: vw(40);
+      font-size: vw(26);
+      &::after {
+        top: vw(18);
+        left: vw(14);
+        width: vw(100);
+        height: vw(100);
+      }
+      @keyframes handAnim {
+        0% {
+          transform: translate(vw(16), vw(16));
+        }
+      }
     }
   }
 }

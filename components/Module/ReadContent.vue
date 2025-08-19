@@ -24,46 +24,7 @@
       <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
     </article>
 
-    <!-- PC端未解锁状态隐藏该位置广告 -->
-    <google-ad-small
-      v-if="
-        currentChapterDetail.purchase_status == 2 ||
-        currentChapterDetail.chapter_num <= 8 ||
-        isMobile
-      "
-      class="ad-1"
-      ad-slot="7793230426"
-    />
-
     <section class="bottom-operation">
-      <!-- 支付模块 -->
-      <div
-        v-if="currentChapterDetail.purchase_status !== 2 && currentChapterDetail.chapter_num > 8"
-        class="pay-box"
-        @click="createPaymentOrder(currentChapterDetail.purchase_status)"
-      >
-        <div class="row-status">
-          <i class="icon-lock"></i>
-          <span>Unlock</span>
-        </div>
-        <div class="row-info">
-          <span v-if="currentChapterDetail.purchase_status !== 1"
-            >${{ currentChapterDetail.novel_info.price }}</span
-          >
-          <span>{{
-            currentChapterDetail.purchase_status === 1
-              ? "Continue payment"
-              : "Enjoy reading this novel"
-          }}</span>
-        </div>
-      </div>
-      <div
-        v-if="currentChapterDetail.purchase_status === 1 && currentChapterDetail.chapter_num > 8"
-        class="status-paid"
-        @click="getOrderUnlockStatus"
-      >
-        Paid(Not unlocked)</div
-      >
       <!-- 分页模块 -->
       <div class="pagination-box">
         <custom-link
@@ -85,7 +46,7 @@
       </div>
     </section>
     <!-- 相关章节模块 -->
-    <section v-if="relatedChapterList !== 0" class="module-related-chapters">
+    <!-- <section v-if="relatedChapterList !== 0" class="module-related-chapters">
       <common-title-label title="Related Chapters" />
       <div class="module-related-chapters-content">
         <item-module-related-chapter
@@ -100,7 +61,7 @@
           @handle-click-chapter="$emit('change-chapter', item)"
         />
       </div>
-    </section>
+    </section> -->
     <common-loading-max v-if="loading" />
   </section>
 </template>
@@ -194,11 +155,11 @@ export default {
       Storage.getCookie("novel_cssReadFontSpace") ||
         Storage.setCookie("novel_cssReadFontSpace", 1.5);
       Storage.getCookie("novel_cssReadBackgroundColor") ||
-        Storage.setCookie("novel_cssReadBackgroundColor", "#fffcf7");
+        Storage.setCookie("novel_cssReadBackgroundColor", "#0f0f0f");
       Storage.getCookie("novel_cssReadTextColor") ||
-        Storage.setCookie("novel_cssReadTextColor", "#41414c");
+        Storage.setCookie("novel_cssReadTextColor", "#eee");
       Storage.getCookie("novel_cssReadLastTheme") ||
-        Storage.setCookie("novel_cssReadLastTheme", "light");
+        Storage.setCookie("novel_cssReadLastTheme", "dark");
     },
 
     // 获取指定字符长度后的第一个p标签
@@ -279,64 +240,8 @@ export default {
       }
     },
 
-    // 创建or支付订单
-    createPaymentOrder(purchaseStatus) {
-      if (!Storage.getCookie("novel_token")) {
-        this.$globalMethod.showDialog("Your account is not logged in, please log in.");
-        return;
-      }
-
-      if (purchaseStatus === 0) {
-        // 创建新订单
-        this.unlockNovel();
-      } else if (purchaseStatus === 1) {
-        // 继续支付
-        this.confirmUnlockNovel();
-      }
-    },
-    // 获取订单解锁状态
-    getOrderUnlockStatus() {
-      // 调用接口获取订单解锁状态
-      this.confirmUnlockNovel();
-    },
     handleShowMenuSetting() {
       this.$emit("show-menu-setting");
-    },
-    async unlockNovel() {
-      this.loading = true;
-      // 调用接口解锁小说
-      try {
-        const res = await this.$axios.$post("/api/payment/unlock_novel", {
-          site_id: process.env.SITE_ID,
-          novel_id: this.currentChapterDetail.novel_info.id,
-          redirect_url: `${window.location.href}&nov=${this.currentChapterDetail.novel_info.id}`
-        });
-        console.log(" response:", res);
-        window.location.href = res.order_info.url;
-      } catch (error) {
-        console.log(" error:", error.msg);
-        this.loading = false;
-      }
-    },
-    async confirmUnlockNovel() {
-      this.loading = true;
-      try {
-        const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
-          site_id: process.env.SITE_ID,
-          novel_id: this.currentChapterDetail.novel_info.id
-        });
-        console.log(" response:", res);
-        if (res.unlock_status === "create_success" || res.unlock_status === "already_pending") {
-          window.location.href = res.order_info.url;
-        } else {
-          // unlock_success
-          this.$emit("reload");
-          this.loading = false;
-        }
-      } catch (error) {
-        console.log(" error:", error.msg);
-        this.loading = false;
-      }
     }
   }
 };
@@ -541,26 +446,26 @@ export default {
       padding: vw(16) 0 vw(32);
     }
     p {
-      font-size: var(--read-font-size);
-      line-height: var(--read-font-space);
+      font-size: vw(36);
+      line-height: vw(48);
     }
   }
   .content-text {
     ::v-deep .br {
-      height: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+      height: vw(24);
     }
     ::v-deep .content-ad-1 {
-      margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+      margin-bottom: vw(24);
     }
     ::v-deep .content-ad-page {
-      margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+      margin-bottom: vw(24);
     }
     ::v-deep .content-ad-inline {
       height: 50px;
-      margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+      margin-bottom: vw(24);
     }
     ::v-deep .content-ad-info {
-      margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+      margin-bottom: vw(24);
     }
   }
 

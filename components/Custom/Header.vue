@@ -96,18 +96,6 @@ header {
     &:before {
       background: $color7;
     }
-    ::v-deep .search-box {
-      border: 1px solid rgba($color2, 0.6);
-      .search-btn {
-        background: rgba($color2, 0.6);
-      }
-      .search-input {
-        color: $color8;
-        &::placeholder {
-          color: rgba($color8, 0.6);
-        }
-      }
-    }
   }
 }
 </style>

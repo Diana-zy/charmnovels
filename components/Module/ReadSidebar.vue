@@ -13,66 +13,9 @@
               <div class="menu-item menu-chapters" @click="showChapterPopup"
                 ><i class="icon-sidebar-chapter"></i
               ></div>
-              <div class="menu-item menu-style" @click="showStyleSetting">
-                <i class="icon-sidebar-theme"></i>
-              </div>
               <div class="menu-item menu-theme" @click="handleChangeDarkTheme"
                 ><i :class="[isDarkTheme ? 'icon-sidebar-light' : 'icon-sidebar-dark']"></i
               ></div>
-            </div>
-          </div>
-        </transition>
-      </div>
-    </transition>
-
-    <!-- 主题样式设置 -->
-    <transition name="fade">
-      <div v-show="isShowStyleSetting" class="bottom-setting">
-        <div class="mask" @click="hideStyleSetting"></div>
-        <transition name="slide">
-          <div v-show="isShowStyleSetting" class="content content_style-setting">
-            <div class="setting-row">
-              <!-- 主题颜色 -->
-              <div class="theme-box">
-                <div
-                  v-for="(item, index) in themeColor.slice(1)"
-                  :key="index"
-                  :class="['theme-item', { 'theme-item-active': index + 1 === themeColorIndex }]"
-                  :style="{ 'background-color': item.bgColor }"
-                  @click="handleChangeThemeColor(item, index + 1)"
-                >
-                  <i :class="[item.theme === 'brown' ? 'icon-T-dark' : 'icon-T-light']"></i>
-                </div>
-              </div>
-              <!-- 字体大小 -->
-              <div class="font-size-box">
-                <i
-                  :class="[
-                    'icon-font-size-minus',
-                    { 'icon-font-size-disabled': currentFontSize === 14 }
-                  ]"
-                  @click="handleChangeFontSize(Number(currentFontSize) - 1)"
-                ></i>
-                <span>{{ currentFontSize }}</span>
-                <i
-                  :class="[
-                    'icon-font-size-plus',
-                    { 'icon-font-size-disabled': currentFontSize === 28 }
-                  ]"
-                  @click="handleChangeFontSize(Number(currentFontSize) + 1)"
-                ></i>
-              </div>
-            </div>
-            <!-- 文本行高 -->
-            <div class="font-space-box">
-              <div
-                v-for="(item, i) in [1.5, 2, 2.5]"
-                :key="item"
-                :class="['space-item', { 'space-item-active': item === currentFontSpace }]"
-                @click="handleChangeSpace(item)"
-              >
-                <i :class="`icon-light-height-${i + 1}`"></i>
-              </div>
             </div>
           </div>
         </transition>
@@ -100,7 +43,7 @@ export default {
         {
           theme: "dark",
           bgColor: "#0f0f0f",
-          textColor: "#6E6E6E"
+          textColor: "#eee"
         },
         /* 常规 */
         {
@@ -181,17 +124,7 @@ export default {
     handleChangeDarkTheme() {
       this.isDarkTheme = !this.isDarkTheme;
       const root = document.documentElement;
-      let themeIndex;
-      // 夜间模式
-      if (this.isDarkTheme) {
-        themeIndex = 0;
-      }
-      // 日间模式
-      else {
-        const lastTheme = Storage.getCookie("novel_cssReadLastTheme");
-        themeIndex = this.themeColor.findIndex((item) => item.theme === lastTheme);
-      }
-
+      const themeIndex = this.isDarkTheme ? 0 : 1;
       const themeBgColor = this.themeColor[themeIndex].bgColor;
       const themeTextColor = this.themeColor[themeIndex].textColor;
       root.style.setProperty("--read-bg-color", themeBgColor);
@@ -231,7 +164,7 @@ export default {
 @media screen and (max-width: 750px) {
   .bottom-setting {
     position: fixed;
-    top: 0;
+    top: vw(96);
     right: 0;
     left: 0;
     bottom: 0;

@@ -52,8 +52,7 @@ header {
     left: 50%;
     transform: translateX(-50%);
     z-index: -1;
-    background: $color4;
-    border-bottom: 1px solid rgba($color2, 0.2);
+    background: $color7;
   }
 }
 
@@ -95,18 +94,6 @@ header {
   .theme-dark {
     &:before {
       background: $color7;
-    }
-    ::v-deep .search-box {
-      border: 1px solid rgba($color2, 0.6);
-      .search-btn {
-        background: rgba($color2, 0.6);
-      }
-      .search-input {
-        color: $color8;
-        &::placeholder {
-          color: rgba($color8, 0.6);
-        }
-      }
     }
   }
 }

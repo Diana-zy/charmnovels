@@ -13,6 +13,8 @@ $color6: #000;
 $color7: #0f0f0f; //背景颜色
 $color8: #eee; //字体颜色
 
+$color_fff: #fff;
+
 /* 书边效果 */
 @mixin book-edge($width: 2px, $left: 3px) {
   position: relative;
