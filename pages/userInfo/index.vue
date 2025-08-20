@@ -21,28 +21,6 @@
   </main>
 </template>
 
-<script>
-import { simulateClick } from "~/utils/utils";
-import Storage from "@/utils/storage";
-
-export default {
-  data() {
-    return {};
-  },
-  mounted() {},
-  methods: {
-    handleSkip() {
-      if (Storage.getItem("novel_preLoginPath")) {
-        const newHref = window.location.origin + Storage.getItem("novel_preLoginPath");
-        window.location.href = newHref;
-      } else {
-        simulateClick("/", "from", "login");
-      }
-    }
-  }
-};
-</script>
-
 <style lang="scss" scoped>
 .login-page {
   ::v-deep .header-right {

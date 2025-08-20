@@ -118,9 +118,8 @@ export default {
     };
   },
   mounted() {
-    this.novelReadHistoryBooks = Storage.getItem("novel_read_history_list") || [];
-  },
-  methods: {}
+    this.novelReadHistoryBooks = Storage.getItem("novel_read_history_list").slice(0, 6) || [];
+  }
 };
 </script>
 
