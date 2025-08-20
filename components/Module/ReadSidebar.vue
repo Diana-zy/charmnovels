@@ -2,7 +2,7 @@
   <div>
     <transition name="fade">
       <div v-show="isShowMenuSetting" class="bottom-setting">
-        <div class="mask" @click="hideMenuSetting"></div>
+        <!-- <div class="mask" @click="hideMenuSetting"></div> -->
         <transition name="slide">
           <div v-show="isShowMenuSetting" class="content">
             <div class="progress-box">
@@ -161,30 +161,34 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.bottom-setting {
+  display: none;
+}
 @media screen and (max-width: 750px) {
   .bottom-setting {
+    display: block;
     position: fixed;
-    top: vw(96);
+    // top: vw(96);
     right: 0;
     left: 0;
     bottom: 0;
     z-index: 10;
     color: $color8;
-    .mask {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba($color6, 0.4);
-    }
+    // .mask {
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    //   right: 0;
+    //   bottom: 0;
+    //   background: rgba($color6, 0.4);
+    // }
     .content {
       position: absolute;
       left: 0;
       bottom: 0;
       width: 100%;
       padding: vw(24) vw(46) vw(22);
-      background: $color7;
+      background: $color9;
     }
     .progress-box {
       display: flex;

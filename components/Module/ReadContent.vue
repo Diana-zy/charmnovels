@@ -585,7 +585,7 @@ export default {
     }
   }
   .pagination-box {
-    margin-top: vw(32);
+    margin: vw(32) 0 vw(200);
     gap: vw(32);
     .btn-change {
       height: vw(80);

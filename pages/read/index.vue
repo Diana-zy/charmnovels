@@ -190,14 +190,17 @@ export default {
     /* 移动端操作 */
     // 展示菜单设置
     handleShowMenuSetting() {
-      this.$refs.readSidebar.showMenuSetting();
-      this.isShowHeader = true;
-
-      this.distanceFromTop = document.documentElement.scrollTop;
-      document.body.classList.add("no-scroll");
+      if (this.$refs.readSidebar.isShowMenuSetting) {
+        this.$refs.readSidebar.hideMenuSetting();
+        this.isShowHeader = false;
+      } else {
+        this.$refs.readSidebar.showMenuSetting();
+        this.isShowHeader = true;
+      }
     },
     handleShowChapterPopup() {
       this.isShowChapterPopup = true;
+      document.body.classList.add("no-scroll");
       this.$nextTick(() => {
         this.$refs.mobileChapterPopup.scrollToActiveChapter();
       });
@@ -205,11 +208,11 @@ export default {
     handleHideChapterPopup() {
       this.handleHideHeader();
       this.isShowChapterPopup = false;
+      document.body.classList.remove("no-scroll");
     },
     // 关闭header，等同关闭所有弹窗
     handleHideHeader() {
       this.isShowHeader = false;
-      document.body.classList.remove("no-scroll");
     },
 
     // 处理内容初始化后一些操作
