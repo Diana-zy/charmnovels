@@ -5,7 +5,7 @@
     </custom-link>
 
     <div class="header-right">
-      <custom-link to="/login/">
+      <custom-link to="/userInfo/">
         <i class="avatar"></i>
       </custom-link>
     </div>
