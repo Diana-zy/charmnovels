@@ -30,6 +30,7 @@
       :next-chapter-item="nextChapterItem"
       @show-menu-setting="handleShowMenuSetting"
       @reload="getCurrentChapterDetail"
+      @handle-get-reward="handleGetReward"
     />
 
     <module-read-reward ref="readReward" />
@@ -92,9 +93,6 @@ export default {
   mounted() {
     document.addEventListener("click", this.handleUserClickEvent);
   },
-  beforeDestroy() {
-    document.removeEventListener("click", this.handleUserClickEvent);
-  },
   methods: {
     async getCurrentChapterDetail() {
       const chapterId = this.$route.query.ch;
@@ -107,8 +105,8 @@ export default {
           const chapterDetail = response;
           // 初始化相关章节
           this.currentChapterDetail = chapterDetail;
-          // 记录阅读历史
-          this.setUserNovelReadHistory(chapterDetail);
+          this.handleStartReadBook(chapterDetail); // 处理内容初始化后一些操作
+
           this.relatedChapterList = chapterDetail.chapter.map((item) => {
             return { ...item, isUnlocked: true };
           });
@@ -197,7 +195,6 @@ export default {
 
       this.distanceFromTop = document.documentElement.scrollTop;
       document.body.classList.add("no-scroll");
-      document.body.style.top = `-${this.distanceFromTop}px`;
     },
     handleShowChapterPopup() {
       this.isShowChapterPopup = true;
@@ -213,7 +210,39 @@ export default {
     handleHideHeader() {
       this.isShowHeader = false;
       document.body.classList.remove("no-scroll");
-      window.scrollTo(0, this.distanceFromTop); // 恢复滚动位置
+    },
+
+    // 处理内容初始化后一些操作
+    handleStartReadBook(chapterDetail) {
+      // 记录阅读历史
+      this.setUserNovelReadHistory(chapterDetail);
+      // 阅读章节
+      this.handleReadChapter();
+      // 阅读计时器
+      this.setReadTimer();
+    },
+
+    // 获取奖励
+    handleGetReward() {
+      this.$refs.readReward.setRewardTaskData("money");
+    },
+    // 阅读章节
+    handleReadChapter() {
+      this.$refs.readReward.setRewardTaskData("chapter");
+    },
+    // 阅读时长
+    handleReadTime() {
+      this.$refs.readReward.setRewardTaskData("time");
+    },
+    // 阅读计时器
+    setReadTimer() {
+      // 每一分钟计时一次
+      this.readTimer = setInterval(() => {
+        this.handleReadTime();
+      }, 60000);
+      window.addEventListener("beforeunload", () => {
+        clearInterval(this.readTimer);
+      });
     }
   }
 };

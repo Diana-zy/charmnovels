@@ -60,7 +60,7 @@ header {
   @include center;
   margin-right: 16px;
   i {
-    @include icon(32px, 32px, "icon-arrow-active.png");
+    @include icon(32px, 32px, "icon-back-white.png");
   }
 }
 

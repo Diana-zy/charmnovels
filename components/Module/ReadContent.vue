@@ -25,6 +25,25 @@
     </article>
 
     <section class="bottom-operation">
+      <!-- 奖励模块 -->
+      <div class="get-reward-box">
+        <div class="content-left">
+          <img src="~/assets/images/icon-money.png" alt="icon-money" />
+          <div>
+            Reading Reward $1
+            <div class="content-left-num">$1</div>
+          </div>
+        </div>
+        <div
+          :class="[
+            'btn-get-reward',
+            canGetReward ? 'get-anima-hand' : 'btn-disable',
+            isSuccessGetReward ? 'get-anima-reward' : ''
+          ]"
+          @click="handleGetReward"
+          >{{ canGetReward ? "Get $1" : "End" }}</div
+        >
+      </div>
       <!-- 分页模块 -->
       <div class="pagination-box">
         <custom-link
@@ -43,24 +62,6 @@
         </custom-link>
       </div>
     </section>
-    <!-- 相关章节模块 -->
-    <!-- <section v-if="relatedChapterList !== 0" class="module-related-chapters">
-      <common-title-label title="Related Chapters" />
-      <div class="module-related-chapters-content">
-        <item-module-related-chapter
-          v-for="(item, i) in relatedChapterList"
-          :key="i"
-          :item="item"
-          :to="
-            item.isUnlocked && currentChapterDetail.purchase_status !== 2
-              ? `/read/?ch=${item.id}`
-              : ''
-          "
-          @handle-click-chapter="$emit('change-chapter', item)"
-        />
-      </div>
-    </section> -->
-    <common-loading-max v-if="loading" />
   </section>
 </template>
 
@@ -90,9 +91,9 @@ export default {
   },
   data() {
     return {
-      loading: false,
       isMobile: false,
-      previousScrollTop: 0
+      canGetReward: true, // 是否可以领取奖励
+      isSuccessGetReward: false
     };
   },
   computed: {
@@ -127,8 +128,7 @@ export default {
   methods: {
     initStorageReadSetting() {
       Storage.getItem("novel_cssReadFontSize") || Storage.setItem("novel_cssReadFontSize", 18);
-      Storage.getItem("novel_cssReadFontSpace") ||
-        Storage.setItem("novel_cssReadFontSpace", 1.5);
+      Storage.getItem("novel_cssReadFontSpace") || Storage.setItem("novel_cssReadFontSpace", 1.5);
       Storage.getItem("novel_cssReadBackgroundColor") ||
         Storage.setItem("novel_cssReadBackgroundColor", "#0f0f0f");
       Storage.getItem("novel_cssReadTextColor") ||
@@ -205,6 +205,14 @@ export default {
       } catch (error) {
         console.error("Error setting up MutationObserver:", error);
       }
+    },
+
+    handleGetReward() {
+      if (this.canGetReward) {
+        this.canGetReward = false;
+        this.isSuccessGetReward = true;
+        this.$emit("handle-get-reward");
+      }
     }
   }
 };
@@ -220,7 +228,7 @@ export default {
   box-shadow: 0 0 11px 0 rgba($color6, 0.06);
   border-radius: 2px;
   overflow-y: scroll;
-  height: 73vw;
+  height: 87vh;
 }
 .top-info {
   display: flex;
@@ -321,6 +329,92 @@ export default {
   text-decoration: underline;
   margin-top: 8px;
   cursor: pointer;
+}
+.get-reward-box {
+  display: flex;
+  align-items: center;
+  width: 450px;
+  height: 80px;
+  margin: 32px auto;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: #fff4e4;
+  img {
+    width: 70px;
+    height: 70px;
+    margin-right: 12px;
+  }
+  .content-left {
+    display: flex;
+    align-items: center;
+    color: #98650e;
+    font-size: 24px;
+    line-height: 32px;
+  }
+  .content-left-num {
+    width: 50px;
+    text-align: center;
+    font-size: 20px;
+    line-height: 24px;
+    border-radius: 4px;
+    background-color: rgba($color_fff, 0.6);
+  }
+  .btn-get-reward {
+    @include center;
+    width: 86px;
+    height: 36px;
+    margin-left: auto;
+    border-radius: 36px;
+    background-color: $color3;
+    color: $color_fff;
+    font-family: "sesb";
+    font-size: 18px;
+    cursor: pointer;
+    &.btn-disable {
+      background-color: rgba($color3, 0.6);
+      color: rgba($color_fff, 0.8);
+    }
+  }
+  .get-anima-reward {
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: 18px;
+      @include icon(40px, 40px, "icon-money.png");
+      animation: getRewardAnima 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+    }
+    @keyframes getRewardAnima {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100dvh) translateX(0);
+        opacity: 0;
+      }
+    }
+  }
+  .get-anima-hand {
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 36px;
+      @include icon(40px, 40px, "icon-hand.png");
+      animation: handAnim 0.4s linear infinite alternate;
+    }
+    @keyframes handAnim {
+      0% {
+        transform: translate(12px, 12px);
+      }
+      100% {
+        transform: translate(0);
+      }
+    }
+  }
 }
 .pagination-box {
   margin-top: 16px;
@@ -441,6 +535,54 @@ export default {
     font-size: vw(28);
     line-height: vw(38);
     margin-top: vw(16);
+  }
+  .get-reward-box {
+    width: 100%;
+    height: vw(124);
+    margin: vw(46) auto vw(64);
+    padding: 0 vw(24);
+    border-radius: vw(16);
+    img {
+      width: vw(100);
+      height: vw(100);
+      margin-right: vw(18);
+    }
+    .content-left {
+      font-size: vw(38);
+      line-height: vw(54);
+    }
+    .content-left-num {
+      width: vw(88);
+      font-size: vw(32);
+      line-height: vw(40);
+      border-radius: vw(12);
+    }
+    .btn-get-reward {
+      width: vw(132);
+      height: vw(52);
+      border-radius: vw(52);
+      font-size: vw(32);
+    }
+    .get-anima-reward {
+      &::before {
+        width: vw(50);
+        height: vw(50);
+        top: 0;
+        left: vw(40);
+      }
+    }
+    .get-anima-hand {
+      &::after {
+        top: vw(30);
+        left: vw(50);
+        @include icon(vw(60), vw(60), "icon-hand.png");
+      }
+      @keyframes handAnim {
+        0% {
+          transform: translate(vw(20), vw(20));
+        }
+      }
+    }
   }
   .pagination-box {
     margin-top: vw(32);

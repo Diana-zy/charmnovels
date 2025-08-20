@@ -2,12 +2,19 @@
   <div>
     <section class="read-reward-box">
       <i class="icon-money"></i>
-      <span class="text-money">$ 100</span>
-      <div
+      <span v-if="isShowMoney" class="text-money">$ {{ taskData.money }}</span>
+      <!-- <div
         :class="['btn-get', isShowHandAnima ? 'get-anima' : '']"
         @click="handleShowReadRewardPopup"
         >Get</div
-      >
+      > -->
+      <div class="btn-get-gif">
+        <img
+          src="~/assets/images/get-read-reward.gif"
+          alt="get-read-reward"
+          @click="handleShowReadRewardPopup"
+        />
+      </div>
     </section>
 
     <!-- 奖励模块 -->
@@ -20,37 +27,62 @@
             <h3>Super Surprise Reward</h3>
             <div class="money-box">
               <img src="~/assets/images/icon-money.png" alt="icon-money" />
-              <span>$ 100</span>
+              <span>$ {{ taskData.money }}</span>
             </div>
             <div>
-              <div class="level-box">
-                <div class="level-item"> My <div>Lv 5</div> </div>
+              <div
+                v-if="chapterProgress >= 100 && timeProgress >= 100"
+                class="level-box"
+                :class="{ 'disabled-anima': isShowDisabledTip }"
+              >
+                <div class="level-item">
+                  My <div>Lv {{ taskData.level }}</div>
+                </div>
                 <div class="level-progress">
-                  <div> {{ progress }} %</div>
+                  <div> {{ taskData.levelExp }} %</div>
                   <div class="progress-bar">
-                    <div class="progress-bar-inner" :style="{ width: `${progress}%` }"></div>
+                    <div
+                      class="progress-bar-inner"
+                      :style="{ width: `${taskData.levelExp}%` }"
+                    ></div>
                   </div>
                 </div>
-                <div class="level-item"> Goal <div>Lv 6</div> </div>
+                <div class="level-item">
+                  Goal <div>Lv {{ taskData.level + 1 }}</div>
+                </div>
               </div>
               <p class="task-title">Eligibility for Collection</p>
               <div>
-                <div class="task-item">
-                  <p class="task-item-title">Read for 5/190 Chapters</p>
+                <div
+                  class="task-item"
+                  :class="{ 'disabled-anima': chapterProgress < 100 && isShowDisabledTip }"
+                >
+                  <p class="task-item-title"
+                    >Read for {{ Math.min(taskData.chapter, 150) }}/150 Chapters</p
+                  >
                   <div class="task-progress">
                     <div class="progress-bar">
-                      <div class="progress-bar-inner" :style="{ width: `${progress}%` }"></div>
+                      <div
+                        class="progress-bar-inner"
+                        :style="{ width: `${chapterProgress}%` }"
+                      ></div>
                     </div>
-                    <div class="progress-num"> {{ progress }}%</div>
+                    <div class="progress-num"> {{ chapterProgress }}%</div>
                   </div>
                 </div>
-                <div class="task-item">
-                  <p class="task-item-title">Read for 1000/1000 minutes</p>
+                <div
+                  v-if="chapterProgress >= 100"
+                  class="task-item"
+                  :class="{ 'disabled-anima': timeProgress < 100 && isShowDisabledTip }"
+                >
+                  <p class="task-item-title"
+                    >Read for {{ Math.min(taskData.time, 1000) }}/1000 minutes</p
+                  >
                   <div class="task-progress">
                     <div class="progress-bar">
-                      <div class="progress-bar-inner" :style="{ width: `${progress}%` }"></div>
+                      <div class="progress-bar-inner" :style="{ width: `${timeProgress}%` }"></div>
                     </div>
-                    <div class="progress-num"> {{ progress }}%</div>
+                    <div class="progress-num"> {{ timeProgress }}%</div>
                   </div>
                 </div>
               </div>
@@ -66,7 +98,9 @@
                   <img :src="item.img" alt="pay-type-img" />
                 </div>
               </div>
-              <div class="pay-btn"> Get $100 </div>
+              <div class="pay-btn" @click="handleGetRewardPay"
+                ><i class="icon-star"></i> Get ${{ taskData.money }}
+              </div>
               <div class="go-read" @click="handleHideReadRewardPopup">
                 <i class="icon-back"></i>
                 Go Read
@@ -80,6 +114,7 @@
 </template>
 
 <script>
+import Storage from "~/utils/storage";
 export default {
   data() {
     return {
@@ -91,19 +126,79 @@ export default {
         { type: "ios", img: require("~/assets/images/icon-pay-ios.png") },
         { type: "google", img: require("~/assets/images/icon-pay-google.png") }
       ],
-      payType: "paypal" // 支付方式
+      payType: "paypal", // 支付方式
+      isShowMoney: false,
+      taskData: {
+        chapter: 0,
+        level: 1,
+        levelExp: 0,
+        money: 100,
+        time: 0
+      },
+      isShowDisabledTip: false
     };
+  },
+  computed: {
+    chapterProgress() {
+      // 上限为100
+      return Math.min(Math.floor((this.taskData.chapter / 150) * 100), 100);
+    },
+    timeProgress() {
+      // 上限为100
+      return Math.min(Math.floor((this.taskData.time / 1000) * 100), 100);
+    }
+  },
+  mounted() {
+    this.getRewardTaskData();
   },
   methods: {
     handleShowReadRewardPopup() {
       this.isShowHandAnima = false;
       this.isShowReadReward = true;
-      this.distanceFromTop = document.documentElement.scrollTop;
       document.body.classList.add("no-scroll");
     },
     handleHideReadRewardPopup() {
       this.isShowReadReward = false;
       document.body.classList.remove("no-scroll");
+    },
+
+    getRewardTaskData() {
+      this.isShowMoney = true;
+      const taskData = Storage.getItem("novel_reward_task");
+      if (taskData) {
+        this.taskData = taskData;
+      } else {
+        Storage.setItem("novel_reward_task", this.taskData);
+      }
+    },
+
+    setRewardTaskData(type) {
+      switch (type) {
+        case "chapter":
+          this.taskData.chapter++;
+          this.taskData.levelExp += 10;
+          if (this.taskData.levelExp >= 100) {
+            this.taskData.level += 1;
+            this.taskData.levelExp = 0;
+          }
+          break;
+        case "money":
+          this.taskData.money++;
+          break;
+        case "time":
+          this.taskData.time++;
+          break;
+        default:
+          break;
+      }
+      Storage.setItem("novel_reward_task", this.taskData);
+    },
+
+    handleGetRewardPay() {
+      this.isShowDisabledTip = true;
+      setTimeout(() => {
+        this.isShowDisabledTip = false;
+      }, 1000);
     }
   }
 };
@@ -122,7 +217,7 @@ export default {
   border-radius: 40px;
   border: 1px solid rgba($color_fff, 0.6);
   .icon-money {
-    @include icon(30px, 30px, "icon-money.png");
+    @include icon(36px, 36px, "icon-money.png");
   }
   .text-money {
     font-size: 20px;
@@ -159,6 +254,17 @@ export default {
       }
     }
   }
+  .btn-get-gif {
+    position: relative;
+    width: 56px;
+    height: 30px;
+    img {
+      position: absolute;
+      width: 70px;
+      height: 55px;
+      cursor: pointer;
+    }
+  }
 }
 
 .read-reward-popup {
@@ -190,7 +296,7 @@ export default {
     position: absolute;
     top: 24px;
     right: 32px;
-    @include icon(36px, 36px, "icon-close.png");
+    @include icon(36px, 36px, "icon-close-reward.png");
     cursor: pointer;
   }
   h3 {
@@ -241,6 +347,7 @@ export default {
       height: 12px;
       border-radius: 12px;
       background-color: rgba($color_fff, 0.1);
+      overflow: hidden;
     }
     .progress-bar-inner {
       height: 100%;
@@ -257,7 +364,8 @@ export default {
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 16px;
-    background-color: #333;
+    background: linear-gradient(to top, #241502 0%, #523808 100%);
+    border: 1px solid rgba($color_fff, 0.3);
     .task-item-title {
       margin-bottom: 16px;
       font-size: 20px;
@@ -270,7 +378,8 @@ export default {
         width: 100%;
         height: 12px;
         border-radius: 12px;
-        background-color: rgba($color_fff, 0.1);
+        background-color: rgba($color_000, 0.5);
+        overflow: hidden;
       }
       .progress-bar-inner {
         height: 100%;
@@ -308,18 +417,24 @@ export default {
       }
     }
     .pay-btn {
-      margin: 50px auto 0;
+      margin: 40px auto 0;
       width: 244px;
-      height: 64px;
+      height: 77px;
       @include center;
-      border-radius: 64px;
-      background-color: $color3;
+      gap: 4px;
+      background-image: url("~/assets/images/icon-get-money.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 100% 100%;
       font-size: 22px;
       font-family: "sesb";
       cursor: pointer;
+      .icon-star {
+        @include icon(26px, 26px, "icon-get-money-star.png");
+      }
     }
     .go-read {
-      margin: 24px auto 0;
+      margin: 16px auto 0;
       @include center;
       gap: 4px;
       font-size: 18px;
@@ -327,8 +442,45 @@ export default {
       color: rgba($color8, 0.6);
       cursor: pointer;
       .icon-back {
-        @include icon(20px, 20px, "icon-back.png");
+        @include icon(20px, 20px, "icon-go-read.png");
       }
+    }
+  }
+}
+
+.disabled-anima {
+  animation: shake-bottom 0.8s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
+  @keyframes shake-bottom {
+    0%,
+    100% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+      -webkit-transform-origin: 50% 100%;
+      transform-origin: 50% 100%;
+    }
+    10% {
+      -webkit-transform: rotate(2deg);
+      transform: rotate(2deg);
+    }
+    20%,
+    40%,
+    60% {
+      -webkit-transform: rotate(-4deg);
+      transform: rotate(-4deg);
+    }
+    30%,
+    50%,
+    70% {
+      -webkit-transform: rotate(4deg);
+      transform: rotate(4deg);
+    }
+    80% {
+      -webkit-transform: rotate(-2deg);
+      transform: rotate(-2deg);
+    }
+    90% {
+      -webkit-transform: rotate(2deg);
+      transform: rotate(2deg);
     }
   }
 }
@@ -342,11 +494,12 @@ export default {
     border-radius: vw(60);
     border: vw(2) solid rgba($color_fff, 0.6);
     .icon-money {
-      width: vw(40);
-      height: vw(40);
+      width: vw(56);
+      height: vw(56);
     }
     .text-money {
-      font-size: vw(28);
+      font-size: vw(30);
+      line-height: vw(38);
     }
     .btn-get {
       width: vw(64);
@@ -363,6 +516,14 @@ export default {
         0% {
           transform: translate(vw(16), vw(16));
         }
+      }
+    }
+    .btn-get-gif {
+      width: vw(90);
+      height: vw(50);
+      img {
+        width: vw(120);
+        height: vw(90);
       }
     }
   }
@@ -455,18 +616,22 @@ export default {
         height: vw(80);
         border-radius: vw(80);
         img {
-          height: vw(32);
+          height: vw(36);
         }
       }
       .pay-btn {
-        margin: vw(50) auto 0;
+        margin: vw(42) auto 0;
         width: vw(320);
-        height: vw(96);
+        height: vw(101);
         border-radius: vw(96);
         font-size: vw(36);
+        .icon-star {
+          width: vw(44);
+          height: vw(44);
+        }
       }
       .go-read {
-        margin: vw(32) auto 0;
+        margin: vw(24) auto 0;
         gap: vw(8);
         font-size: vw(28);
         .icon-back {
