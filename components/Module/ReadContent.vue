@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <section v-if="currentChapterDetail" class="read-container">
+  <section v-if="currentChapterDetail" id="read-book-container" class="read-container">
     <!-- 第一章节才展示 top-info-->
     <div v-if="currentChapterDetail.chapter_num === 1" class="top-info">
       <div class="cover">
@@ -21,7 +21,7 @@
       <h3
         >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
       </h3>
-      <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
+      <read-content-with-ad :content="currentChapterDetail.content" />
     </article>
 
     <section class="bottom-operation">
@@ -30,7 +30,6 @@
         <custom-link
           :to="preChapterPath"
           :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
-          @click.native="(event) => handleClickPageChapter(event, preChapterItem)"
         >
           <i class="icon-prev"></i>
           <span>Previous Chapter</span>
@@ -38,7 +37,6 @@
         <custom-link
           :to="nextChapterPath"
           :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
-          @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"
         >
           <span>Next Chapter</span>
           <i class="icon-next"></i>
@@ -67,10 +65,7 @@
 </template>
 
 <script>
-import Vue from "vue";
 import Storage from "@/utils/storage";
-import googleAdPreload from "@/components/GoogleAdPreload";
-import googleAdSmall from "@/components/GoogleAdSmall";
 export default {
   props: {
     currentChapterDetail: {
@@ -97,44 +92,24 @@ export default {
     return {
       loading: false,
       isMobile: false,
-      firstTagCount: 30, // 首次广告展示的字数位置
-      followingTagCount: 1200, // 后续广告展示的字数间隔
-      currentTagIndex: 0 // 当前广告展示的字数位置
+      previousScrollTop: 0
     };
   },
   computed: {
-    chapterContent() {
-      let content = this.currentChapterDetail?.content;
-      content = content?.replace(/\n/g, "<p class='br'></p>");
-      return content;
-    },
     preChapterPath() {
-      return this.preChapterItem === null || !this.preChapterItem.isUnlocked
-        ? "#"
-        : `/read/?ch=${this.preChapterItem.id}`;
+      return this.preChapterItem === null ? "#" : `/read/?ch=${this.preChapterItem.id}`;
     },
     nextChapterPath() {
-      return this.nextChapterItem === null || !this.nextChapterItem.isUnlocked
-        ? "#"
-        : `/read/?ch=${this.nextChapterItem.id}`;
+      return this.nextChapterItem === null ? "#" : `/read/?ch=${this.nextChapterItem.id}`;
     }
   },
   watch: {
-    chapterContent(newContent) {
-      if (newContent) {
+    // 监听是否有数据，且只监听一次
+    currentChapterDetail(newValue, oldValue) {
+      if (newValue && oldValue === null) {
         this.$nextTick(() => {
-          const cut30pTags = this.getContentPTagesToLength(30);
-          if (cut30pTags) {
-            this.insertContentAd(cut30pTags, "content-ad-1", "page", "7045171250", true);
-          }
-
-          // 免费章节或解锁章节，插入中间段落广告
-          if (
-            this.currentChapterDetail.purchase_status === 2 ||
-            this.currentChapterDetail.chapter_num <= 8
-          ) {
-            this.createCountPTagsAd();
-          }
+          this.watchBookContentScroll();
+          this.watchReaderScrollHeight();
         });
       }
     }
@@ -144,104 +119,92 @@ export default {
     this.initStorageReadSetting();
 
     const root = document.documentElement;
-    root.style.setProperty("--read-font-size", Storage.getCookie("novel_cssReadFontSize") + "px");
-    root.style.setProperty("--read-font-space", Storage.getCookie("novel_cssReadFontSpace"));
-    root.style.setProperty("--read-bg-color", Storage.getCookie("novel_cssReadBackgroundColor"));
-    root.style.setProperty("--read-text-color", Storage.getCookie("novel_cssReadTextColor"));
+    root.style.setProperty("--read-font-size", Storage.getItem("novel_cssReadFontSize") + "px");
+    root.style.setProperty("--read-font-space", Storage.getItem("novel_cssReadFontSpace"));
+    root.style.setProperty("--read-bg-color", Storage.getItem("novel_cssReadBackgroundColor"));
+    root.style.setProperty("--read-text-color", Storage.getItem("novel_cssReadTextColor"));
   },
   methods: {
     initStorageReadSetting() {
-      Storage.getCookie("novel_cssReadFontSize") || Storage.setCookie("novel_cssReadFontSize", 18);
-      Storage.getCookie("novel_cssReadFontSpace") ||
-        Storage.setCookie("novel_cssReadFontSpace", 1.5);
-      Storage.getCookie("novel_cssReadBackgroundColor") ||
-        Storage.setCookie("novel_cssReadBackgroundColor", "#0f0f0f");
-      Storage.getCookie("novel_cssReadTextColor") ||
-        Storage.setCookie("novel_cssReadTextColor", "#eee");
-      Storage.getCookie("novel_cssReadLastTheme") ||
-        Storage.setCookie("novel_cssReadLastTheme", "dark");
-    },
-
-    // 获取指定字符长度后的第一个p标签
-    getContentPTagesToLength(length) {
-      const contentTextRef = this.$refs.contentTextRef;
-      // 获取所有p标签
-      const allParagraph = contentTextRef.querySelectorAll("p");
-      const contentText = this.currentChapterDetail.content;
-      /* 与最后一个广告留出间隔 */
-      if (contentText.length - this.followingTagCount > length) {
-        const cutContentText = contentText.slice(0, length);
-        // 截取的字符串中p标签数量
-        const pTagsLengthInCutContentText = (cutContentText.match(/\n/g) || []).length;
-        // 截取的字符串中的p标签数量等于全文p标签数量
-        if (pTagsLengthInCutContentText === allParagraph.length) {
-          return null;
-        } else {
-          return allParagraph[pTagsLengthInCutContentText];
-        }
-      }
-      // 字符数不足
-      else {
-        return null;
-      }
-    },
-
-    // 动态添加广告
-    insertContentAd(markEl, className, adType = "page", adSlot, isPreload = false) {
-      const componentInstance = new (Vue.extend(isPreload ? googleAdPreload : googleAdSmall))({
-        propsData: {
-          adSlot,
-          adType
-        }
-      });
-      componentInstance.$mount();
-      componentInstance.$el?.classList.add(className);
-      markEl.insertAdjacentElement("afterend", componentInstance.$el);
-    },
-
-    createCountPTagsAd() {
-      this.currentTagIndex++;
-      const cutTextCountPTags = this.getContentPTagesToLength(
-        this.currentTagIndex * this.followingTagCount + this.firstTagCount
-      );
-
-      // 可填充且广告数量不超过9
-      if (cutTextCountPTags && this.currentTagIndex <= 9) {
-        const adSlotArr = [
-          "7313227898", // page-1
-          "6438397404", // inline-1
-          "3151557383", // info-1
-          "4933744044", // page-2
-          "5070207930", // inline-2
-          "6407613406", // info-2
-          "8770052860", // page-3
-          "2224552749", // inline-3
-          "6287920834" // info-3
-        ];
-        const adTypeArr = ["page", "inline", "info"];
-        const adType = adTypeArr[(this.currentTagIndex - 1) % 3]; // ["page","inline","info"]
-        this.insertContentAd(
-          cutTextCountPTags,
-          `content-ad-${adType}`,
-          adType,
-          adSlotArr[this.currentTagIndex - 1]
-        );
-        this.createCountPTagsAd();
-      }
-    },
-
-    handleClickPageChapter(event, item) {
-      if (item === null || !item.isUnlocked) {
-        event.preventDefault();
-        // 有章节且需要解锁
-        if (item !== null && !item.isUnlocked) {
-          this.$emit("change-chapter", item);
-        }
-      }
+      Storage.getItem("novel_cssReadFontSize") || Storage.setItem("novel_cssReadFontSize", 18);
+      Storage.getItem("novel_cssReadFontSpace") ||
+        Storage.setItem("novel_cssReadFontSpace", 1.5);
+      Storage.getItem("novel_cssReadBackgroundColor") ||
+        Storage.setItem("novel_cssReadBackgroundColor", "#0f0f0f");
+      Storage.getItem("novel_cssReadTextColor") ||
+        Storage.setItem("novel_cssReadTextColor", "#eee");
+      Storage.getItem("novel_cssReadLastTheme") ||
+        Storage.setItem("novel_cssReadLastTheme", "dark");
     },
 
     handleShowMenuSetting() {
       this.$emit("show-menu-setting");
+    },
+
+    /* 处理页内滚动 */
+    watchBookContentScrollCallback(event) {
+      if (window.AD_SHOW_SCROLL === false) {
+        const admSlotOffsetTop = document.querySelector("." + window.AD_SHOW_SCROLL_TOP).offsetTop;
+        const pageScrollTop = event.target.scrollTop;
+
+        // console.log("admSlotOffsetTop", admSlotOffsetTop);
+        // console.log("pageScrollTop", pageScrollTop);
+        // console.log("window.AD_SHOW_SCROLL_TOP", window.AD_SHOW_SCROLL_TOP);
+
+        // 获取header高度
+        const headerHeight = document.querySelector(".read-header").offsetHeight;
+        if (pageScrollTop >= admSlotOffsetTop - headerHeight) {
+          event.stopPropagation();
+          event.preventDefault();
+          event.target.scrollTo(0, admSlotOffsetTop - headerHeight);
+          this.previousScrollTop = pageScrollTop;
+        }
+      }
+      // if (
+      //   (this.watchReadChapter(event.target.scrollTop),
+      //   window.__IS_SHOW_MASK__ &&
+      //     (event.stopPropagation(),
+      //     event.preventDefault(),
+      //     event.target.scrollTo(0, window.___READ_MORE_TOP___)),
+      //   !1 === window.___AD_SHOW_SCROLL___)
+      // ) {
+      //   const e = document.querySelector("." + window.___AD_SHOW_SCROLL_TOP___).offsetTop,
+      //     o = event.target.scrollTop;
+      //   o > this.previousScrollTop &&
+      //     event.target.scrollTop >= e - 65 &&
+      //     (event.stopPropagation(), event.preventDefault(), event.target.scrollTo(0, e - 65)),
+      //     (this.previousScrollTop = o);
+      // }
+    },
+    watchBookContentScroll() {
+      document
+        .getElementById("read-book-container")
+        .addEventListener("scroll", this.watchBookContentScrollCallback);
+    },
+    watchReaderScrollHeight() {
+      try {
+        const container = document.getElementById("read-book-container");
+        if (!container) {
+          console.error('Element with ID "read-book-container" not found.');
+          return;
+        }
+
+        new MutationObserver((mutationsList) => {
+          for (const mutation of mutationsList) {
+            if (mutation.type === "attributes" && mutation.attributeName === "style") {
+              console.log("watchReaderScrollHeight", container.clientHeight);
+              // 这里假设我们想要获取的是元素的高度变化
+              // 如果只需要监听 style 变化而不做实际的高度计算或更新，可以根据实际需求调整
+              this.innerHeight = container.clientHeight;
+            }
+          }
+        }).observe(container, {
+          attributes: true,
+          attributeFilter: ["style"]
+        });
+      } catch (error) {
+        console.error("Error setting up MutationObserver:", error);
+      }
     }
   }
 };
@@ -251,11 +214,13 @@ export default {
 .read-container {
   width: 100%;
   max-width: 900px;
-  margin: 100px auto 32px;
+  margin: 32px auto 32px;
   padding: 0 30px 40px;
   background: #fffefc;
   box-shadow: 0 0 11px 0 rgba($color6, 0.06);
   border-radius: 2px;
+  overflow-y: scroll;
+  height: 73vw;
 }
 .top-info {
   display: flex;
@@ -267,7 +232,7 @@ export default {
 .cover {
   width: 200px;
   height: 300px;
-  margin-top: -60px;
+  margin-top: 24px;
   box-shadow: 0 4px 32px 0 rgba($color6, 0.09);
   border-radius: 2px;
   overflow: hidden;
@@ -298,7 +263,7 @@ export default {
     line-height: 26px;
     padding: 24px 0 16px;
   }
-  p {
+  div {
     font-size: 16px;
     line-height: 26px;
   }
@@ -307,22 +272,8 @@ export default {
   ::v-deep .br {
     height: 16px;
   }
-  // 正文第一个广告位
-  ::v-deep .content-ad-1 {
-    margin-bottom: 16px;
-    font-family: "se";
-  }
-  ::v-deep .content-ad-page {
-    margin: 0 auto 16px;
-    font-family: "se";
-  }
-  ::v-deep .content-ad-inline {
-    height: 50px;
-    margin: 0 auto 16px;
-  }
-  ::v-deep .content-ad-info {
-    margin: 0 auto 16px;
-    font-family: "se";
+  ::v-deep .adm-slot {
+    margin-top: 16px;
   }
 }
 
@@ -412,7 +363,7 @@ export default {
 @media screen and (max-width: 750px) {
   .read-container {
     max-width: unset;
-    min-height: 100vh;
+    height: calc(100dvh - vw(96));
     margin: 0;
     padding: 0 vw(46) vw(48);
     background: var(--read-bg-color);
@@ -445,7 +396,7 @@ export default {
       line-height: vw(54);
       padding: vw(16) 0 vw(32);
     }
-    p {
+    div {
       font-size: vw(36);
       line-height: vw(48);
     }
@@ -454,18 +405,8 @@ export default {
     ::v-deep .br {
       height: vw(24);
     }
-    ::v-deep .content-ad-1 {
-      margin-bottom: vw(24);
-    }
-    ::v-deep .content-ad-page {
-      margin-bottom: vw(24);
-    }
-    ::v-deep .content-ad-inline {
-      height: 50px;
-      margin-bottom: vw(24);
-    }
-    ::v-deep .content-ad-info {
-      margin-bottom: vw(24);
+    ::v-deep .adm-slot {
+      margin-top: vw(24);
     }
   }
 

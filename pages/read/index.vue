@@ -66,7 +66,6 @@
 
 <script>
 import Storage from "~/utils/storage";
-import { getQueryParam, getIsWatchedIncentiveVideo } from "@/utils/utils";
 
 export default {
   data() {
@@ -87,12 +86,7 @@ export default {
   },
   created() {
     if (process.client) {
-      if (getQueryParam("nov") && getQueryParam("pay_status") === "success") {
-        this.confirmUnlockNovel();
-      } else {
-        this.getCurrentChapterDetail();
-      }
-      console.log("getQueryParam('pay_status'):", getQueryParam("pay_status"));
+      this.getCurrentChapterDetail();
     }
   },
   mounted() {
@@ -111,12 +105,10 @@ export default {
         })
         .then((response) => {
           const chapterDetail = response;
-          /* 登录过期 */
-          if (!chapterDetail.is_login && Storage.getCookie("novel_token")) {
-            this.$globalMethod.showDialog("Your session has expired. Please log in again.");
-          }
           // 初始化相关章节
           this.currentChapterDetail = chapterDetail;
+          // 记录阅读历史
+          this.setUserNovelReadHistory(chapterDetail);
           this.relatedChapterList = chapterDetail.chapter.map((item) => {
             return { ...item, isUnlocked: true };
           });
@@ -146,33 +138,30 @@ export default {
           this.novelChapterList = novelDetail.chapter.map((item) => {
             return { ...item, isUnlocked: true };
           });
-          this.getFreeNumAndUnlocked();
+          this.getPreNextChapter();
         });
     },
 
-    // 获取免费章节以及解锁状态
-    getFreeNumAndUnlocked() {
+    // 设置用户阅读历史
+    setUserNovelReadHistory(chapterDetail) {
+      const currentChapterId = chapterDetail.chapter_id;
+      const currentNovelId = chapterDetail.novel_info.id;
+      const novelReadHistoryList = Storage.getItem("novel_read_history_list") || [];
+      const novelReadHistoryItem = novelReadHistoryList.find((item) => item.id === currentNovelId);
+      if (novelReadHistoryItem) {
+        const index = novelReadHistoryList.findIndex((item) => item.id === currentNovelId);
+        novelReadHistoryList.splice(index, 1);
+        novelReadHistoryItem.chapter_id = currentChapterId;
+        novelReadHistoryList.unshift(novelReadHistoryItem);
+      } else {
+        novelReadHistoryList.unshift({ ...chapterDetail.novel_info, chapter_id: currentChapterId });
+      }
+      Storage.setItem("novel_read_history_list", novelReadHistoryList);
+    },
+    // 获取上一章和下一章路径
+    getPreNextChapter() {
       const chapterId = this.$route.query.ch;
 
-      this.novelChapterList.forEach((item) => {
-        if (item.chapter_num >= 2 && item.chapter_num <= 8) {
-          const isUnlocked = getIsWatchedIncentiveVideo(`${item.id}`);
-          item.isUnlocked = isUnlocked;
-        } else {
-          item.isUnlocked = true;
-        }
-      });
-
-      this.relatedChapterList.forEach((item) => {
-        if (item.chapter_num >= 2 && item.chapter_num <= 8) {
-          const isUnlocked = getIsWatchedIncentiveVideo(`${item.id}`);
-          item.isUnlocked = isUnlocked;
-        } else {
-          item.isUnlocked = true;
-        }
-      });
-
-      // 计算上一章和下一章路径
       const currentChapterIndex = this.novelChapterList.findIndex(
         (chapter) => chapter.id === Number(chapterId)
       );
@@ -225,18 +214,6 @@ export default {
       this.isShowHeader = false;
       document.body.classList.remove("no-scroll");
       window.scrollTo(0, this.distanceFromTop); // 恢复滚动位置
-    },
-    async confirmUnlockNovel() {
-      try {
-        const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
-          site_id: process.env.SITE_ID,
-          novel_id: getQueryParam("nov")
-        });
-        console.log(" response:", res);
-      } catch (error) {
-        console.log(" error:", error);
-      }
-      this.getCurrentChapterDetail();
     }
   }
 };

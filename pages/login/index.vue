@@ -112,8 +112,8 @@ export default {
         });
         console.log("Login response:", loginResponse);
 
-        Storage.setCookie("novel_token", loginResponse.token);
-        Storage.setCookie("novel_userId", loginResponse.user_id);
+        Storage.setItem("novel_token", loginResponse.token);
+        Storage.setItem("novel_userId", loginResponse.user_id);
 
         this.handleSkip();
       } catch (error) {
@@ -124,8 +124,8 @@ export default {
       this.loading = false;
     },
     handleSkip() {
-      if (Storage.getCookie("novel_preLoginPath")) {
-        const newHref = window.location.origin + Storage.getCookie("novel_preLoginPath");
+      if (Storage.getItem("novel_preLoginPath")) {
+        const newHref = window.location.origin + Storage.getItem("novel_preLoginPath");
         window.location.href = newHref;
       } else {
         simulateClick("/", "from", "login");

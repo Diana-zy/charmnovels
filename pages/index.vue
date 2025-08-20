@@ -4,6 +4,20 @@
 
     <module-home-banner :data="recBooks" />
 
+    <section v-if="novelReadHistoryBooks.length > 0" class="module-common module-history">
+      <common-title-label title="History Reading" />
+      <div class="module-history-content">
+        <item-module-common
+          v-for="(item, i) in novelReadHistoryBooks"
+          :key="i"
+          :item="item"
+          :index="i"
+          :eager="3"
+          :to="`/novel/${item.id}/`"
+        />
+      </div>
+    </section>
+
     <section class="module-common module-trending">
       <common-title-label title="Trending" />
       <div class="module-trending-content">
@@ -27,7 +41,6 @@
           :key="i"
           :item="item"
           :index="i"
-          :eager="3"
           :to="`/novel/${item.id}/`"
         />
       </div>
@@ -58,6 +71,7 @@
   </main>
 </template>
 <script>
+import Storage from "~/utils/storage";
 export default {
   async asyncData({ $axios, env }) {
     try {
@@ -99,15 +113,19 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      novelReadHistoryBooks: []
+    };
   },
-  mounted() {},
-  beforeDestroy() {},
+  mounted() {
+    this.novelReadHistoryBooks = Storage.getItem("novel_read_history_list") || [];
+  },
   methods: {}
 };
 </script>
 
 <style lang="scss" scoped>
+.module-history-content,
 .module-trending-content,
 .module-popular-content {
   display: grid;
@@ -116,6 +134,7 @@ export default {
 }
 
 @media screen and (max-width: 750px) {
+  .module-history-content,
   .module-trending-content,
   .module-popular-content {
     grid-template-columns: repeat(3, vw(198));

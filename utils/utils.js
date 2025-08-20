@@ -1,5 +1,3 @@
-import Storage from "@/utils/storage";
-
 // 模拟点击链接
 function simulateClick(route, key, value, className) {
   // 获取当前页面的 URL 参数
@@ -59,7 +57,7 @@ function generateCustomLink(url) {
 
   const currentParams = new URLSearchParams(window.location.search);
   const currentPathname = window.location.pathname;
-  const targetDomain = getTargetDomain();
+  const targetDomain = window.location.host;
   const protocol = window.location.protocol;
 
   const from = filterFromPath(currentPathname);
@@ -173,38 +171,6 @@ function getQueryParam(paramName, url = window.location.href) {
   }
 }
 
-/*
- * 获取是否已观看激励视频
- * @param {String} chapterId 剧集ID-集数
- * @return {Boolean} 是否已观看激励视频
- */
-function getIsWatchedIncentiveVideo(chapterId) {
-  const incentiveVideoStr = Storage.getCookie("hi_incentiveVideos");
-  if (!incentiveVideoStr) {
-    return false;
-  }
-  const incentiveVideoList = incentiveVideoStr.split(",");
-  return incentiveVideoList.includes(chapterId);
-}
-
-/*
- * 存储观看激励视频的数据
- * @param {String} chapterId 剧集ID-集数
- */
-function setWatchedIncentiveVideo(chapterId) {
-  const incentiveVideoStr = Storage.getCookie("hi_incentiveVideos");
-  if (!incentiveVideoStr) {
-    const newIncentiveVideoList = [chapterId];
-    Storage.setCookie("hi_incentiveVideos", newIncentiveVideoList, 365);
-  } else {
-    const incentiveVideoList = incentiveVideoStr.split(",");
-    if (!incentiveVideoList.includes(chapterId)) {
-      const newIncentiveVideoList = [chapterId, ...incentiveVideoList];
-      Storage.setCookie("hi_incentiveVideos", newIncentiveVideoList, 365);
-    }
-  }
-}
-
 export {
   simulateClick,
   generateCustomLink,
@@ -214,7 +180,5 @@ export {
   getStarListStyle,
   getStarScore,
   getTargetDomain,
-  getQueryParam,
-  getIsWatchedIncentiveVideo,
-  setWatchedIncentiveVideo
+  getQueryParam
 };

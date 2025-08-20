@@ -1,5 +1,5 @@
 <template>
-  <header class="theme-dark">
+  <header class="theme-dark read-header">
     <custom-link v-show="isShowBack" to="/" class="icon-back">
       <i></i>
     </custom-link>

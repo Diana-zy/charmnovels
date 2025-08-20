@@ -3,7 +3,11 @@
     <section class="read-reward-box">
       <i class="icon-money"></i>
       <span class="text-money">$ 100</span>
-      <div class="btn-get" @click="handleShowReadRewardPopup">Get</div>
+      <div
+        :class="['btn-get', isShowHandAnima ? 'get-anima' : '']"
+        @click="handleShowReadRewardPopup"
+        >Get</div
+      >
     </section>
 
     <!-- 奖励模块 -->
@@ -79,6 +83,7 @@
 export default {
   data() {
     return {
+      isShowHandAnima: true, // 是否显示手部动画
       isShowReadReward: false, // 阅读奖励弹窗
       progress: 70, // 阅读进度
       payTypeArr: [
@@ -91,6 +96,7 @@ export default {
   },
   methods: {
     handleShowReadRewardPopup() {
+      this.isShowHandAnima = false;
       this.isShowReadReward = true;
       this.distanceFromTop = document.documentElement.scrollTop;
       document.body.classList.add("no-scroll");
@@ -134,6 +140,8 @@ export default {
     font-size: 18px;
     font-family: "seb";
     cursor: pointer;
+  }
+  .get-anima {
     &::after {
       content: "";
       position: absolute;
@@ -174,7 +182,7 @@ export default {
   left: 0;
   bottom: 0;
   width: 100%;
-  padding: 24px 32px 130px;
+  padding: 24px 32px 50px;
   border-radius: 32px 32px 0 0;
   background: #222;
   color: $color8;
@@ -359,7 +367,7 @@ export default {
     }
   }
   .reward-content {
-    padding: vw(32) vw(46) vw(200);
+    padding: vw(32) vw(46);
     border-radius: vw(46) vw(46) 0 0;
     .icon-close {
       position: absolute;
@@ -451,7 +459,7 @@ export default {
         }
       }
       .pay-btn {
-        margin: vw(80) auto 0;
+        margin: vw(50) auto 0;
         width: vw(320);
         height: vw(96);
         border-radius: vw(96);
