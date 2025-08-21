@@ -5,18 +5,14 @@
 </template>
 
 <script>
-import { customAlphabet } from "nanoid";
+import { v4 as uuidv4 } from "uuid";
 import Storage from "@/utils/storage";
 export default {
   mounted() {
     const userId = Storage.getItem("novel_userId");
     if (!userId) {
-      const nanoid = customAlphabet(
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-        32
-      );
-      const randomId = nanoid();
-      Storage.setItem("novel_userId", randomId);
+      const userId = uuidv4().replace(/-/g, "");
+      Storage.setItem("novel_userId", userId);
     }
   },
   methods: {}

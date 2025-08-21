@@ -76,25 +76,25 @@ export default {
   async asyncData({ $axios, env }) {
     try {
       const [recResponse, trendingResponse, popularResponse, allBooksResponse] = await Promise.all([
-        $axios.$post("/api/novel/novel_module", {
+        $axios.$post("/api/free_novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "rec",
           page_size: 3,
           page: 1
         }),
-        $axios.$post("/api/novel/novel_module", {
+        $axios.$post("/api/free_novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "trending",
           page_size: 6,
           page: 1
         }),
-        $axios.$post("/api/novel/novel_module", {
+        $axios.$post("/api/free_novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "popular",
           page_size: 6,
           page: 1
         }),
-        $axios.$post("/api/novel/novel_module", {
+        $axios.$post("/api/free_novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
           page_size: 4,
@@ -118,7 +118,8 @@ export default {
     };
   },
   mounted() {
-    this.novelReadHistoryBooks = Storage.getItem("novel_read_history_list").slice(0, 6) || [];
+    const novelReadHistoryList = Storage.getItem("novel_read_history_list");
+    this.novelReadHistoryBooks = (novelReadHistoryList && novelReadHistoryList.slice(0, 6)) || [];
   }
 };
 </script>

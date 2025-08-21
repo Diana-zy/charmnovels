@@ -2,7 +2,7 @@
   <main>
     <custom-header class="login-page" />
     <div class="m-header">
-      <custom-link class="btn-skip" to="/" @click="handleSkip">
+      <custom-link class="btn-skip" to="/">
         <i class="icon-back"></i>
       </custom-link>
       <div class="header-title">CharmNovels</div>

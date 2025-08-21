@@ -1,7 +1,7 @@
 <template>
   <main>
     <custom-header />
-    <section class="module-introduce">
+    <section v-if="novelDetailInfo" class="module-introduce">
       <div class="introduce-content">
         <div class="cover-container">
           <nuxt-img
@@ -56,7 +56,10 @@
             </div>
           </div>
 
-          <custom-link :to="`/read/?ch=${novelDetail.chapter[0].id}`" class="btn-read">
+          <custom-link
+            :to="`/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`"
+            class="btn-read"
+          >
             <i class="icon-read-book"></i>
             <span>Read Now</span>
           </custom-link>
@@ -117,7 +120,11 @@
       </div>
     </section>
     <section class="bottom-menu pc-hidden-flex">
-      <custom-link :to="`/read/?ch=${novelDetail.chapter[0].id}`" class="menu-item menu-read">
+      <custom-link
+        v-if="novelDetail"
+        :to="`/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`"
+        class="menu-item menu-read"
+      >
         <i class="icon-reading"></i>
         <span>Read Now</span>
       </custom-link>
@@ -127,23 +134,20 @@
 </template>
 
 <script>
+import { v4 as uuidv4 } from "uuid";
+import Storage from "@/utils/storage";
 import { getStarListStyle, getStarScore, shuffleArray } from "~/utils/utils";
 export default {
   async asyncData({ $axios, params, env }) {
-    const novelId = params.novel;
     try {
-      const [novelDetailResponse, allBooksResponse, recBooksResponse] = await Promise.all([
-        $axios.$post("/api/novel/novel_info", {
-          site_id: env.SITE_ID,
-          novel_id: Number(novelId)
-        }),
-        $axios.$post("/api/novel/novel_module", {
+      const [allBooksResponse, recBooksResponse] = await Promise.all([
+        $axios.$post("/api/free_novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
           page_size: 4,
           page: 1
         }),
-        $axios.$post("/api/novel/novel_module", {
+        $axios.$post("/api/free_novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
           page_size: 20,
@@ -152,8 +156,6 @@ export default {
       ]);
       const recBooks = shuffleArray(recBooksResponse.novel_list).slice(0, 5);
       return {
-        novelDetail: novelDetailResponse,
-        novelDetailInfo: novelDetailResponse.novel_info,
         allBooks: allBooksResponse.novel_list,
         recBooks
       };
@@ -163,6 +165,7 @@ export default {
   },
   data() {
     return {
+      novelId: 0,
       isMobile: false,
       novelDetail: null,
       novelDetailInfo: null,
@@ -172,8 +175,7 @@ export default {
       currentRecIndex: 0, // 移动端rec模块当前索引
       changeCurrentRecIndexTimer: null,
       changeCurrentRecIndexInterval: 3000,
-      isShowChapterPopup: false, // 移动端章节弹窗
-      distanceFromTop: 0 // body距离顶部距离
+      isShowChapterPopup: false // 移动端章节弹窗
     };
   },
   watch: {
@@ -188,6 +190,8 @@ export default {
   mounted() {
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
+
+    this.getNovelDetailData();
   },
   methods: {
     getStarListStyle,
@@ -198,6 +202,27 @@ export default {
       } else {
         this.isMobile = false;
       }
+    },
+
+    async getNovelDetailData() {
+      this.novelId = this.$route.params.novel;
+      const userId = this.getUserId();
+      const novelDetail = await this.$axios.$post("/api/free_novel/novel_info", {
+        site_id: process.env.SITE_ID,
+        novel_id: Number(this.novelId),
+        uid: userId
+      });
+      this.novelDetail = novelDetail;
+      this.novelDetailInfo = novelDetail.novel_info;
+    },
+
+    getUserId() {
+      let userId = Storage.getItem("novel_userId");
+      if (!userId) {
+        userId = uuidv4().replace(/-/g, "");
+        Storage.setItem("novel_userId", userId);
+      }
+      return userId;
     },
 
     // 移动端rec模块切换

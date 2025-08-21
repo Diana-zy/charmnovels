@@ -98,10 +98,14 @@ export default {
   },
   computed: {
     preChapterPath() {
-      return this.preChapterItem === null ? "#" : `/read/?ch=${this.preChapterItem.id}`;
+      return this.preChapterItem === null
+        ? "#"
+        : `/read/${this.preChapterItem.novel_id}/?ch=${this.preChapterItem.id}`;
     },
     nextChapterPath() {
-      return this.nextChapterItem === null ? "#" : `/read/?ch=${this.nextChapterItem.id}`;
+      return this.nextChapterItem === null
+        ? "#"
+        : `/read/${this.preChapterItem.novel_id}/?ch=${this.nextChapterItem.id}`;
     }
   },
   watch: {
