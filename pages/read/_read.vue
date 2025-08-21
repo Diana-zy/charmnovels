@@ -18,6 +18,7 @@
           :purchase-status="currentChapterDetail?.purchase_status"
           :current-chapter-id="currentChapterDetail?.chapter_id"
           theme="dark"
+          @handle-click-next-chapter="handleClickNextChapter"
         />
       </div>
     </section>
@@ -25,12 +26,12 @@
     <!-- 小说内容 -->
     <module-read-content
       :current-chapter-detail="currentChapterDetail"
-      :related-chapter-list="relatedChapterList"
       :pre-chapter-item="preChapterItem"
       :next-chapter-item="nextChapterItem"
       @show-menu-setting="handleShowMenuSetting"
       @reload="getCurrentChapterDetail"
       @handle-get-reward="handleGetReward"
+      @handle-click-next-chapter="handleClickNextChapter"
     />
 
     <module-read-reward ref="readReward" />
@@ -55,6 +56,7 @@
             :current-chapter-id="currentChapterDetail?.chapter_id"
             theme="dark"
             @close-chapter-popup="handleHideChapterPopup"
+            @handle-click-next-chapter="handleClickNextChapter"
           />
         </transition>
       </div>
@@ -72,7 +74,6 @@ export default {
   data() {
     return {
       currentChapterDetail: null, // 当前阅读章节详情
-      relatedChapterList: [], // 相关章节列表
       currentReadProgress: 0, // 当前阅读进度
       clickChapterId: 0, // 点击章节id
       isInitIncentiveAd: false, // 激励广告是否初始化
@@ -81,8 +82,7 @@ export default {
       novelChapterList: [], // 章节列表
       isShowChapters: false, // PC端悬浮章节列表
       isShowHeader: false,
-      isShowChapterPopup: false, // 移动端章节弹窗
-      distanceFromTop: 0 // body距离顶部距离
+      isShowChapterPopup: false // 移动端章节弹窗
     };
   },
   created() {
@@ -96,8 +96,26 @@ export default {
   methods: {
     async getCurrentChapterDetail() {
       const chapterId = this.$route.query.ch;
+      const novelId = this.$route.params.read;
+      const userId = Storage.getItem("novel_userId");
+      const novelDetail = await this.$axios.$post("/api/free_novel/novel_info", {
+        site_id: process.env.SITE_ID,
+        novel_id: Number(novelId),
+        uid: userId
+      });
+      // 阅读历史与当前章节不一致，重定向
+      if (Number(chapterId) !== novelDetail.user_last_read_chapter_id) {
+        const newUrl = `${window.location.origin}/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`;
+        window.location.href = newUrl;
+        return;
+      }
+
+      this.novelChapterList = novelDetail.chapter;
+      // 获取上一章和下一章
+      this.getPreNextChapter();
+
       await this.$axios
-        .$post("/api/novel/novel_chapter_content", {
+        .$post("/api/free_novel/novel_chapter_content", {
           site_id: process.env.SITE_ID,
           chapter_id: Number(chapterId)
         })
@@ -105,17 +123,12 @@ export default {
           const chapterDetail = response;
           // 初始化相关章节
           this.currentChapterDetail = chapterDetail;
-          this.handleStartReadBook(chapterDetail); // 处理内容初始化后一些操作
-
-          this.relatedChapterList = chapterDetail.chapter.map((item) => {
-            return { ...item, isUnlocked: true };
-          });
+          // 处理内容初始化后一些操作
+          this.handleStartReadBook(chapterDetail);
 
           const readProgress = (chapterDetail.chapter_num / chapterDetail.novel_info.chapter) * 100;
           this.currentReadProgress =
             readProgress % 1 === 0 ? readProgress : readProgress.toFixed(1);
-
-          this.getCurrentNovelDetail(chapterDetail.novel_info.id);
 
           // eslint-disable-next-line no-undef
           dataLayer.push({
@@ -123,20 +136,6 @@ export default {
             novel_id: chapterDetail.novel_info.id,
             chapter_id: Number(chapterId)
           });
-        });
-    },
-    async getCurrentNovelDetail(novelId) {
-      await this.$axios
-        .$post("/api/novel/novel_info", {
-          site_id: process.env.SITE_ID,
-          novel_id: Number(novelId)
-        })
-        .then((response) => {
-          const novelDetail = response;
-          this.novelChapterList = novelDetail.chapter.map((item) => {
-            return { ...item, isUnlocked: true };
-          });
-          this.getPreNextChapter();
         });
     },
 
@@ -169,6 +168,18 @@ export default {
         currentChapterIndex === this.novelChapterList.length - 1
           ? null
           : this.novelChapterList[currentChapterIndex + 1];
+    },
+
+    // 点击下一章
+    async handleClickNextChapter(chapterId) {
+      const novelId = this.$route.params.read;
+      const userId = Storage.getItem("novel_userId");
+      await this.$axios.$post("/api/free_novel/cnc", {
+        site_id: process.env.SITE_ID,
+        novel_id: Number(novelId),
+        nchid: Number(chapterId),
+        uid: userId
+      });
     },
 
     changeShowChapters() {
@@ -239,10 +250,11 @@ export default {
     },
     // 阅读计时器
     setReadTimer() {
+      const _this = this;
       // 每一分钟计时一次
       this.readTimer = setInterval(() => {
-        this.handleReadTime();
-      }, 60000);
+        _this.handleReadTime();
+      }, 1000);
       window.addEventListener("beforeunload", () => {
         clearInterval(this.readTimer);
       });

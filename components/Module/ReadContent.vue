@@ -21,7 +21,7 @@
       <h3
         >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
       </h3>
-      <read-content-with-ad :content="currentChapterDetail.content" />
+      <!-- <read-content-with-ad :content="currentChapterDetail.content" /> -->
     </article>
 
     <section class="bottom-operation">
@@ -37,7 +37,7 @@
         <div
           :class="[
             'btn-get-reward',
-            canGetReward ? 'get-anima-hand' : 'btn-disable',
+            canGetReward ? '' : 'btn-disable',
             isSuccessGetReward ? 'get-anima-reward' : ''
           ]"
           @click="handleGetReward"
@@ -53,13 +53,24 @@
           <i class="icon-prev"></i>
           <span>Previous Chapter</span>
         </custom-link>
-        <custom-link
-          :to="nextChapterPath"
-          :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
-        >
-          <span>Next Chapter</span>
-          <i class="icon-next"></i>
-        </custom-link>
+        <div class="next-chapter-box">
+          <div
+            class="reward-ad-mask"
+            :class="[isRequestRewardAdLoading ? '' : 'get-anima-hand']"
+            @click="handleOpenRewardAd"
+          >
+            <div v-if="isRequestRewardAdLoading" class="reward-ad-loading"></div>
+          </div>
+          <custom-link
+            ref="nextChapterLinkRef"
+            :to="nextChapterPath"
+            :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
+            @click.native="handleClickNextChapter"
+          >
+            <span>Next Chapter</span>
+            <i class="icon-next"></i>
+          </custom-link>
+        </div>
       </div>
     </section>
   </section>
@@ -72,10 +83,6 @@ export default {
     currentChapterDetail: {
       // eslint-disable-next-line vue/require-prop-type-constructor
       type: Object | null,
-      required: true
-    },
-    relatedChapterList: {
-      type: Array,
       required: true
     },
     preChapterItem: {
@@ -93,7 +100,9 @@ export default {
     return {
       isMobile: false,
       canGetReward: true, // 是否可以领取奖励
-      isSuccessGetReward: false
+      isSuccessGetReward: false, // 是否成功领取奖励
+      isRequestRewardAdLoading: false, // 是否正在请求奖励广告
+      isSecondRequestRewardAd: false // 是否二次请求奖励广告
     };
   },
   computed: {
@@ -105,7 +114,7 @@ export default {
     nextChapterPath() {
       return this.nextChapterItem === null
         ? "#"
-        : `/read/${this.preChapterItem.novel_id}/?ch=${this.nextChapterItem.id}`;
+        : `/read/${this.nextChapterItem.novel_id}/?ch=${this.nextChapterItem.id}`;
     }
   },
   watch: {
@@ -151,34 +160,13 @@ export default {
         const admSlotOffsetTop = document.querySelector("." + window.AD_SHOW_SCROLL_TOP).offsetTop;
         const pageScrollTop = event.target.scrollTop;
 
-        // console.log("admSlotOffsetTop", admSlotOffsetTop);
-        // console.log("pageScrollTop", pageScrollTop);
-        // console.log("window.AD_SHOW_SCROLL_TOP", window.AD_SHOW_SCROLL_TOP);
-
-        // 获取header高度
         const headerHeight = document.querySelector(".read-header").offsetHeight;
         if (pageScrollTop >= admSlotOffsetTop - headerHeight) {
           event.stopPropagation();
           event.preventDefault();
           event.target.scrollTo(0, admSlotOffsetTop - headerHeight);
-          this.previousScrollTop = pageScrollTop;
         }
       }
-      // if (
-      //   (this.watchReadChapter(event.target.scrollTop),
-      //   window.__IS_SHOW_MASK__ &&
-      //     (event.stopPropagation(),
-      //     event.preventDefault(),
-      //     event.target.scrollTo(0, window.___READ_MORE_TOP___)),
-      //   !1 === window.___AD_SHOW_SCROLL___)
-      // ) {
-      //   const e = document.querySelector("." + window.___AD_SHOW_SCROLL_TOP___).offsetTop,
-      //     o = event.target.scrollTop;
-      //   o > this.previousScrollTop &&
-      //     event.target.scrollTop >= e - 65 &&
-      //     (event.stopPropagation(), event.preventDefault(), event.target.scrollTo(0, e - 65)),
-      //     (this.previousScrollTop = o);
-      // }
     },
     watchBookContentScroll() {
       document
@@ -216,6 +204,67 @@ export default {
         this.canGetReward = false;
         this.isSuccessGetReward = true;
         this.$emit("handle-get-reward");
+      }
+    },
+
+    handleOpenRewardAd() {
+      if (this.isRequestRewardAdLoading) {
+        return;
+      }
+      this.isRequestRewardAdLoading = true;
+      const adConfig = {
+        google_ad_loaded_callback: (adInstance) => {
+          if (adInstance !== null) {
+            window.dataLayer.push({
+              event: "C_IR"
+            });
+            adInstance.show((result) => {
+              if (result.status === "viewed") {
+                window.dataLayer.push({
+                  event: "V_IR"
+                });
+                this.handleSimulationClickNextChapter();
+              } else {
+                window.dataLayer.push({
+                  event: "F_IR"
+                });
+              }
+            });
+          } else {
+            console.log("No rewarded ad loaded");
+            // 第一次请求失败给个提示
+            if (this.isSecondRequestRewardAd === false) {
+              this.isSecondRequestRewardAd = true;
+              this.$globalMethod.showNotification({
+                message: "NetWork Error, Please try again later",
+                type: "warning"
+              });
+            } else {
+              this.handleSimulationClickNextChapter();
+            }
+          }
+          this.isRequestRewardAdLoading = false;
+        },
+        google_ad_slot: 6875183545,
+        google_ad_format: "rewarded"
+      };
+
+      window.adsbygoogle = window.adsbygoogle || [];
+      window.adsbygoogle.push({
+        params: adConfig
+      });
+      window.dataLayer.push({
+        event: "Q_IR"
+      });
+    },
+
+    handleSimulationClickNextChapter() {
+      this.$refs.nextChapterLinkRef.$el.click();
+    },
+
+    handleClickNextChapter() {
+      if (this.nextChapterItem !== null) {
+        this.$emit("handle-click-next-chapter", this.nextChapterItem.id);
       }
     }
   }
@@ -400,25 +449,6 @@ export default {
       }
     }
   }
-  .get-anima-hand {
-    position: relative;
-    &::after {
-      content: "";
-      position: absolute;
-      top: 20px;
-      left: 36px;
-      @include icon(40px, 40px, "icon-hand.png");
-      animation: handAnim 0.4s linear infinite alternate;
-    }
-    @keyframes handAnim {
-      0% {
-        transform: translate(12px, 12px);
-      }
-      100% {
-        transform: translate(0);
-      }
-    }
-  }
 }
 .pagination-box {
   margin-top: 16px;
@@ -449,6 +479,67 @@ export default {
     .icon-prev,
     .icon-next {
       @include icon(24px, 24px, "icon-arrow-disable.png");
+    }
+  }
+
+  .next-chapter-box {
+    position: relative;
+    flex: 1;
+  }
+  .reward-ad-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  .get-anima-hand {
+    &::after {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      @include icon(40px, 40px, "icon-hand.png");
+      animation: handAnim 0.4s linear infinite alternate;
+    }
+    @keyframes handAnim {
+      0% {
+        transform: translate(12px, 12px);
+      }
+      100% {
+        transform: translate(0);
+      }
+    }
+  }
+
+  .reward-ad-loading {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    @include center;
+    background: rgba(#000, 0.6);
+    &::after {
+      content: "";
+      position: absolute;
+      border: 4px solid rgba(#fff, 0.8);
+      border-left-color: transparent;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      animation: loadingAnim 1s linear infinite;
+    }
+    @keyframes loadingAnim {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
   }
 }
@@ -575,18 +666,6 @@ export default {
         left: vw(40);
       }
     }
-    .get-anima-hand {
-      &::after {
-        top: vw(30);
-        left: vw(50);
-        @include icon(vw(60), vw(60), "icon-hand.png");
-      }
-      @keyframes handAnim {
-        0% {
-          transform: translate(vw(20), vw(20));
-        }
-      }
-    }
   }
   .pagination-box {
     margin: vw(32) 0 vw(200);
@@ -605,6 +684,38 @@ export default {
       .icon-prev,
       .icon-next {
         display: none;
+      }
+    }
+
+    .get-anima-hand {
+      &::after {
+        top: vw(30);
+        left: vw(130);
+        @include icon(vw(60), vw(60), "icon-hand.png");
+      }
+      @keyframes handAnim {
+        0% {
+          transform: translate(vw(20), vw(20));
+        }
+      }
+    }
+    .reward-ad-loading {
+      border-radius: vw(16);
+      &::after {
+        content: "";
+        border: vw(6) solid rgba(#fff, 0.8);
+        border-left-color: transparent;
+        width: vw(50);
+        height: vw(50);
+        animation: loadingAnim 1s linear infinite;
+      }
+      @keyframes loadingAnim {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     }
   }

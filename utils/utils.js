@@ -72,7 +72,7 @@ function generateCustomLink(url) {
   }
 
   /* 处理小说章节页面传参 */
-  if (targetPath === "/read/") {
+  if (targetPath.includes("/read/")) {
     currentParams.append("ch", chapterId);
   }
 
@@ -88,6 +88,7 @@ function filterFromPath(path) {
   // 定义路径与类型的映射关系
   const pathTypeMappings = [
     { pattern: /^\/novel\/[\w-]+\/$/, type: "novel" },
+    { pattern: /^\/read\/[\w-]+\/$/, type: "read" },
     { pattern: /^\/$/, type: "home" }
   ];
   // 查找匹配的路径类型
@@ -171,6 +172,17 @@ function getQueryParam(paramName, url = window.location.href) {
   }
 }
 
+function throttle(fn, delay = 1500) {
+  let lastTime = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - lastTime >= delay) {
+      fn.apply(this, args);
+      lastTime = now; // 更新上次执行时间
+    }
+  };
+}
+
 export {
   simulateClick,
   generateCustomLink,
@@ -180,5 +192,6 @@ export {
   getStarListStyle,
   getStarScore,
   getTargetDomain,
-  getQueryParam
+  getQueryParam,
+  throttle
 };

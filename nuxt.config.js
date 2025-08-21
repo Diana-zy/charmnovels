@@ -18,7 +18,12 @@ export default {
         `${process.env.PROD_API_URL}/api/free_novel/all_path?site_id=${process.env.SITE_ID}`
       );
       const path = await pathData.json();
-      const novelPaths = path.data.list.map((item) => `/novel/${item.novel_id}`);
+      // 我想同时打包多个地址
+
+      const novelPaths = path.data.list.flatMap((item) => [
+        `/novel/${item.novel_id}`,
+        `/read/${item.novel_id}`
+      ]);
       const urls = [...novelPaths];
       return urls;
     }

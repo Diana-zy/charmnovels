@@ -26,6 +26,7 @@
           <custom-link
             :to="`/read/${item.novel_id}/?ch=${item.id}`"
             :class="['chapter-item', item.id === currentChapterId ? 'chapter-item-active' : '']"
+            @click.native="handleClickNextChapter(item.id)"
           >
             <div class="tag-current"><i class="icon-chapter-current"></i></div>
             <span>Chapter {{ item.chapter_num }}</span>
@@ -87,6 +88,9 @@ export default {
       this.$nextTick(() => {
         this.scrollToActiveChapter();
       });
+    },
+    handleClickNextChapter(chapterId) {
+      this.$emit("handle-click-next-chapter", chapterId);
     }
   }
 };
