@@ -219,12 +219,31 @@ function setUserReadChapterData(chapterId) {
   setItem("novel_userReadChapterData", userReadChapterData);
 }
 
+// 记录用户观看到第一个和第二个页内
+// eslint-disable-next-line no-unused-vars
+function setUserWatchFirstTwoPageAd(adIndex) {
+  const userWatchFirstTwoPageAd = getSessionStorageItem("novel_userWatchFirstTwoPageAd");
+  if (adIndex === 1 && !userWatchFirstTwoPageAd) {
+    setSessionStorageItem("novel_userWatchFirstTwoPageAd", 1);
+    window.dataLayer.push({
+      event: "Banner_show_type",
+      banner_show: "first"
+    });
+  } else if (adIndex === 2 && userWatchFirstTwoPageAd === 1) {
+    setSessionStorageItem("novel_userWatchFirstTwoPageAd", 2);
+    window.dataLayer.push({
+      event: "Banner_show_type",
+      banner_show: "second"
+    });
+  }
+}
+
 // 上报用户阅读章节数的数据到FaceBook
 // eslint-disable-next-line no-unused-vars
 function setUserReadChapterToFaceBookData(chapterId) {
   let userReadChapterToFaceBookData = getItem("novel_userReadChapterToFaceBookData");
   const userFbClid = getCookie("hi_fbclid") || "unknown";
-  if (!userReadChapterToFaceBookData || userFbClid !== userReadChapterToFaceBookData.userFbClid) {
+  if (!userReadChapterToFaceBookData) {
     userReadChapterToFaceBookData = {
       userFbClid,
       allReadChapterCount: 0,

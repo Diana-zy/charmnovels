@@ -58,6 +58,9 @@
       window.googletag = window.googletag || { cmd: [] };
       googletag.cmd.push(function () {
         googletag.pubads().addEventListener("slotRenderEnded", (event) => {
+          const elementId = event.slot.getSlotId().getDomId();
+          const userWatchPageAdIndex = elementId.split("_")[1];
+          window.setUserWatchFirstTwoPageAd(Number(userWatchPageAdIndex) + 1);
           // 页内填充了广告
           if (!event.isEmpty) {
             window.setUserPageAdActionData("show");
