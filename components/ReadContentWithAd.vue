@@ -22,12 +22,12 @@ export default {
     },
     charInterval: {
       type: Number,
-      default: 1000
+      default: 600
     }
   },
   data() {
     return {
-      adMaxCount: 10  // 页内最大个数
+      adMaxCount: 10 // 页内最大个数
     };
   },
   computed: {
@@ -37,7 +37,12 @@ export default {
       let charCount = 0;
       let adIndex = 0;
       let lastAdCharCount = 0;
-      const items = [];
+      const items = [
+        {
+          type: "ad",
+          slot: `detail_0`
+        }
+      ];
 
       parts.forEach((part) => {
         if (!part.trim()) return; // 跳过空字符串

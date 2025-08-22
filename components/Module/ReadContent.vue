@@ -21,7 +21,7 @@
       <h3
         >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
       </h3>
-      <!-- <read-content-with-ad :content="currentChapterDetail.content" /> -->
+      <read-content-with-ad :content="currentChapterDetail.content" />
     </article>
 
     <section class="bottom-operation">
@@ -46,13 +46,6 @@
       </div>
       <!-- 分页模块 -->
       <div class="pagination-box">
-        <custom-link
-          :to="preChapterPath"
-          :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
-        >
-          <i class="icon-prev"></i>
-          <span>Previous Chapter</span>
-        </custom-link>
         <div class="next-chapter-box">
           <div
             class="reward-ad-mask"
@@ -64,13 +57,16 @@
           <custom-link
             ref="nextChapterLinkRef"
             :to="nextChapterPath"
-            :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
+            :class="['btn-next', { 'btn-disable': nextChapterItem === null }]"
             @click.native="handleClickNextChapter"
           >
             <span>Next Chapter</span>
-            <i class="icon-next"></i>
           </custom-link>
         </div>
+
+        <custom-link v-if="preChapterItem !== null" :to="preChapterPath" class="btn-pre">
+          Previous Chapter
+        </custom-link>
       </div>
     </section>
   </section>
@@ -145,7 +141,7 @@ export default {
       Storage.getItem("novel_cssReadBackgroundColor") ||
         Storage.setItem("novel_cssReadBackgroundColor", "#0f0f0f");
       Storage.getItem("novel_cssReadTextColor") ||
-        Storage.setItem("novel_cssReadTextColor", "#eee");
+        Storage.setItem("novel_cssReadTextColor", "#c8c8c8");
       Storage.getItem("novel_cssReadLastTheme") ||
         Storage.setItem("novel_cssReadLastTheme", "dark");
     },
@@ -288,7 +284,6 @@ export default {
   flex-direction: column;
   align-items: center;
   border-bottom: 1px solid rgba($color2, 0.1);
-  font-family: serif;
 }
 .cover {
   width: 200px;
@@ -318,7 +313,6 @@ export default {
   opacity: 0.6;
 }
 .read-content {
-  font-family: serif;
   h3 {
     font-size: 20px;
     line-height: 26px;
@@ -451,40 +445,35 @@ export default {
   }
 }
 .pagination-box {
-  margin-top: 16px;
+  margin-top: 64px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 16px;
-  .btn-change {
-    flex: 1;
-    height: 40px;
-    border-radius: 8px;
-    background: rgba($color3, 0.2);
-    color: $color3;
-    font-size: 14px;
-    font-family: "sesb";
+  .btn-next {
     @include center;
-    gap: 8px;
-    .icon-prev,
-    .icon-next {
-      @include icon(24px, 24px, "icon-arrow-active.png");
-    }
-    .icon-next {
-      transform: rotate(180deg);
-    }
+    width: 100%;
+    height: 80px;
+    border-radius: 8px;
+    background-color: $color3;
+    color: $color_fff;
+    font-size: 28px;
+    font-family: "sesb";
+  }
+  .btn-pre {
+    text-align: center;
+    color: #a8a8a8;
+    font-size: 18px;
+    text-decoration: underline;
   }
   .btn-disable {
     background: #eeece8;
     color: #a8a8a8;
-    .icon-prev,
-    .icon-next {
-      @include icon(24px, 24px, "icon-arrow-disable.png");
-    }
   }
 
   .next-chapter-box {
     position: relative;
     flex: 1;
+    cursor: pointer;
   }
   .reward-ad-mask {
     position: absolute;
@@ -499,9 +488,9 @@ export default {
     &::after {
       content: "";
       position: absolute;
-      top: 20px;
+      top: 40px;
       left: 50%;
-      @include icon(40px, 40px, "icon-hand.png");
+      @include icon(50px, 50px, "icon-hand.png");
       animation: handAnim 0.4s linear infinite alternate;
     }
     @keyframes handAnim {
@@ -569,8 +558,8 @@ export default {
   }
   .name {
     width: 100%;
-    font-size: vw(48);
-    line-height: vw(64);
+    font-size: vw(64);
+    line-height: vw(76);
     margin: 0 0 vw(16);
     text-align: left;
   }
@@ -581,13 +570,13 @@ export default {
   }
   .read-content {
     h3 {
-      font-size: vw(40);
-      line-height: vw(54);
-      padding: vw(16) 0 vw(32);
+      font-size: vw(58);
+      line-height: vw(76);
+      padding: vw(16) 0;
     }
     div {
-      font-size: vw(36);
-      line-height: vw(48);
+      font-size: vw(50);
+      line-height: vw(68);
     }
   }
   .content-text {
@@ -668,30 +657,22 @@ export default {
     }
   }
   .pagination-box {
-    margin: vw(32) 0 vw(200);
+    margin: vw(156) 0 vw(200);
     gap: vw(32);
-    .btn-change {
-      height: vw(80);
+    .btn-next {
+      height: vw(124);
       border-radius: vw(16);
-      font-size: vw(28);
-      gap: 0;
-      .icon-prev,
-      .icon-next {
-        display: none;
-      }
+      font-size: vw(46);
     }
-    .btn-disable {
-      .icon-prev,
-      .icon-next {
-        display: none;
-      }
+    .btn-pre {
+      font-size: vw(32);
     }
 
     .get-anima-hand {
       &::after {
-        top: vw(30);
-        left: vw(130);
-        @include icon(vw(60), vw(60), "icon-hand.png");
+        top: vw(60);
+        left: vw(330);
+        @include icon(vw(80), vw(80), "icon-hand.png");
       }
       @keyframes handAnim {
         0% {
@@ -703,10 +684,10 @@ export default {
       border-radius: vw(16);
       &::after {
         content: "";
-        border: vw(6) solid rgba(#fff, 0.8);
+        border: vw(10) solid rgba(#fff, 0.8);
         border-left-color: transparent;
-        width: vw(50);
-        height: vw(50);
+        width: vw(70);
+        height: vw(70);
         animation: loadingAnim 1s linear infinite;
       }
       @keyframes loadingAnim {

@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { v4 as uuidv4 } from "uuid";
 import Storage from "~/utils/storage";
 
 export default {
@@ -94,10 +95,18 @@ export default {
     document.addEventListener("click", this.handleUserClickEvent);
   },
   methods: {
+    getUserId() {
+      let userId = Storage.getItem("novel_userId");
+      if (!userId) {
+        userId = uuidv4().replace(/-/g, "");
+        Storage.setItem("novel_userId", userId);
+      }
+      return userId;
+    },
     async getCurrentChapterDetail() {
       const chapterId = this.$route.query.ch;
       const novelId = this.$route.params.read;
-      const userId = Storage.getItem("novel_userId");
+      const userId = this.getUserId();
       const novelDetail = await this.$axios.$post("/api/free_novel/novel_info", {
         site_id: process.env.SITE_ID,
         novel_id: Number(novelId),
@@ -173,7 +182,7 @@ export default {
     // 点击下一章
     async handleClickNextChapter(chapterId) {
       const novelId = this.$route.params.read;
-      const userId = Storage.getItem("novel_userId");
+      const userId = this.getUserId();
       await this.$axios.$post("/api/free_novel/cnc", {
         site_id: process.env.SITE_ID,
         novel_id: Number(novelId),

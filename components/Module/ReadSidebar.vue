@@ -43,7 +43,7 @@ export default {
         {
           theme: "dark",
           bgColor: "#0f0f0f",
-          textColor: "#eee"
+          textColor: "#c8c8c8"
         },
         /* 常规 */
         {
