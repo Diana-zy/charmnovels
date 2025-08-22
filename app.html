@@ -61,6 +61,7 @@
           // 页内填充了广告
           if (!event.isEmpty) {
             window.setUserPageAdActionData("show");
+            window.setUserPageAdActionToFaceBookData("show");
           }
         });
       });
@@ -133,16 +134,21 @@
       window.addEventListener("blur", () => {
         const activeElement = document.activeElement,
           activeElementId = activeElement.getAttribute("id");
-        if (activeElementId && activeElementId.includes("google_ads_iframe_/23197833490")) {
-          if (
-            !activeElementId.includes("anchor_0") &&
-            !activeElementId.includes("interstitial") &&
-            activeElement.getAttribute("data-load-complete")
-          ) {
-            dataLayer.push({ event: "D_IP" });
-            window.setUserFirstAction("click_y");
-            window.setUserReadPageClickAction("click_y");
-            window.setUserPageAdActionData("click");
+        if (activeElementId && activeElementId.includes("charmnovels_detail")) {
+          dataLayer.push({ event: "D_IP" });
+          window.setUserFirstAction("click_y");
+          window.setUserReadPageClickAction("click_y");
+          window.setUserPageAdActionData("click");
+
+          // 如果是首个章节，则第6个及以后的广告点击才上报
+          if (window.isFirstChapterNum) {
+            // 获取页内的下标
+            const pageAdIndex = activeElementId.split("charmnovels_detail_")[1].split("_")[0];
+            if (Number(pageAdIndex) >= 6) {
+              window.setUserPageAdActionToFaceBookData("click");
+            }
+          } else {
+            window.setUserPageAdActionToFaceBookData("click");
           }
         }
       });

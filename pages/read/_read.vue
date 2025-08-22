@@ -260,6 +260,10 @@ export default {
       });
       // 记录用户阅读章节数据
       window.setUserReadChapterData(chapterDetail.chapter_id);
+      // 上报用户阅读章节数据到FaceBook
+      window.setUserReadChapterToFaceBookData(chapterDetail.chapter_id);
+      // 记录该章节是否是第一章
+      window.isFirstChapterNum = chapterDetail.chapter_num === 1;
     },
 
     // 获取奖励

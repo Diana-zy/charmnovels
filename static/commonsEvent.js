@@ -26,6 +26,34 @@ function removeItem(key) {
   }
 }
 
+function setSessionStorageItem(key, value) {
+  try {
+    const serializedValue = JSON.stringify(value);
+    sessionStorage.setItem(key, serializedValue);
+  } catch (error) {
+    console.error("Error setting item in sessionStorage", error);
+  }
+}
+
+function getSessionStorageItem(key) {
+  try {
+    const serializedValue = sessionStorage.getItem(key);
+    return serializedValue ? JSON.parse(serializedValue) : null;
+  } catch (error) {
+    console.error("Error getting item from sessionStorage", error);
+    return null;
+  }
+}
+
+// eslint-disable-next-line no-unused-vars
+function removeSessionStorageItem(key) {
+  try {
+    sessionStorage.removeItem(key);
+  } catch (error) {
+    console.error("Error removing item from sessionStorage", error);
+  }
+}
+
 // eslint-disable-next-line no-unused-vars
 function getMainDomain() {
   const url = window.location.hostname; //
@@ -68,9 +96,9 @@ function getCookie(name) {
 // 用户首次站内行为
 // eslint-disable-next-line no-unused-vars
 function setUserFirstAction(action) {
-  const userFirstAction = getItem("novel_userFirstAction");
+  const userFirstAction = getSessionStorageItem("novel_userFirstAction");
   if (!userFirstAction) {
-    setItem("novel_userFirstAction", action);
+    setSessionStorageItem("novel_userFirstAction", action);
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event: "User_first_action", first_type: action });
   }
@@ -112,13 +140,17 @@ function setUserPageAdActionData(action) {
     let pushShowAdCountValue = 0;
     if (pushGtmShowAdCountTypeArr.includes(userPageAdActionData.showAdCount)) {
       pushShowAdCountValue = userPageAdActionData.showAdCount;
+      window.dataLayer.push({
+        event: "Banner_show",
+        banner_show: pushShowAdCountValue
+      });
     } else if (userPageAdActionData.showAdCount > 20) {
       pushShowAdCountValue = ">20";
+      window.dataLayer.push({
+        event: "Banner_show",
+        banner_show: pushShowAdCountValue
+      });
     }
-    window.dataLayer.push({
-      event: "Banner_show",
-      banner_show: pushShowAdCountValue
-    });
   }
   // 页内点击
   else if (action === "click") {
@@ -126,13 +158,17 @@ function setUserPageAdActionData(action) {
     let pushClickAdCountValue = 0;
     if (userPageAdActionData.clickAdCount <= 5) {
       pushClickAdCountValue = userPageAdActionData.clickAdCount;
+      window.dataLayer.push({
+        event: "Banner_click",
+        banner_click: pushClickAdCountValue
+      });
     } else if (userPageAdActionData.clickAdCount > 5) {
       pushClickAdCountValue = ">5";
+      window.dataLayer.push({
+        event: "Banner_click",
+        banner_click: pushClickAdCountValue
+      });
     }
-    window.dataLayer.push({
-      event: "Banner_click",
-      banner_click: pushClickAdCountValue
-    });
   }
   setItem("novel_userPageAdActionData", userPageAdActionData);
 }
@@ -153,13 +189,17 @@ function setUserReadChapterData(chapterId) {
   let pushAllReadChapterCountValue = 0;
   if (pushGtmAllReadChapterCountTypeArr.includes(userReadChapterData.allReadChapterCount)) {
     pushAllReadChapterCountValue = userReadChapterData.allReadChapterCount;
+    window.dataLayer.push({
+      event: "Chapter_read",
+      chapter_read: pushAllReadChapterCountValue
+    });
   } else if (userReadChapterData.allReadChapterCount > 30) {
     pushAllReadChapterCountValue = ">30";
+    window.dataLayer.push({
+      event: "Chapter_read",
+      chapter_read: pushAllReadChapterCountValue
+    });
   }
-  window.dataLayer.push({
-    event: "Chapter_read",
-    chapter_read: pushAllReadChapterCountValue
-  });
 
   // 记录真实阅读次数
   const userReadChapterIdList = getItem("novel_userReadChapterIdList") || [];
@@ -177,4 +217,107 @@ function setUserReadChapterData(chapterId) {
   }
 
   setItem("novel_userReadChapterData", userReadChapterData);
+}
+
+// 上报用户阅读章节数的数据到FaceBook
+// eslint-disable-next-line no-unused-vars
+function setUserReadChapterToFaceBookData(chapterId) {
+  let userReadChapterToFaceBookData = getItem("novel_userReadChapterToFaceBookData");
+  const userFbClid = getCookie("hi_fbclid") || "unknown";
+  if (!userReadChapterToFaceBookData || userFbClid !== userReadChapterToFaceBookData.userFbClid) {
+    userReadChapterToFaceBookData = {
+      userFbClid,
+      allReadChapterCount: 0,
+      realReadChapterCount: 0
+    };
+  }
+  // 如果有数据但fbclid不一致，则重置数据
+  else if (userFbClid !== userReadChapterToFaceBookData.userFbClid) {
+    userReadChapterToFaceBookData = {
+      userFbClid,
+      allReadChapterCount: 0,
+      realReadChapterCount: 0
+    };
+    setItem("novel_userReadChapterIdToFaceBookList", []);
+  }
+  //   记录任意阅读次数
+  userReadChapterToFaceBookData.allReadChapterCount++;
+  const pushFaceBookAllReadChapterCountTypeArr = [1, 2, 3, 5, 10, 20, 30];
+  let pushAllReadChapterCountValue = 0;
+  if (
+    pushFaceBookAllReadChapterCountTypeArr.includes(
+      userReadChapterToFaceBookData.allReadChapterCount
+    )
+  ) {
+    pushAllReadChapterCountValue = userReadChapterToFaceBookData.allReadChapterCount;
+    trackEventToFaceBook(`Chapter_${pushAllReadChapterCountValue}`);
+  }
+
+  // 记录真实阅读次数
+  const userReadChapterIdToFaceBookList = getItem("novel_userReadChapterIdToFaceBookList") || [];
+  if (!userReadChapterIdToFaceBookList.includes(chapterId)) {
+    userReadChapterIdToFaceBookList.push(chapterId);
+    setItem("novel_userReadChapterIdToFaceBookList", userReadChapterIdToFaceBookList);
+    userReadChapterToFaceBookData.realReadChapterCount++;
+    const pushFaceBookRealReadChapterCountTypeArr = [2, 3, 5];
+    if (
+      pushFaceBookRealReadChapterCountTypeArr.includes(
+        userReadChapterToFaceBookData.realReadChapterCount
+      )
+    ) {
+      trackEventToFaceBook(`Chapter_${userReadChapterToFaceBookData.realReadChapterCount}_read`);
+    }
+  }
+
+  setItem("novel_userReadChapterToFaceBookData", userReadChapterToFaceBookData);
+}
+
+// 设置用户页内广告相关的数据到FaceBook
+// eslint-disable-next-line no-unused-vars
+function setUserPageAdActionToFaceBookData(action) {
+  let userPageAdActionToFaceBookData = getItem("novel_userPageAdActionToFaceBookData");
+  const userFbClid = getCookie("hi_fbclid") || "unknown";
+  if (!userPageAdActionToFaceBookData) {
+    userPageAdActionToFaceBookData = {
+      userFbClid,
+      showAdCount: 0
+    };
+  } // 如果有数据但fbclid不一致，则重置数据
+  else if (userFbClid !== userPageAdActionToFaceBookData.userFbClid) {
+    userPageAdActionToFaceBookData = {
+      userFbClid,
+      showAdCount: 0
+    };
+    setItem("novel_userClickPageAdToChapterList", []);
+  }
+  // 页内实际展示
+  if (action === "show") {
+    userPageAdActionToFaceBookData.showAdCount++;
+    setItem("novel_userPageAdActionToFaceBookData", userPageAdActionToFaceBookData);
+    const pushFaceBookShowAdCountTypeArr = [5, 10];
+    let pushShowAdCountValue = 0;
+    if (pushFaceBookShowAdCountTypeArr.includes(userPageAdActionToFaceBookData.showAdCount)) {
+      pushShowAdCountValue = userPageAdActionToFaceBookData.showAdCount;
+      trackEventToFaceBook(`Banner_show_${pushShowAdCountValue}`);
+    }
+  }
+  // 页内点击
+  else if (action === "click") {
+    const searchParams = new URLSearchParams(window.location.search);
+    const chapterId = searchParams.get("ch");
+    const userClickPageAdToChapterList = getItem("novel_userClickPageAdToChapterList") || [];
+    if (!userClickPageAdToChapterList.includes(chapterId)) {
+      userClickPageAdToChapterList.push(chapterId);
+      setItem("novel_userClickPageAdToChapterList", userClickPageAdToChapterList);
+      trackEventToFaceBook("Banner_normal_click");
+    }
+  }
+}
+
+function trackEventToFaceBook(eventName, isCustomEvent = true) {
+  if (isCustomEvent) {
+    window.fbq("trackCustom", eventName);
+  } else {
+    window.fbq("track", eventName);
+  }
 }

@@ -200,7 +200,7 @@ export default {
       this.isShowDisabledTip = true;
       setTimeout(() => {
         this.isShowDisabledTip = false;
-      }, 1000);
+      }, 60000);
       window.setUserReadPageClickAction("click_popup_money_button");
     }
   }
