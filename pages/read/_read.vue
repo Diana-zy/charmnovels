@@ -152,7 +152,7 @@ export default {
     setUserNovelReadHistory(chapterDetail) {
       const currentChapterId = chapterDetail.chapter_id;
       const currentNovelId = chapterDetail.novel_info.id;
-      const novelReadHistoryList = Storage.getItem("novel_read_history_list") || [];
+      const novelReadHistoryList = Storage.getItem("novel_readHistoryList") || [];
       const novelReadHistoryItem = novelReadHistoryList.find((item) => item.id === currentNovelId);
       if (novelReadHistoryItem) {
         const index = novelReadHistoryList.findIndex((item) => item.id === currentNovelId);
@@ -162,7 +162,7 @@ export default {
       } else {
         novelReadHistoryList.unshift({ ...chapterDetail.novel_info, chapter_id: currentChapterId });
       }
-      Storage.setItem("novel_read_history_list", novelReadHistoryList);
+      Storage.setItem("novel_readHistoryList", novelReadHistoryList);
     },
     // 获取上一章和下一章路径
     getPreNextChapter() {
@@ -216,6 +216,8 @@ export default {
       } else {
         this.$refs.readSidebar.showMenuSetting();
         this.isShowHeader = true;
+        window.setUserFirstAction("click_to_show_navbar");
+        window.setUserReadPageClickAction("click_to_show_navbar");
       }
     },
     handleShowChapterPopup() {
@@ -224,6 +226,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.mobileChapterPopup.scrollToActiveChapter();
       });
+      window.setUserReadPageClickAction("click_chapter_list_button");
     },
     handleHideChapterPopup() {
       this.handleHideHeader();
@@ -241,8 +244,22 @@ export default {
       this.setUserNovelReadHistory(chapterDetail);
       // 阅读章节
       this.handleReadChapter();
-      // 阅读计时器
+      // 阅读时长计时器
       this.setReadTimer();
+
+      // 记录用户首次进入小说详情页
+      window.dataLayer.push({
+        event: "Novel_detail_page",
+        hi_ip: window.youknowwho_ip || "unknown"
+      });
+      // 记录用户阅读的章节
+      const novelReadValue = `novel_${chapterDetail.novel_info.id}_chapter_${chapterDetail.chapter_num}`;
+      window.dataLayer.push({
+        event: "Novel_chapter_read",
+        novel_read: novelReadValue
+      });
+      // 记录用户阅读章节数据
+      window.setUserReadChapterData(chapterDetail.chapter_id);
     },
 
     // 获取奖励

@@ -156,6 +156,8 @@ export default {
       this.isShowHandAnima = false;
       this.isShowReadReward = true;
       document.body.classList.add("no-scroll");
+      window.setUserFirstAction("click_right_button");
+      window.setUserReadPageClickAction("click_right_button");
     },
     handleHideReadRewardPopup() {
       this.isShowReadReward = false;
@@ -164,11 +166,11 @@ export default {
 
     getRewardTaskData() {
       this.isShowMoney = true;
-      const taskData = Storage.getItem("novel_reward_task");
+      const taskData = Storage.getItem("novel_rewardTask");
       if (taskData) {
         this.taskData = taskData;
       } else {
-        Storage.setItem("novel_reward_task", this.taskData);
+        Storage.setItem("novel_rewardTask", this.taskData);
       }
     },
 
@@ -191,7 +193,7 @@ export default {
         default:
           break;
       }
-      Storage.setItem("novel_reward_task", this.taskData);
+      Storage.setItem("novel_rewardTask", this.taskData);
     },
 
     handleGetRewardPay() {
@@ -199,6 +201,7 @@ export default {
       setTimeout(() => {
         this.isShowDisabledTip = false;
       }, 1000);
+      window.setUserReadPageClickAction("click_popup_money_button");
     }
   }
 };

@@ -118,7 +118,7 @@ export default {
     };
   },
   mounted() {
-    const novelReadHistoryList = Storage.getItem("novel_read_history_list");
+    const novelReadHistoryList = Storage.getItem("novel_readHistoryList");
     this.novelReadHistoryBooks = (novelReadHistoryList && novelReadHistoryList.slice(0, 6)) || [];
   }
 };

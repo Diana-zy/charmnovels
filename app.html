@@ -2,6 +2,8 @@
 <html lang="en">
   <head {{ HEAD_ATTRS }}>
     <meta charset="UTF-8" />
+    <script src="/commonsEvent.js"></script>
+
     <!-- FaceBook Pixel Code -->
     <script>
       !(function (f, b, e, v, n, t, s) {
@@ -56,11 +58,9 @@
       window.googletag = window.googletag || { cmd: [] };
       googletag.cmd.push(function () {
         googletag.pubads().addEventListener("slotRenderEnded", (event) => {
-          // 填充了广告
+          // 页内填充了广告
           if (!event.isEmpty) {
-            // const elementId = event.slot.getSlotId().getDomId();
-            // const element = document.getElementById(elementId);
-            // console.log(elementId, element);
+            window.setUserPageAdActionData("show");
           }
         });
       });
@@ -111,17 +111,46 @@
     <!-- End Google Tag Manager (noscript) -->
     {{ APP }}
     <script>
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = "https://wc.bunchthings.com/youknowwho.js?" + Date.now();
+      document.body.appendChild(script);
+      script.onload = () => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "Page_View_Ip",
+          hi_ip: window.youknowwho_ip || "unknown",
+          hi_country: window.youknowwho_ip_country || "unknown"
+        });
+      };
+    </script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        // Dom加载完开始计时
+        window.setUserStayThreeMinutes();
+      });
+
       window.addEventListener("blur", () => {
         const activeElement = document.activeElement,
-          activeElementSrc = activeElement.getAttribute("src");
-        if (
-          activeElementSrc &&
-          activeElementSrc.includes("googleads.g.doubleclick.net/pagead/ads?")
-        ) {
-          const closestIns = activeElement.closest("ins");
-          if (closestIns && closestIns.getAttribute("data-ad-status") === "filled") {
+          activeElementId = activeElement.getAttribute("id");
+        if (activeElementId && activeElementId.includes("google_ads_iframe_/23197833490")) {
+          if (
+            !activeElementId.includes("anchor_0") &&
+            !activeElementId.includes("interstitial") &&
+            activeElement.getAttribute("data-load-complete")
+          ) {
             dataLayer.push({ event: "D_IP" });
+            window.setUserFirstAction("click_y");
+            window.setUserReadPageClickAction("click_y");
+            window.setUserPageAdActionData("click");
           }
+        }
+      });
+      window.addEventListener("visibilitychange", function () {
+        if ("visible" === document.visibilityState) {
+          setTimeout(() => {
+            window.focus();
+          }, 0);
         }
       });
     </script>

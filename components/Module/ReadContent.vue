@@ -133,6 +133,11 @@ export default {
     root.style.setProperty("--read-font-space", Storage.getItem("novel_cssReadFontSpace"));
     root.style.setProperty("--read-bg-color", Storage.getItem("novel_cssReadBackgroundColor"));
     root.style.setProperty("--read-text-color", Storage.getItem("novel_cssReadTextColor"));
+
+    // 页面卸载移除激励定时器
+    window.addEventListener("beforeunload", () => {
+      this.rewardTimer && clearTimeout(this.rewardTimer);
+    });
   },
   methods: {
     initStorageReadSetting() {
@@ -200,6 +205,7 @@ export default {
         this.canGetReward = false;
         this.isSuccessGetReward = true;
         this.$emit("handle-get-reward");
+        window.setUserReadPageClickAction("click_bottom_money_button");
       }
     },
 
@@ -212,18 +218,18 @@ export default {
         google_ad_loaded_callback: (adInstance) => {
           if (adInstance !== null) {
             window.dataLayer.push({
-              event: "C_IR"
+              event: "Ads_IR",
+              Ads_IR: "C_IR"
             });
+            this.handleWatchRewardTime();
             adInstance.show((result) => {
+              clearTimeout(this.rewardTimer);
               if (result.status === "viewed") {
                 window.dataLayer.push({
-                  event: "V_IR"
+                  event: "Ads_IR",
+                  Ads_IR: "V_IR"
                 });
                 this.handleSimulationClickNextChapter();
-              } else {
-                window.dataLayer.push({
-                  event: "F_IR"
-                });
               }
             });
           } else {
@@ -250,8 +256,20 @@ export default {
         params: adConfig
       });
       window.dataLayer.push({
-        event: "Q_IR"
+        event: "Ads_IR",
+        Ads_IR: "Q_IR"
       });
+    },
+
+    handleWatchRewardTime() {
+      this.rewardTimer && clearTimeout(this.rewardTimer);
+      this.rewardTimer = setTimeout(() => {
+        window.dataLayer.push({
+          event: "Ads_IR",
+          Ads_IR: "V_IR_5S"
+        });
+        clearTimeout(this.rewardTimer);
+      }, 5000);
     },
 
     handleSimulationClickNextChapter() {
@@ -261,6 +279,8 @@ export default {
     handleClickNextChapter() {
       if (this.nextChapterItem !== null) {
         this.$emit("handle-click-next-chapter", this.nextChapterItem.id);
+        // 点击进入下一章节
+        window.dataLayer.push({ event: "Next_chapter_click" });
       }
     }
   }
