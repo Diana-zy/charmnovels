@@ -84,6 +84,50 @@ function getCookie(name) {
   return null;
 }
 
+// 记录用户首次访问的落地页
+(function () {
+  const searchParams = new URLSearchParams(window.location.search);
+  // 未携带 hi_first_time 参数时，记录首次访问时间
+  if (!searchParams.has("hi_first_time")) {
+    const hiFirstTime = new Date().getTime();
+    setLandingPageUrl(hiFirstTime);
+  } else {
+    // 携带 hi_first_time 参数时，判断是否与缓存时间一致，不一致则更新缓存时间
+    let hiFirstTime = searchParams.get("hi_first_time");
+    const hiFirstTimeCache = getCookie("hi_first_time");
+    if (hiFirstTime !== hiFirstTimeCache) {
+      hiFirstTime = new Date().getTime();
+      setLandingPageUrl(hiFirstTime);
+    }
+  }
+})();
+// 更新落地页Url
+function setLandingPageUrl(hiFirstTime) {
+  const searchParams = new URLSearchParams(window.location.search);
+  setCookie("hi_first_time", hiFirstTime);
+  searchParams.set("hi_first_time", hiFirstTime);
+  const updateUrl = `${window.location.origin}${
+    window.location.pathname
+  }?${searchParams.toString()}`;
+  window.history.replaceState({}, "", updateUrl);
+  setCookie("hi_landing_page", updateUrl);
+}
+
+async function handleTrackEventToApi() {
+  await this.$axios.$post("/api/zh/sjzh", {
+    site_id: process.env.SITE_ID,
+    hi_source: "tiktok", // 媒体渠道
+    scid: "xxxx", // 媒体渠道的ClickID
+    sjmc: "ClickButton", // 事件名称
+    cid: "channeid", // AFS渠道号ID
+    curl: "curl", // 发生转化页面的完整url
+    lurl: "lurl", // 落地页的完整url
+    domain: "domain", // 完整域名
+    user_agent: "json",
+    cookie: "json"
+  });
+}
+
 // 记录fbclid
 (function () {
   const searchParams = new URLSearchParams(window.location.search);

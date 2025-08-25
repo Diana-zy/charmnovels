@@ -54,23 +54,9 @@ function generateCustomLink(url) {
     targetPath = url.split("?ch=")[0];
     chapterId = url.split("?ch=")[1];
   }
-
   const currentParams = new URLSearchParams(window.location.search);
-  const currentPathname = window.location.pathname;
-  const targetDomain = window.location.host;
-  const protocol = window.location.protocol;
 
-  const from = filterFromPath(currentPathname);
-  // 删除不需要的查询参数
-  currentParams.delete("from");
   currentParams.delete("ch");
-  currentParams.delete("pay_status");
-  currentParams.delete("nov");
-
-  if (currentPathname === "/search/") {
-    currentParams.delete("text");
-  }
-
   /* 处理小说章节页面传参 */
   if (targetPath.includes("/read/")) {
     currentParams.append("ch", chapterId);
@@ -78,9 +64,7 @@ function generateCustomLink(url) {
 
   // 生成新的查询参数字符串
   const queryString = currentParams.toString();
-  return `${protocol}//${targetDomain}${targetPath}?${queryString}${
-    queryString ? "&" : ""
-  }from=${encodeURIComponent(from)}`;
+  return `${targetPath}?${queryString}`;
 }
 
 // 过滤from

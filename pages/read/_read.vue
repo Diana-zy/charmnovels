@@ -70,6 +70,7 @@
 <script>
 import { v4 as uuidv4 } from "uuid";
 import Storage from "~/utils/storage";
+import { generateCustomLink } from "@/utils/utils";
 
 export default {
   data() {
@@ -114,8 +115,10 @@ export default {
       });
       // 阅读历史与当前章节不一致，重定向
       if (Number(chapterId) !== novelDetail.user_last_read_chapter_id) {
-        const newUrl = `${window.location.origin}/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`;
-        window.location.href = newUrl;
+        const updateUrl = generateCustomLink(
+          `/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`
+        );
+        window.location.href = updateUrl;
         return;
       }
 
