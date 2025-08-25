@@ -260,6 +260,10 @@ export default {
         event: "Ads_IR",
         Ads_IR: "Q_IR"
       });
+
+      // 点击下一章
+      window.dataLayer.push({ event: "Next_chapter_click" });
+      window.trackEventToFaceBook("Next_chapter_click");
     },
 
     handleWatchRewardTime() {
@@ -283,8 +287,8 @@ export default {
       if (this.nextChapterItem !== null) {
         this.$emit("handle-click-next-chapter", this.nextChapterItem.id);
         // 点击进入下一章节
-        window.dataLayer.push({ event: "Next_chapter_click" });
-        window.trackEventToFaceBook("Next_chapter_click");
+        // window.dataLayer.push({ event: "Next_chapter_click" });
+        // window.trackEventToFaceBook("Next_chapter_click");
       }
     }
   }
