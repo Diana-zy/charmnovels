@@ -113,18 +113,33 @@ function setLandingPageUrl(hiFirstTime) {
   setCookie("hi_landing_page", updateUrl);
 }
 
-async function handleTrackEventToApi() {
-  await this.$axios.$post("/api/zh/sjzh", {
-    site_id: process.env.SITE_ID,
-    hi_source: "tiktok", // 媒体渠道
-    scid: "xxxx", // 媒体渠道的ClickID
-    sjmc: "ClickButton", // 事件名称
-    cid: "channeid", // AFS渠道号ID
-    curl: "curl", // 发生转化页面的完整url
-    lurl: "lurl", // 落地页的完整url
-    domain: "domain", // 完整域名
-    user_agent: "json",
-    cookie: "json"
+// 上报事件到后端接口
+// eslint-disable-next-line no-unused-vars
+function trackEventToApi(eventName) {
+  const currentHref = window.location.href;
+  const currentDomain = window.location.hostname;
+  const landingPageUrl = getCookie("hi_landing_page");
+  const userAgent = navigator.userAgent;
+  const currentCookie = document.cookie;
+  const fbclid = getCookie("hi_fbclid");
+  fetch("https://api.findtapgame.com/api/zh/sjzh", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      site_id: "charmnovels-free",
+      hi_source: "facebook", // 媒体渠道
+      scid: fbclid || "", // 媒体渠道的ClickID
+      sjmc: eventName, // 事件名称
+      cc: window.youknowwho_ip_country || "", // 国家code
+      // cid: "channeid", // AFS渠道号ID
+      curl: currentHref, // 发生转化页面的完整url
+      lurl: landingPageUrl, // 落地页的完整url
+      domain: currentDomain, // 完整域名
+      user_agent: userAgent,
+      cookie: currentCookie
+    })
   });
 }
 
@@ -378,6 +393,18 @@ function setUserPageAdActionToFaceBookData(action) {
 }
 
 function trackEventToFaceBook(eventName, isCustomEvent = true) {
+  // trackEventToApi(eventName);
+
+  // const userId = getItem("novel_userId");
+  // const eventId = `${userId}_${eventName}_${new Date().getTime()}_${Math.floor(
+  //   Math.random() * 1000000
+  // )}`;
+  // if (isCustomEvent) {
+  //   window.fbq("trackCustom", eventName, {}, { eventID: eventId });
+  // } else {
+  //   window.fbq("track", eventName);
+  // }
+
   if (isCustomEvent) {
     window.fbq("trackCustom", eventName);
   } else {
