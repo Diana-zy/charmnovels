@@ -213,7 +213,17 @@ export default {
                   event: "Ads_IR",
                   Ads_IR: "V_IR"
                 });
-                this.handleSimulationClickNextChapter();
+
+                const isDontRemindWatchedDialog = Storage.getItem(
+                  "novel_isDontRemindWatchedDialog"
+                );
+                if (isDontRemindWatchedDialog === true) {
+                  this.$emit("handle-get-reward");
+                  this.handleSimulationClickNextChapter();
+                } else {
+                  this.$emit("handle-show-reward-watched-dialog");
+                }
+
                 window.trackEventToFaceBook("V_IR");
               }
             });

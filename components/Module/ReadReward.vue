@@ -110,6 +110,27 @@
         </transition>
       </div>
     </transition>
+
+    <!-- 观看完激励的弹窗展示 -->
+    <section v-if="isShowRewardWatchedDialog" class="reward-watched-dialog">
+      <div class="mask"></div>
+      <div class="dialog-content">
+        <div :class="[isSuccessGetReward ? 'get-anima-reward' : '']">
+          <img class="icon-money" src="~/assets/images/icon-money-2.png" alt="icon-money" />
+        </div>
+        <span class="text-money">+$1</span>
+        <p class="desc">You can get an extra $1 after watching an ad!</p>
+        <div class="check-container" @click="handleCheckRemind">
+          <div class="check-box"><i v-if="isCheckedRemind" class="icon-checkmark"></i></div>
+          <div>Don't remind me again.</div>
+        </div>
+        <div class="get-btn" @click="handleCloseRewardWatchedDialog">
+          <i class="icon-star"></i>Get It！
+          <span v-if="dialogCountdown > 0"></span>
+          <!-- <span v-if="dialogCountdown > 0">{{ dialogCountdown }}s</span> -->
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -135,7 +156,11 @@ export default {
         money: 100,
         time: 0
       },
-      isShowDisabledTip: false
+      isShowDisabledTip: false,
+      isShowRewardWatchedDialog: false,
+      isCheckedRemind: true,
+      dialogCountdown: 3,
+      isSuccessGetReward: false
     };
   },
   computed: {
@@ -202,6 +227,43 @@ export default {
         this.isShowDisabledTip = false;
       }, 1000);
       window.setUserReadPageClickAction("click_popup_money_button");
+    },
+
+    handleOpenRewardWatchedDialog() {
+      this.isShowRewardWatchedDialog = true;
+      window.dataLayer.push({
+        event: "IR_Reward_Dialog",
+        dialog_action: "dialog_show"
+      });
+      // this.dialogCountdown = 3;
+      // this.countdownInterval = setInterval(() => {
+      //   this.dialogCountdown--;
+      //   if (this.dialogCountdown <= 0) {
+      //     this.handleCloseRewardWatchedDialog();
+      //   }
+      // }, 1000);
+      // window.addEventListener("beforeunload", () => {
+      //   clearInterval(this.countdownInterval);
+      // });
+    },
+    handleCloseRewardWatchedDialog() {
+      this.isSuccessGetReward = true;
+      // clearInterval(this.countdownInterval);
+      Storage.setItem("novel_isDontRemindWatchedDialog", this.isCheckedRemind);
+      this.setRewardTaskData("money");
+      setTimeout(() => {
+        this.isShowRewardWatchedDialog = false;
+        this.isSuccessGetReward = false;
+        this.$emit("handle-close-reward-watched-dialog");
+      }, 500);
+
+      window.dataLayer.push({
+        event: "IR_Reward_Dialog",
+        dialog_action: "dialog_button_click"
+      });
+    },
+    handleCheckRemind() {
+      this.isCheckedRemind = !this.isCheckedRemind;
     }
   }
 };
@@ -487,6 +549,100 @@ export default {
     }
   }
 }
+
+.reward-watched-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+  @include center;
+  color: $color8;
+  .mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($color6, 0.4);
+  }
+  .dialog-content {
+    position: absolute;
+    width: 650px;
+    padding: 28px 36px 18px;
+    z-index: 1;
+    @include center;
+    flex-direction: column;
+    border-radius: 24px;
+    background-color: $color9;
+    .icon-money {
+      width: 120px;
+    }
+    .get-anima-reward {
+      position: relative;
+      &::before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: 38px;
+        @include icon(40px, 40px, "icon-money.png");
+        animation: getRewardAnima 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+      }
+      @keyframes getRewardAnima {
+        0% {
+          transform: translateY(0) translateX(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100dvh) translateX(0);
+          opacity: 0;
+        }
+      }
+    }
+    .text-money {
+      font-size: 42px;
+      color: $color3;
+      font-family: "sesb";
+    }
+    .desc {
+      margin: 20px auto 32px;
+      font-size: 18px;
+      line-height: 24px;
+    }
+    .check-container {
+      display: flex;
+      align-items: center;
+      .check-box {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        border-radius: 50%;
+        background-color: #ebebeb;
+        cursor: pointer;
+      }
+      .icon-checkmark {
+        @include icon(20px, 20px, "icon-check-mark.png");
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+    .get-btn {
+      @include icon(280px, 65px, "icon-reward-watched-get-it.png");
+      @include center;
+      margin-top: 12px;
+      font-size: 18px;
+      font-family: "sesb";
+      cursor: pointer;
+      .icon-star {
+        @include icon(24px, 24px, "icon-get-money-star.png");
+        margin-right: 6px;
+      }
+    }
+  }
+}
 @media screen and (max-width: 750px) {
   .read-reward-box {
     right: vw(24);
@@ -640,6 +796,61 @@ export default {
         .icon-back {
           width: vw(30);
           height: vw(30);
+        }
+      }
+    }
+  }
+
+  .reward-watched-dialog {
+    .dialog-content {
+      width: vw(632);
+      padding: vw(28) vw(36) vw(18);
+      border-radius: vw(30);
+      .icon-money {
+        width: vw(160);
+      }
+      .get-anima-reward {
+        &::before {
+          width: vw(50);
+          height: vw(50);
+          top: 0;
+          left: vw(60);
+        }
+      }
+      .text-money {
+        font-size: vw(60);
+        line-height: vw(80);
+      }
+      .desc {
+        width: vw(420);
+        text-align: center;
+        margin: vw(28) auto vw(56);
+        font-size: vw(32);
+        line-height: vw(42);
+      }
+      .check-container {
+        font-size: vw(32);
+        line-height: vw(42);
+        align-self: flex-start;
+        padding-left: vw(16);
+        .check-box {
+          width: vw(32);
+          height: vw(32);
+          margin-right: vw(12);
+        }
+        .icon-checkmark {
+          @include icon(vw(32), vw(32), "icon-check-mark.png");
+        }
+      }
+      .get-btn {
+        width: vw(560);
+        height: vw(130);
+        margin-top: vw(20);
+        font-size: vw(36);
+        .icon-star {
+          width: vw(44);
+          height: vw(44);
+          margin-right: vw(8);
         }
       }
     }

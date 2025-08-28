@@ -7,6 +7,7 @@
 
     <!-- 小说内容 -->
     <module-read-content
+      ref="readContent"
       :current-chapter-detail="currentChapterDetail"
       :pre-chapter-item="preChapterItem"
       :next-chapter-item="nextChapterItem"
@@ -15,9 +16,13 @@
       @reload="getCurrentChapterDetail"
       @handle-get-reward="handleGetReward"
       @handle-click-next-chapter="handleClickNextChapter"
+      @handle-show-reward-watched-dialog="handleShowRewardWatchedDialog"
     />
 
-    <module-read-reward ref="readReward" />
+    <module-read-reward
+      ref="readReward"
+      @handle-close-reward-watched-dialog="handleCloseRewardWatchedDialog"
+    />
 
     <!-- <module-read-sidebar
       ref="readSidebar"
@@ -205,6 +210,14 @@ export default {
         nchid: Number(chapterId),
         uid: userId
       });
+    },
+
+    // 观看完激励后弹窗提示
+    handleShowRewardWatchedDialog() {
+      this.$refs.readReward.handleOpenRewardWatchedDialog();
+    },
+    handleCloseRewardWatchedDialog() {
+      this.$refs.readContent.handleSimulationClickNextChapter();
     },
 
     /* 移动端操作 */
