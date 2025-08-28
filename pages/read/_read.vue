@@ -5,29 +5,12 @@
       :current-chapter-detail="currentChapterDetail"
     />
 
-    <!-- PC端悬浮章节列表 -->
-    <section class="fixed-bar">
-      <div ref="fixedChapterBar" class="fixed-chapter" @click.stop="changeShowChapters">
-        <i class="icon-chapter"></i>
-        <span>Chapters</span>
-      </div>
-      <div v-show="isShowChapters" class="fixed-chapter-list">
-        <module-read-chapter
-          ref="fixedChapterList"
-          :chapters="novelChapterList"
-          :purchase-status="currentChapterDetail?.purchase_status"
-          :current-chapter-id="currentChapterDetail?.chapter_id"
-          theme="dark"
-          @handle-click-next-chapter="handleClickNextChapter"
-        />
-      </div>
-    </section>
-
     <!-- 小说内容 -->
     <module-read-content
       :current-chapter-detail="currentChapterDetail"
       :pre-chapter-item="preChapterItem"
       :next-chapter-item="nextChapterItem"
+      :other-recommend-novel-detail="otherRecommendNovelDetail"
       @show-menu-setting="handleShowMenuSetting"
       @reload="getCurrentChapterDetail"
       @handle-get-reward="handleGetReward"
@@ -36,13 +19,13 @@
 
     <module-read-reward ref="readReward" />
 
-    <module-read-sidebar
+    <!-- <module-read-sidebar
       ref="readSidebar"
       :current-read-progress="currentReadProgress"
       @show-chapter-popup="handleShowChapterPopup"
       @hide-menu-setting="handleHideHeader"
       @hide-style-setting="handleHideHeader"
-    />
+    /> -->
     <!-- 移动端章节弹窗 -->
     <transition name="fade">
       <div v-show="isShowChapterPopup" class="chapter-list-popup">
@@ -81,8 +64,8 @@ export default {
       isInitIncentiveAd: false, // 激励广告是否初始化
       preChapterItem: null, // 上一章节数据
       nextChapterItem: null, // 下一章节数据
+      otherRecommendNovelDetail: null, // 其他推荐小说路径
       novelChapterList: [], // 章节列表
-      isShowChapters: false, // PC端悬浮章节列表
       isShowHeader: false,
       isShowChapterPopup: false // 移动端章节弹窗
     };
@@ -92,9 +75,7 @@ export default {
       this.getCurrentChapterDetail();
     }
   },
-  mounted() {
-    document.addEventListener("click", this.handleUserClickEvent);
-  },
+  mounted() {},
   methods: {
     getUserId() {
       let userId = Storage.getItem("novel_userId");
@@ -176,10 +157,42 @@ export default {
       );
       this.preChapterItem =
         currentChapterIndex === 0 ? null : this.novelChapterList[currentChapterIndex - 1];
+      // 最后一章
+      if (currentChapterIndex === this.novelChapterList.length - 1) {
+        this.getOtherRecommendNovel();
+      }
       this.nextChapterItem =
         currentChapterIndex === this.novelChapterList.length - 1
           ? null
           : this.novelChapterList[currentChapterIndex + 1];
+    },
+
+    // 在阅读到最后一章，获取其他推荐小说（狼人题材）
+    async getOtherRecommendNovel() {
+      const novelReadHistoryList = Storage.getItem("novel_readHistoryList");
+      const otherRecommendNovelResponse = await this.$axios.$post("/api/free_novel/novel_module", {
+        site_id: process.env.SITE_ID,
+        module_id: "all",
+        page_size: 20,
+        page: 1
+      });
+      const otherRecommendNovelList = otherRecommendNovelResponse.novel_list.filter(
+        (novel) =>
+          novel.category === "Werewolf" &&
+          !(novelReadHistoryList && novelReadHistoryList.find((item) => item.id === novel.id))
+      );
+      if (otherRecommendNovelList.length !== 0) {
+        const otherRecommendNovel =
+          otherRecommendNovelList[Math.floor(Math.random() * otherRecommendNovelList.length)];
+
+        const userId = this.getUserId();
+        const otherRecommendNovelDetail = await this.$axios.$post("/api/free_novel/novel_info", {
+          site_id: process.env.SITE_ID,
+          novel_id: Number(otherRecommendNovel.id),
+          uid: userId
+        });
+        this.otherRecommendNovelDetail = otherRecommendNovelDetail;
+      }
     },
 
     // 点击下一章
@@ -194,34 +207,23 @@ export default {
       });
     },
 
-    changeShowChapters() {
-      this.isShowChapters = !this.isShowChapters;
-      if (this.isShowChapters) {
-        this.$nextTick(() => {
-          // 定位到当前阅读章节
-          this.$refs.fixedChapterList.scrollToActiveChapter();
-        });
-      }
-    },
-    handleUserClickEvent(event) {
-      const fixedChapterBar = this.$refs.fixedChapterBar;
-      if (!fixedChapterBar.contains(event.target)) {
-        this.isShowChapters = false;
-      }
-    },
-
     /* 移动端操作 */
     // 展示菜单设置
     handleShowMenuSetting() {
-      if (this.$refs.readSidebar.isShowMenuSetting) {
-        this.$refs.readSidebar.hideMenuSetting();
+      if (this.isShowHeader) {
         this.isShowHeader = false;
       } else {
-        this.$refs.readSidebar.showMenuSetting();
         this.isShowHeader = true;
-        window.setUserFirstAction("click_to_show_navbar");
-        window.setUserReadPageClickAction("click_to_show_navbar");
       }
+      // if (this.$refs.readSidebar.isShowMenuSetting) {
+      //   this.$refs.readSidebar.hideMenuSetting();
+      //   this.isShowHeader = false;
+      // } else {
+      //   this.$refs.readSidebar.showMenuSetting();
+      //   this.isShowHeader = true;
+      //   window.setUserFirstAction("click_to_show_navbar");
+      //   window.setUserReadPageClickAction("click_to_show_navbar");
+      // }
     },
     handleShowChapterPopup() {
       this.isShowChapterPopup = true;
@@ -287,7 +289,7 @@ export default {
       // 每一分钟计时一次
       this.readTimer = setInterval(() => {
         _this.handleReadTime();
-      }, 1000);
+      }, 60000);
       window.addEventListener("beforeunload", () => {
         clearInterval(this.readTimer);
       });

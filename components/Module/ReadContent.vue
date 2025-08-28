@@ -56,11 +56,11 @@
           </div>
           <custom-link
             ref="nextChapterLinkRef"
-            :to="nextChapterPath"
-            :class="['btn-next', { 'btn-disable': nextChapterItem === null }]"
+            :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
+            class="btn-next"
             @click.native="handleClickNextChapter"
           >
-            <span>Next Chapter</span>
+            <span>{{ nextChapterItem === null ? "Read More" : "Next Chapter" }}</span>
           </custom-link>
         </div>
 
@@ -90,6 +90,11 @@ export default {
       // eslint-disable-next-line vue/require-prop-type-constructor
       type: Object | null,
       required: true
+    },
+    otherRecommendNovelDetail: {
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Object | null,
+      required: true
     }
   },
   data() {
@@ -111,6 +116,11 @@ export default {
       return this.nextChapterItem === null
         ? "#"
         : `/read/${this.nextChapterItem.novel_id}/?ch=${this.nextChapterItem.id}`;
+    },
+    otherRecommendNovelPath() {
+      return this.otherRecommendNovelDetail === null
+        ? "/"
+        : `/read/${this.otherRecommendNovelDetail.novel_info.id}/?ch=${this.otherRecommendNovelDetail.user_last_read_chapter_id}`;
     }
   },
   watch: {
@@ -119,7 +129,6 @@ export default {
       if (newValue && oldValue === null) {
         this.$nextTick(() => {
           this.watchBookContentScroll();
-          this.watchReaderScrollHeight();
         });
       }
     }
@@ -173,31 +182,6 @@ export default {
       document
         .getElementById("read-book-container")
         .addEventListener("scroll", this.watchBookContentScrollCallback);
-    },
-    watchReaderScrollHeight() {
-      try {
-        const container = document.getElementById("read-book-container");
-        if (!container) {
-          console.error('Element with ID "read-book-container" not found.');
-          return;
-        }
-
-        new MutationObserver((mutationsList) => {
-          for (const mutation of mutationsList) {
-            if (mutation.type === "attributes" && mutation.attributeName === "style") {
-              console.log("watchReaderScrollHeight", container.clientHeight);
-              // 这里假设我们想要获取的是元素的高度变化
-              // 如果只需要监听 style 变化而不做实际的高度计算或更新，可以根据实际需求调整
-              this.innerHeight = container.clientHeight;
-            }
-          }
-        }).observe(container, {
-          attributes: true,
-          attributeFilter: ["style"]
-        });
-      } catch (error) {
-        console.error("Error setting up MutationObserver:", error);
-      }
     },
 
     handleGetReward() {
