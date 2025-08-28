@@ -21,7 +21,7 @@
       <h3
         >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
       </h3>
-      <!-- <read-content-with-ad :content="currentChapterDetail.content" /> -->
+      <read-content-with-ad :content="currentChapterDetail.content" />
     </article>
 
     <section class="bottom-operation">
