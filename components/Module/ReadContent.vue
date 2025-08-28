@@ -21,7 +21,7 @@
       <h3
         >Chapter {{ currentChapterDetail.chapter_num }} {{ currentChapterDetail.chapter_name }}
       </h3>
-      <read-content-with-ad :content="currentChapterDetail.content" />
+      <!-- <read-content-with-ad :content="currentChapterDetail.content" /> -->
     </article>
 
     <section class="bottom-operation">
@@ -46,6 +46,8 @@
       </div>
       <!-- 分页模块 -->
       <div class="pagination-box">
+        <p class="tip-desc">Complete ads to get extra $1! </p>
+
         <div class="next-chapter-box">
           <div
             class="reward-ad-mask"
@@ -461,6 +463,10 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  .tip-desc {
+    color: $color3;
+    text-align: center;
+  }
   .btn-next {
     @include center;
     width: 100%;
@@ -671,6 +677,10 @@ export default {
   .pagination-box {
     margin: vw(156) 0 vw(200);
     gap: vw(32);
+    .tip-desc {
+      font-size: vw(28);
+      line-height: vw(36);
+    }
     .btn-next {
       height: vw(124);
       border-radius: vw(16);
