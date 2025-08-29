@@ -565,7 +565,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba($color6, 0.4);
+    background: rgba($color6, 0.7);
   }
   .dialog-content {
     position: absolute;
@@ -630,12 +630,26 @@ export default {
       }
     }
     .get-btn {
-      @include icon(280px, 65px, "icon-reward-watched-get-it.png");
+      position: relative;
+      width: 260px;
+      height: 55px;
+      border-radius: 65px;
+      background-color: $color3;
       @include center;
-      margin-top: 12px;
+      margin: 24px auto 12px;
       font-size: 18px;
       font-family: "sesb";
       cursor: pointer;
+      &::after {
+        content: "";
+        position: absolute;
+        left: -5px;
+        top: -5px;
+        right: -5px;
+        bottom: -5px;
+        border-radius: 70px;
+        background: rgba($color3, 0.2);
+      }
       .icon-star {
         @include icon(24px, 24px, "icon-get-money-star.png");
         margin-right: 6px;
@@ -843,10 +857,17 @@ export default {
         }
       }
       .get-btn {
-        width: vw(560);
-        height: vw(130);
-        margin-top: vw(20);
+        width: vw(500);
+        height: vw(100);
+        margin: vw(40) auto vw(30);
         font-size: vw(36);
+        &::after {
+          left: vw(-10);
+          top: vw(-10);
+          right: vw(-10);
+          bottom: vw(-10);
+          border-radius: vw(120);
+        }
         .icon-star {
           width: vw(44);
           height: vw(44);
