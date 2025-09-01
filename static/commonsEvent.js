@@ -164,11 +164,11 @@ function setUserFirstAction(action) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function setUserStayThreeMinutes() {
-  const userStayThreeMinutes = getItem("novel_userStayThreeMinutes");
+function setUserStayThreeSeconds() {
+  const userStayThreeMinutes = getItem("novel_userStayThreeSeconds");
   if (!userStayThreeMinutes) {
     window.userStayThreeMinutesTimer = setTimeout(() => {
-      setItem("novel_userStayThreeMinutes", true);
+      setItem("novel_userStayThreeSeconds", true);
       window.dataLayer.push({ event: "User_stay_3s" });
     }, 3000);
     window.addEventListener("beforeunload", () => {

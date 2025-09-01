@@ -263,6 +263,9 @@ export default {
         event: "Novel_chapter_read",
         novel_read: novelReadValue
       });
+
+      // 记录用户站内停留3s
+      window.setUserStayThreeSeconds();
       // 记录用户阅读章节数据
       window.setUserReadChapterData(chapterDetail.chapter_id);
       // 上报用户阅读章节数据到FaceBook
