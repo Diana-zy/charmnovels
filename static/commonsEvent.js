@@ -165,14 +165,14 @@ function setUserFirstAction(action) {
 
 // eslint-disable-next-line no-unused-vars
 function setUserStayThreeSeconds() {
-  const userStayThreeMinutes = getItem("novel_userStayThreeSeconds");
-  if (!userStayThreeMinutes) {
-    window.userStayThreeMinutesTimer = setTimeout(() => {
+  const userStayThreeSeconds = getItem("novel_userStayThreeSeconds");
+  if (!userStayThreeSeconds) {
+    window.userStayThreeSecondsTimer = setTimeout(() => {
       setItem("novel_userStayThreeSeconds", true);
       window.dataLayer.push({ event: "User_stay_3s" });
     }, 3000);
     window.addEventListener("beforeunload", () => {
-      window.userStayThreeMinutesTimer && clearTimeout(window.userStayThreeMinutesTimer);
+      window.userStayThreeSecondsTimer && clearTimeout(window.userStayThreeSecondsTimer);
     });
   }
 }
@@ -330,6 +330,10 @@ function setUserReadChapterToFaceBookData(chapterId) {
     pushAllReadChapterCountValue = userReadChapterToFaceBookData.allReadChapterCount;
     trackEventToFaceBook(`Chapter_${pushAllReadChapterCountValue}`);
   }
+  // 上报标准事件
+  if (userReadChapterToFaceBookData.allReadChapterCount === 1) {
+    trackEventToFaceBook("ViewContent", false);
+  }
 
   // 记录真实阅读次数
   const userReadChapterIdToFaceBookList = getItem("novel_userReadChapterIdToFaceBookList") || [];
@@ -344,6 +348,14 @@ function setUserReadChapterToFaceBookData(chapterId) {
       )
     ) {
       trackEventToFaceBook(`Chapter_${userReadChapterToFaceBookData.realReadChapterCount}_read`);
+    }
+
+    // 上报标准事件
+    if (userReadChapterToFaceBookData.realReadChapterCount === 2) {
+      trackEventToFaceBook("CompleteRegistration", false);
+    }
+    if (userReadChapterToFaceBookData.realReadChapterCount === 5) {
+      trackEventToFaceBook("InitiateCheckout", false);
     }
   }
 
@@ -378,6 +390,10 @@ function setUserPageAdActionToFaceBookData(action) {
       pushShowAdCountValue = userPageAdActionToFaceBookData.showAdCount;
       trackEventToFaceBook(`Banner_show_${pushShowAdCountValue}`);
     }
+    // 上报标准事件
+    if (userPageAdActionToFaceBookData.showAdCount === 5) {
+      trackEventToFaceBook("AddToCart", false);
+    }
   }
   // 页内点击
   else if (action === "click") {
@@ -388,6 +404,7 @@ function setUserPageAdActionToFaceBookData(action) {
       userClickPageAdToChapterList.push(chapterId);
       setItem("novel_userClickPageAdToChapterList", userClickPageAdToChapterList);
       trackEventToFaceBook("Banner_normal_click");
+      trackEventToFaceBook("StartTrial", false);
     }
   }
 }
