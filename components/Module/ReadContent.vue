@@ -250,6 +250,7 @@ export default {
       // 点击下一章
       window.dataLayer.push({ event: "Next_chapter_click" });
       window.trackEventToFaceBook("Next_chapter_click");
+      window.trackEventToFaceBook("Purchase", false);
     },
 
     handleWatchRewardTime() {
