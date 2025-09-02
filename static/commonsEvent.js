@@ -404,7 +404,7 @@ function setUserPageAdActionToFaceBookData(action) {
       userClickPageAdToChapterList.push(chapterId);
       setItem("novel_userClickPageAdToChapterList", userClickPageAdToChapterList);
       trackEventToFaceBook("Banner_normal_click");
-      trackEventToFaceBook("StartTrial", false);
+      trackEventToFaceBook("Lead", false);
     }
   }
 }
