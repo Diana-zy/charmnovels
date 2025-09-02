@@ -409,22 +409,49 @@ function setUserPageAdActionToFaceBookData(action) {
   }
 }
 
-function trackEventToFaceBook(eventName, isCustomEvent = true) {
-  // trackEventToApi(eventName);
+// Purchase事件去重检查函数
+function canReportPurchaseEvent() {
+  const currentFbclid = getCookie("hi_fbclid") || "unknown";
+  const purchaseEvents = getItem("novel_fbclidPurchaseEvents") || {};
 
-  // const userId = getItem("novel_userId");
-  // const eventId = `${userId}_${eventName}_${new Date().getTime()}_${Math.floor(
-  //   Math.random() * 1000000
-  // )}`;
-  // if (isCustomEvent) {
-  //   window.fbq("trackCustom", eventName, {}, { eventID: eventId });
-  // } else {
-  //   window.fbq("track", eventName);
-  // }
+  // 检查当前fbclid是否已上报过Purchase事件
+  if (purchaseEvents[currentFbclid] && purchaseEvents[currentFbclid].isPurchaseReported) {
+    return false;
+  }
+
+  return true;
+}
+
+// Purchase事件上报记录函数
+function recordPurchaseEvent() {
+  const currentFbclid = getCookie("hi_fbclid") || "unknown";
+  const purchaseEvents = getItem("novel_fbclidPurchaseEvents") || {};
+
+  // 记录当前fbclid的Purchase事件上报状态
+  purchaseEvents[currentFbclid] = {
+    isPurchaseReported: true,
+    firstReportTime: new Date().getTime()
+  };
+
+  setItem("novel_fbclidPurchaseEvents", purchaseEvents);
+}
+
+function trackEventToFaceBook(eventName, isCustomEvent = true) {
+  // 特殊处理Purchase事件的去重逻辑
+  if (eventName === "Purchase" && !canReportPurchaseEvent()) {
+    return;
+  }
+
+  // trackEventToApi(eventName);
 
   if (isCustomEvent) {
     window.fbq("trackCustom", eventName);
   } else {
     window.fbq("track", eventName);
+  }
+
+  // 记录Purchase事件上报状态
+  if (eventName === "Purchase") {
+    recordPurchaseEvent();
   }
 }
