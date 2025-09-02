@@ -37,12 +37,8 @@ export default {
       let charCount = 0;
       let adIndex = 0;
       let lastAdCharCount = 0;
-      const items = [
-        {
-          type: "ad",
-          slot: `detail_0`
-        }
-      ];
+      let isFirstAd = false;
+      const items = [];
 
       parts.forEach((part) => {
         if (!part.trim()) return; // 跳过空字符串
@@ -56,17 +52,25 @@ export default {
         // 计算纯文本长度
         const textContent = part.replace(/<[^>]+>/g, "");
         charCount += textContent.length;
-        // 检查是否需要插入广告
-        if (
+        if (charCount >= 150 && !isFirstAd) {
+          items.push({
+            type: "ad",
+            slot: `detail_${adIndex}`
+          });
+          isFirstAd = true;
+          lastAdCharCount = charCount;
+          adIndex++;
+        } else if (
           charCount >= this.charInterval &&
           (charCount - lastAdCharCount >= this.charInterval || lastAdCharCount === 0)
         ) {
           items.push({
             type: "ad",
-            slot: `detail_${adIndex + 1}`
+            slot: `detail_${adIndex}`
           });
           lastAdCharCount = charCount;
           adIndex++;
+          console.log(charCount, lastAdCharCount);
         }
       });
       return items;
