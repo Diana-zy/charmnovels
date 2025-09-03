@@ -123,16 +123,6 @@ export default {
         : `/read/${this.otherRecommendNovelDetail.novel_info.id}/?ch=${this.otherRecommendNovelDetail.user_last_read_chapter_id}`;
     }
   },
-  watch: {
-    // 监听是否有数据，且只监听一次
-    currentChapterDetail(newValue, oldValue) {
-      if (newValue && oldValue === null) {
-        this.$nextTick(() => {
-          this.watchBookContentScroll();
-        });
-      }
-    }
-  },
   mounted() {
     this.isMobile = window.innerWidth <= 750;
     this.initStorageReadSetting();
@@ -162,26 +152,6 @@ export default {
 
     handleShowMenuSetting() {
       this.$emit("show-menu-setting");
-    },
-
-    /* 处理页内滚动 */
-    watchBookContentScrollCallback(event) {
-      if (window.AD_SHOW_SCROLL === false) {
-        const admSlotOffsetTop = document.querySelector("." + window.AD_SHOW_SCROLL_TOP).offsetTop;
-        const pageScrollTop = event.target.scrollTop;
-
-        const headerHeight = document.querySelector(".read-header").offsetHeight;
-        if (pageScrollTop >= admSlotOffsetTop - headerHeight) {
-          event.stopPropagation();
-          event.preventDefault();
-          event.target.scrollTo(0, admSlotOffsetTop - headerHeight);
-        }
-      }
-    },
-    watchBookContentScroll() {
-      document
-        .getElementById("read-book-container")
-        .addEventListener("scroll", this.watchBookContentScrollCallback);
     },
 
     handleGetReward() {
@@ -289,8 +259,8 @@ export default {
   background: #fffefc;
   box-shadow: 0 0 11px 0 rgba($color6, 0.06);
   border-radius: 2px;
-  overflow-y: scroll;
-  height: 87vh;
+  // overflow-y: scroll;
+  // height: 87vh;
 }
 .top-info {
   display: flex;
@@ -554,7 +524,7 @@ export default {
 @media screen and (max-width: 750px) {
   .read-container {
     max-width: unset;
-    height: calc(100dvh - vw(96));
+    // height: calc(100dvh - vw(96));
     margin: 0;
     padding: 0 vw(46) vw(48);
     background: var(--read-bg-color);

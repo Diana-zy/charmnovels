@@ -1,8 +1,6 @@
 <template>
   <div ref="admSlot" :class="['adm-slot', `adm-slot-${admId}`]">
-    <p ref="title" class="title"
-      >AD SHOW <span v-if="countdown" class="text-countdown">{{ countdown }}s</span></p
-    >
+    <p ref="title" class="title">AD SHOW</p>
     <div :id="admId" ref="googleAdmSlot" class="ad-slot"></div>
   </div>
 </template>
@@ -25,26 +23,14 @@ export default {
     };
   },
   mounted() {
-    this.observer = new IntersectionObserver(this.handleIntersection);
+    this.observer = new IntersectionObserver(this.handleIntersection, {
+      rootMargin: `0px 0px ${innerHeight}px 0px`
+    });
     this.observer.observe(this.$refs.googleAdmSlot);
   },
   methods: {
-    setCountDownInterval() {
-      window.AD_SHOW_SCROLL_TOP = `adm-slot-${this.admId}`;
-      window.AD_SHOW_SCROLL = false;
-      const interval = setInterval(() => {
-        this.countdown--;
-        window.AD_SHOW_SCROLL = false;
-        if (this.countdown === 0) {
-          clearInterval(interval);
-          window.AD_SHOW_SCROLL = true;
-        }
-      }, 1000);
-    },
     handleIntersection(entries) {
       if (entries[0].isIntersecting) {
-        this.setCountDownInterval();
-
         const width = this.$refs.admSlot.clientWidth;
         const height = this.$refs.admSlot.clientHeight - this.$refs.title.clientHeight;
         console.log(width, height);
