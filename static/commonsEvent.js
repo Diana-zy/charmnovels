@@ -123,7 +123,7 @@ function trackEventToApi(eventName) {
   const currentCookie = document.cookie;
   const sourceClickId = getCookie("hi_souceClickId");
   const source = window.getParam("hi_source");
-  fetch("https://api.findtapgame.com/api/zh/sjzh", {
+  fetch("https://api.tapmygame.com/api/zh/sjzh", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
