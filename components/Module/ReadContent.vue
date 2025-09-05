@@ -214,7 +214,7 @@ export default {
                   Ads_IR: "V_IR"
                 });
                 this.handleSimulationClickNextChapter();
-                window.trackEventToFaceBook("V_IR");
+                window.trackEventToPixel("V_IR");
               }
             });
           } else {
@@ -247,8 +247,8 @@ export default {
 
       // 点击下一章
       window.dataLayer.push({ event: "Next_chapter_click" });
-      window.trackEventToFaceBook("Next_chapter_click");
-      window.trackEventToFaceBook("Purchase", false);
+      window.trackEventToPixel("Next_chapter_click");
+      window.trackEventToPixel("Next_chapter_click", false);
     },
 
     handleWatchRewardTime() {
@@ -273,7 +273,7 @@ export default {
         this.$emit("handle-click-next-chapter", this.nextChapterItem.id);
         // 点击进入下一章节
         // window.dataLayer.push({ event: "Next_chapter_click" });
-        // window.trackEventToFaceBook("Next_chapter_click");
+        // window.trackEventToPixel("Next_chapter_click");
       }
     }
   }

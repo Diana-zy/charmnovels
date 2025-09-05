@@ -121,19 +121,19 @@ function trackEventToApi(eventName) {
   const landingPageUrl = getCookie("hi_landing_page");
   const userAgent = navigator.userAgent;
   const currentCookie = document.cookie;
-  const fbclid = getCookie("hi_fbclid");
-  fetch("https://api.findtapgame.com/api/zh/sjzh", {
+  const sourceClickId = getCookie("hi_souceClickId");
+  const source = window.getParam("hi_source");
+  fetch("https://api.tapmygame.com/api/zh/sjzh", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
       site_id: "charmnovels-free",
-      hi_source: "facebook", // 媒体渠道
-      scid: fbclid || "", // 媒体渠道的ClickID
+      hi_source: source, // 媒体渠道
+      scid: sourceClickId || "", // 媒体渠道的ClickID
       sjmc: eventName, // 事件名称
       cc: window.youknowwho_ip_country || "", // 国家code
-      // cid: "channeid", // AFS渠道号ID
       curl: currentHref, // 发生转化页面的完整url
       lurl: landingPageUrl, // 落地页的完整url
       domain: currentDomain, // 完整域名
@@ -146,9 +146,9 @@ function trackEventToApi(eventName) {
 // 记录fbclid
 (function () {
   const searchParams = new URLSearchParams(window.location.search);
-  const fbclid = searchParams.get("fbclid");
-  if (fbclid) {
-    setCookie("hi_fbclid", fbclid);
+  const sourceClickId = searchParams.get("fbclid") || searchParams.get("ttclid");
+  if (sourceClickId) {
+    setCookie("hi_souceClickId", sourceClickId);
   }
 })();
 
@@ -301,18 +301,18 @@ function setUserWatchFirstTwoPageAd(adIndex) {
 // eslint-disable-next-line no-unused-vars
 function setUserReadChapterToFaceBookData(chapterId) {
   let userReadChapterToFaceBookData = getItem("novel_userReadChapterToFaceBookData");
-  const userFbClid = getCookie("hi_fbclid") || "unknown";
+  const userScClid = getCookie("hi_souceClickId") || "unknown";
   if (!userReadChapterToFaceBookData) {
     userReadChapterToFaceBookData = {
-      userFbClid,
+      userScClid,
       allReadChapterCount: 0,
       realReadChapterCount: 0
     };
   }
   // 如果有数据但fbclid不一致，则重置数据
-  else if (userFbClid !== userReadChapterToFaceBookData.userFbClid) {
+  else if (userScClid !== userReadChapterToFaceBookData.userScClid) {
     userReadChapterToFaceBookData = {
-      userFbClid,
+      userScClid,
       allReadChapterCount: 0,
       realReadChapterCount: 0
     };
@@ -328,11 +328,11 @@ function setUserReadChapterToFaceBookData(chapterId) {
     )
   ) {
     pushAllReadChapterCountValue = userReadChapterToFaceBookData.allReadChapterCount;
-    trackEventToFaceBook(`Chapter_${pushAllReadChapterCountValue}`);
+    trackEventToPixel(`Chapter_${pushAllReadChapterCountValue}`);
   }
   // 上报标准事件
   if (userReadChapterToFaceBookData.allReadChapterCount === 1) {
-    trackEventToFaceBook("ViewContent", false);
+    trackEventToPixel("Chapter_1", false);
   }
 
   // 记录真实阅读次数
@@ -347,15 +347,15 @@ function setUserReadChapterToFaceBookData(chapterId) {
         userReadChapterToFaceBookData.realReadChapterCount
       )
     ) {
-      trackEventToFaceBook(`Chapter_${userReadChapterToFaceBookData.realReadChapterCount}_read`);
+      trackEventToPixel(`Chapter_${userReadChapterToFaceBookData.realReadChapterCount}_read`);
     }
 
     // 上报标准事件
     if (userReadChapterToFaceBookData.realReadChapterCount === 2) {
-      trackEventToFaceBook("CompleteRegistration", false);
+      trackEventToPixel("Chapter_2_read", false);
     }
     if (userReadChapterToFaceBookData.realReadChapterCount === 5) {
-      trackEventToFaceBook("InitiateCheckout", false);
+      trackEventToPixel("Chapter_5_read", false);
     }
   }
 
@@ -364,18 +364,18 @@ function setUserReadChapterToFaceBookData(chapterId) {
 
 // 设置用户页内广告相关的数据到FaceBook
 // eslint-disable-next-line no-unused-vars
-function setUserPageAdActionToFaceBookData(action) {
+function setUserPageAdActionToFaceBookData(action, clickAdInfo) {
   let userPageAdActionToFaceBookData = getItem("novel_userPageAdActionToFaceBookData");
-  const userFbClid = getCookie("hi_fbclid") || "unknown";
+  const userScClid = getCookie("hi_souceClickId") || "unknown";
   if (!userPageAdActionToFaceBookData) {
     userPageAdActionToFaceBookData = {
-      userFbClid,
+      userScClid,
       showAdCount: 0
     };
   } // 如果有数据但fbclid不一致，则重置数据
-  else if (userFbClid !== userPageAdActionToFaceBookData.userFbClid) {
+  else if (userScClid !== userPageAdActionToFaceBookData.userScClid) {
     userPageAdActionToFaceBookData = {
-      userFbClid,
+      userScClid,
       showAdCount: 0
     };
     setItem("novel_userClickPageAdToChapterList", []);
@@ -388,11 +388,11 @@ function setUserPageAdActionToFaceBookData(action) {
     let pushShowAdCountValue = 0;
     if (pushFaceBookShowAdCountTypeArr.includes(userPageAdActionToFaceBookData.showAdCount)) {
       pushShowAdCountValue = userPageAdActionToFaceBookData.showAdCount;
-      trackEventToFaceBook(`Banner_show_${pushShowAdCountValue}`);
+      trackEventToPixel(`Banner_show_${pushShowAdCountValue}`);
     }
     // 上报标准事件
     if (userPageAdActionToFaceBookData.showAdCount === 5) {
-      trackEventToFaceBook("AddToCart", false);
+      trackEventToPixel("Banner_show_5", false);
     }
   }
   // 页内点击
@@ -403,19 +403,23 @@ function setUserPageAdActionToFaceBookData(action) {
     if (!userClickPageAdToChapterList.includes(chapterId)) {
       userClickPageAdToChapterList.push(chapterId);
       setItem("novel_userClickPageAdToChapterList", userClickPageAdToChapterList);
-      trackEventToFaceBook("Banner_normal_click");
-      trackEventToFaceBook("StartTrial", false);
+      trackEventToPixel("Banner_normal_click");
+      trackEventToPixel("Banner_normal_click", false);
+      window.dataLayer.push({
+        event: "Banner_normal_click",
+        banner_info: clickAdInfo
+      });
     }
   }
 }
 
 // Purchase事件去重检查函数
 function canReportPurchaseEvent() {
-  const currentFbclid = getCookie("hi_fbclid") || "unknown";
+  const currentScClid = getCookie("hi_souceClickId") || "unknown";
   const purchaseEvents = getItem("novel_fbclidPurchaseEvents") || {};
 
   // 检查当前fbclid是否已上报过Purchase事件
-  if (purchaseEvents[currentFbclid] && purchaseEvents[currentFbclid].isPurchaseReported) {
+  if (purchaseEvents[currentScClid] && purchaseEvents[currentScClid].isPurchaseReported) {
     return false;
   }
 
@@ -424,11 +428,11 @@ function canReportPurchaseEvent() {
 
 // Purchase事件上报记录函数
 function recordPurchaseEvent() {
-  const currentFbclid = getCookie("hi_fbclid") || "unknown";
+  const currentScClid = getCookie("hi_souceClickId") || "unknown";
   const purchaseEvents = getItem("novel_fbclidPurchaseEvents") || {};
 
   // 记录当前fbclid的Purchase事件上报状态
-  purchaseEvents[currentFbclid] = {
+  purchaseEvents[currentScClid] = {
     isPurchaseReported: true,
     firstReportTime: new Date().getTime()
   };
@@ -436,22 +440,70 @@ function recordPurchaseEvent() {
   setItem("novel_fbclidPurchaseEvents", purchaseEvents);
 }
 
-function trackEventToFaceBook(eventName, isCustomEvent = true) {
+function trackEvent(source, eventName, isCustomEvent = true) {
   // 特殊处理Purchase事件的去重逻辑
   if (eventName === "Purchase" && !canReportPurchaseEvent()) {
     return;
   }
 
-  // trackEventToApi(eventName);
-
-  if (isCustomEvent) {
-    window.fbq("trackCustom", eventName);
-  } else {
-    window.fbq("track", eventName);
+  if (source === "tiktok") {
+    isCustomEvent === false && window.ttq?.track?.(eventName);
+  } else if (source === "facebook") {
+    if (isCustomEvent) {
+      window.fbq?.("trackCustom", eventName);
+    } else {
+      eventName === "Purchase"
+        ? window.fbq?.("track", eventName, {
+            currency: "USD",
+            value: 1
+          })
+        : window.fbq?.("track", eventName);
+    }
   }
+
+  // 标准事件才上报给接口
+  isCustomEvent === false && trackEventToApi(eventName);
 
   // 记录Purchase事件上报状态
   if (eventName === "Purchase") {
     recordPurchaseEvent();
+  }
+}
+
+function trackEventToPixel(eventKey, isCustomEvent = true) {
+  const eventNameObj = {
+    Chapter_1: {
+      tiktok: "ViewContent",
+      facebook: "ViewContent"
+    },
+    Chapter_2_read: {
+      tiktok: "CompleteRegistration",
+      facebook: "CompleteRegistration"
+    },
+    Chapter_5_read: {
+      tiktok: "InitiateCheckout",
+      facebook: "InitiateCheckout"
+    },
+    Banner_show_5: {
+      tiktok: "AddToCart",
+      facebook: "AddToCart"
+    },
+    Banner_normal_click: {
+      tiktok: "Lead",
+      facebook: "Lead"
+    },
+    Next_chapter_click: {
+      tiktok: "Purchase",
+      facebook: "Purchase"
+    }
+  };
+
+  const source = window.getParam("hi_source");
+  let eventName = "";
+  isCustomEvent ? (eventName = eventKey) : (eventName = eventNameObj[eventKey][source]);
+
+  const pixelId = window.getParam("hi_pc");
+  if (source && pixelId && eventName) {
+    trackEvent(source, eventName, isCustomEvent);
   }
 }
