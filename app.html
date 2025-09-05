@@ -2,30 +2,8 @@
 <html lang="en">
   <head {{ HEAD_ATTRS }}>
     <meta charset="UTF-8" />
+    <script src="/trackEvent.js" type="text/javascript"></script>
     <script src="/commonsEvent.js" type="text/javascript"></script>
-
-    <!-- FaceBook Pixel Code -->
-    <script>
-      !(function (f, b, e, v, n, t, s) {
-        if (f.fbq) return;
-        n = f.fbq = function () {
-          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-        };
-        if (!f._fbq) f._fbq = n;
-        n.push = n;
-        n.loaded = !0;
-        n.version = "2.0";
-        n.queue = [];
-        t = b.createElement(e);
-        t.async = !0;
-        t.src = v;
-        s = b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t, s);
-      })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-      fbq("init", "1875563969657075");
-      fbq("track", "PageView");
-    </script>
-    <!-- End FaceBook Pixel Code -->
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHEGG7L6EF"></script>
@@ -138,15 +116,14 @@
           window.setUserReadPageClickAction("click_y");
           window.setUserPageAdActionData("click");
 
+          // 获取页内的下标
+          const pageAdIndex = activeElementId.split("charmnovels_detail_")[1].split("_")[0];
           // 如果是首个章节，则第6个及以后的广告点击才上报
-          if (window.isFirstChapterNum) {
-            // 获取页内的下标
-            const pageAdIndex = activeElementId.split("charmnovels_detail_")[1].split("_")[0];
-            if (Number(pageAdIndex) >= 6) {
-              window.setUserPageAdActionToFaceBookData("click");
-            }
-          } else {
-            window.setUserPageAdActionToFaceBookData("click");
+          if (!window.isFirstChapterNum || Number(pageAdIndex) >= 6) {
+            window.setUserPageAdActionToFaceBookData(
+              "click",
+              `chapter_${window.currentReadChapterNum}_adIndex_${pageAdIndex}`
+            );
           }
         }
       });

@@ -285,6 +285,7 @@ export default {
       window.setUserReadChapterToFaceBookData(chapterDetail.chapter_id);
       // 记录该章节是否是第一章
       window.isFirstChapterNum = chapterDetail.chapter_num === 1;
+      window.currentReadChapterNum = chapterDetail.chapter_num;
     },
 
     // 获取奖励
