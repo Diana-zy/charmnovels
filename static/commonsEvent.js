@@ -485,12 +485,12 @@ function trackEventToPixel(eventKey, isCustomEvent = true) {
       facebook: "InitiateCheckout"
     },
     Banner_show_5: {
-      tiktok: "AddToCart",
-      facebook: "AddToCart"
+      tiktok: "AddPaymentInfo",
+      facebook: "StartTrial"
     },
     Banner_normal_click: {
-      tiktok: "Lead",
-      facebook: "Lead"
+      tiktok: "AddToCart",
+      facebook: "AddToCart"
     },
     Next_chapter_click: {
       tiktok: "Purchase",
