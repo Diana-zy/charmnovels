@@ -27,7 +27,7 @@ export default {
   },
   data() {
     return {
-      adMaxCount: 10 // 页内最大个数
+      adMaxCount: 3 // 页内最大个数
     };
   },
   computed: {
