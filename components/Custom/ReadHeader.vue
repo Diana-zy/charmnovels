@@ -1,8 +1,8 @@
 <template>
   <header class="theme-dark read-header">
-    <custom-link v-show="isShowBack" to="/" class="icon-back">
+    <div v-show="isShowBack" @click="handlePageBack" class="icon-back">
       <i></i>
-    </custom-link>
+    </div>
     <div v-if="currentChapterDetail" class="chapter-box">
       <span class="progress"
         >{{ currentChapterDetail.chapter_num }} /
@@ -24,6 +24,37 @@ export default {
       // eslint-disable-next-line vue/require-prop-type-constructor
       type: Object | null,
       required: true
+    }
+  },
+  methods: {
+    handlePageBack() {
+      if (navigator.userAgent.includes("MSIE") && !navigator.userAgent.includes("Opera")) {
+        // IE
+        if (history.length > 0) {
+          window.history.go(-1);
+        } else {
+          window.location.href = "/";
+        }
+      } else {
+        // 非IE浏览器
+        // eslint-disable-next-line no-lonely-if
+        if (
+          navigator.userAgent.includes("Firefox") ||
+          navigator.userAgent.includes("Opera") ||
+          navigator.userAgent.includes("Safari") ||
+          navigator.userAgent.includes("Chrome") ||
+          navigator.userAgent.includes("WebKit")
+        ) {
+          if (window.history.length > 1) {
+            window.history.go(-1);
+          } else {
+            window.location.href = "/";
+          }
+        } else {
+          // 未知的浏览器
+          window.history.go(-1);
+        }
+      }
     }
   }
 };

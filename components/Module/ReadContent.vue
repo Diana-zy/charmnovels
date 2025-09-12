@@ -24,51 +24,29 @@
       <read-content-with-ad :content="currentChapterDetail.content" />
     </article>
 
-    <section class="bottom-operation">
-      <!-- 奖励模块 -->
-      <div class="get-reward-box">
-        <div class="content-left">
-          <img src="~/assets/images/icon-money.png" alt="icon-money" />
-          <div>
-            Reading Reward $1
-            <div class="content-left-num">$1</div>
-          </div>
-        </div>
-        <div
-          :class="[
-            'btn-get-reward',
-            canGetReward ? '' : 'btn-disable',
-            isSuccessGetReward ? 'get-anima-reward' : ''
-          ]"
-          @click="handleGetReward"
-          >{{ canGetReward ? "Get $1" : "End" }}</div
-        >
-      </div>
-      <!-- 分页模块 -->
-      <div class="pagination-box">
-        <div class="next-chapter-box">
-          <div
-            class="reward-ad-mask"
-            :class="[isRequestRewardAdLoading ? '' : 'get-anima-hand']"
-            @click="handleOpenRewardAd"
-          >
-            <div v-if="isRequestRewardAdLoading" class="reward-ad-loading"></div>
-          </div>
-          <custom-link
-            ref="nextChapterLinkRef"
-            :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
-            class="btn-next"
-            @click.native="handleClickNextChapter"
-          >
-            <span>{{ nextChapterItem === null ? "Read More" : "Next Chapter" }}</span>
-          </custom-link>
-        </div>
+    <transition name="fade">
+      <section v-show="isShowPagination" class="bottom-operation">
+        <transition name="slide">
+          <!-- 分页模块 -->
+          <div v-show="isShowPagination" class="pagination-box">
+            <div class="next-chapter-box">
+              <custom-link
+                ref="nextChapterLinkRef"
+                :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
+                class="btn-next"
+                @click.native="handleClickNextChapter"
+              >
+                <span>{{ nextChapterItem === null ? "Read More" : "Next Chapter" }}</span>
+              </custom-link>
+            </div>
 
-        <custom-link v-if="preChapterItem !== null" :to="preChapterPath" class="btn-pre">
-          Previous Chapter
-        </custom-link>
-      </div>
-    </section>
+            <custom-link v-if="preChapterItem !== null" :to="preChapterPath" class="btn-pre">
+              Previous Chapter
+            </custom-link>
+          </div>
+        </transition>
+      </section>
+    </transition>
   </section>
 </template>
 
@@ -103,7 +81,8 @@ export default {
       canGetReward: true, // 是否可以领取奖励
       isSuccessGetReward: false, // 是否成功领取奖励
       isRequestRewardAdLoading: false, // 是否正在请求奖励广告
-      isSecondRequestRewardAd: false // 是否二次请求奖励广告
+      isSecondRequestRewardAd: false, // 是否二次请求奖励广告
+      isShowPagination: false
     };
   },
   computed: {
@@ -166,6 +145,25 @@ export default {
 
     /* 处理页内滚动 */
     watchBookContentScrollCallback(event) {
+      // 获取最后一个页内广告
+      const lastPageAdElement = document.querySelector(".adm-slot-detail_2");
+      const lastPageAdElementTop = lastPageAdElement.offsetTop;
+      const lastPageAdElementHeight = lastPageAdElement.offsetHeight;
+
+      const scrollContentHeight = event.target.scrollHeight;
+      const clientHeight = event.target.clientHeight;
+      const scrollTop = event.target.scrollTop;
+      // 判断是否观看完最后一个页内广告后且滑动了1个屏幕高度
+      const isReadLastPageAd =
+        scrollTop > lastPageAdElementTop + lastPageAdElementHeight + clientHeight;
+      // 判断滚动到底部还有半个屏幕高度
+      const isArriveBottom = scrollContentHeight - clientHeight - scrollTop < clientHeight / 2;
+      if (isReadLastPageAd || isArriveBottom) {
+        this.isShowPagination = true;
+      } else {
+        this.isShowPagination = false;
+      }
+
       if (window.AD_SHOW_SCROLL === false) {
         const admSlotOffsetTop = document.querySelector("." + window.AD_SHOW_SCROLL_TOP).offsetTop;
         const pageScrollTop = event.target.scrollTop;
@@ -184,96 +182,14 @@ export default {
         .addEventListener("scroll", this.watchBookContentScrollCallback);
     },
 
-    handleGetReward() {
-      if (this.canGetReward) {
-        this.canGetReward = false;
-        this.isSuccessGetReward = true;
-        this.$emit("handle-get-reward");
-        window.setUserReadPageClickAction("click_bottom_money_button");
-      }
-    },
-
-    handleOpenRewardAd() {
-      if (this.isRequestRewardAdLoading) {
-        return;
-      }
-      this.isRequestRewardAdLoading = true;
-      const adConfig = {
-        google_ad_loaded_callback: (adInstance) => {
-          if (adInstance !== null) {
-            window.dataLayer.push({
-              event: "Ads_IR",
-              Ads_IR: "C_IR"
-            });
-            this.handleWatchRewardTime();
-            adInstance.show((result) => {
-              clearTimeout(this.rewardTimer);
-              if (result.status === "viewed") {
-                window.dataLayer.push({
-                  event: "Ads_IR",
-                  Ads_IR: "V_IR"
-                });
-                this.handleSimulationClickNextChapter();
-                window.trackEventToPixel("V_IR");
-              }
-            });
-          } else {
-            console.log("No rewarded ad loaded");
-            // 第一次请求失败给个提示
-            if (this.isSecondRequestRewardAd === false) {
-              this.isSecondRequestRewardAd = true;
-              this.$globalMethod.showNotification({
-                message: "NetWork Error, Please try again later",
-                type: "warning"
-              });
-            } else {
-              this.handleSimulationClickNextChapter();
-            }
-          }
-          this.isRequestRewardAdLoading = false;
-        },
-        google_ad_slot: 6875183545,
-        google_ad_format: "rewarded"
-      };
-
-      window.adsbygoogle = window.adsbygoogle || [];
-      window.adsbygoogle.push({
-        params: adConfig
-      });
-      window.dataLayer.push({
-        event: "Ads_IR",
-        Ads_IR: "Q_IR"
-      });
-
-      // 点击下一章
-      window.dataLayer.push({ event: "Next_chapter_click" });
-      window.trackEventToPixel("Next_chapter_click");
-      window.trackEventToPixel("Next_chapter_click", false);
-    },
-
-    handleWatchRewardTime() {
-      this.rewardTimer && clearTimeout(this.rewardTimer);
-      this.rewardTimer = setTimeout(() => {
-        window.dataLayer.push({
-          event: "Ads_IR",
-          Ads_IR: "V_IR_5S"
-        });
-        clearTimeout(this.rewardTimer);
-      }, 5000);
-    },
-
-    handleSimulationClickNextChapter() {
-      this.$nextTick(() => {
-        this.$refs.nextChapterLinkRef.$el.click();
-      });
-    },
-
     handleClickNextChapter() {
       if (this.nextChapterItem !== null) {
         this.$emit("handle-click-next-chapter", this.nextChapterItem.id);
-        // 点击进入下一章节
-        // window.dataLayer.push({ event: "Next_chapter_click" });
-        // window.trackEventToPixel("Next_chapter_click");
+
+        // 点击下一章
+        window.dataLayer.push({ event: "Next_chapter_click" });
+        window.trackEventToPixel("Next_chapter_click");
+        window.trackEventToPixel("Next_chapter_click", false);
       }
     }
   }
@@ -349,116 +265,15 @@ export default {
   margin: 0 auto 16px;
 }
 .bottom-operation {
-  margin-top: 16px;
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  width: 520px;
 }
-.pay-box {
-  width: 100%;
-  height: 64px;
-  border-radius: 8px;
-  background: $color3;
-  @include center;
-  flex-direction: column;
-  cursor: pointer;
-  .icon-lock {
-    @include icon(24px, 24px, "icon-lock.png");
-    margin-right: 4px;
-  }
-  .row-status {
-    font-size: 18px;
-    line-height: 24px;
-    margin-bottom: 4px;
-    color: $color1;
-    font-family: "seb";
-    @include center;
-  }
-  .row-info {
-    font-size: 14px;
-    line-height: 19px;
-    color: $color1;
-    :nth-child(1) {
-      font-family: "seb";
-      margin-right: 4px;
-    }
-  }
-}
-.status-paid {
-  font-size: 14px;
-  line-height: 19px;
-  color: $color3;
-  text-align: center;
-  text-decoration: underline;
-  margin-top: 8px;
-  cursor: pointer;
-}
-.get-reward-box {
-  display: flex;
-  align-items: center;
-  width: 450px;
-  height: 80px;
-  margin: 32px auto;
-  padding: 0 16px;
-  border-radius: 8px;
-  background: #fff4e4;
-  img {
-    width: 70px;
-    height: 70px;
-    margin-right: 12px;
-  }
-  .content-left {
-    display: flex;
-    align-items: center;
-    color: #98650e;
-    font-size: 24px;
-    line-height: 32px;
-  }
-  .content-left-num {
-    width: 50px;
-    text-align: center;
-    font-size: 20px;
-    line-height: 24px;
-    border-radius: 4px;
-    background-color: rgba($color_fff, 0.6);
-  }
-  .btn-get-reward {
-    @include center;
-    width: 86px;
-    height: 36px;
-    margin-left: auto;
-    border-radius: 36px;
-    background-color: $color3;
-    color: $color_fff;
-    font-family: "sesb";
-    font-size: 18px;
-    cursor: pointer;
-    &.btn-disable {
-      background-color: rgba($color3, 0.6);
-      color: rgba($color_fff, 0.8);
-    }
-  }
-  .get-anima-reward {
-    position: relative;
-    &::before {
-      content: "";
-      position: absolute;
-      top: -4px;
-      left: 18px;
-      @include icon(40px, 40px, "icon-money.png");
-      animation: getRewardAnima 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
-    }
-    @keyframes getRewardAnima {
-      0% {
-        transform: translateY(0) translateX(0);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-100dvh) translateX(0);
-        opacity: 0;
-      }
-    }
-  }
-}
+
 .pagination-box {
-  margin-top: 64px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -571,8 +386,8 @@ export default {
   }
   .name {
     width: 100%;
-    font-size: vw(64);
-    line-height: vw(76);
+    font-size: vw(48);
+    line-height: vw(64);
     margin: 0 0 vw(16);
     text-align: left;
   }
@@ -583,13 +398,13 @@ export default {
   }
   .read-content {
     h3 {
-      font-size: vw(58);
-      line-height: vw(76);
+      font-size: vw(40);
+      line-height: vw(54);
       padding: vw(16) 0;
     }
     div {
-      font-size: vw(50);
-      line-height: vw(68);
+      font-size: vw(36);
+      line-height: vw(48);
     }
   }
   .content-text {
@@ -605,72 +420,11 @@ export default {
     margin-top: vw(32);
   }
   .bottom-operation {
-    margin-top: vw(32);
+    width: vw(658);
+    bottom: vw(32);
   }
-  .pay-box {
-    height: vw(128);
-    border-radius: vw(16);
-    .icon-lock {
-      width: vw(48);
-      height: vw(48);
-      margin-right: vw(8);
-    }
-    .row-status {
-      font-size: vw(36);
-      line-height: vw(48);
-      margin-bottom: vw(8);
-    }
-    .row-info {
-      font-size: vw(28);
-      line-height: vw(38);
-      :nth-child(1) {
-        margin-right: vw(8);
-      }
-    }
-  }
-  .status-paid {
-    font-size: vw(28);
-    line-height: vw(38);
-    margin-top: vw(16);
-  }
-  .get-reward-box {
-    width: 100%;
-    height: vw(124);
-    margin: vw(46) auto vw(64);
-    padding: 0 vw(24);
-    border-radius: vw(16);
-    img {
-      width: vw(100);
-      height: vw(100);
-      margin-right: vw(18);
-    }
-    .content-left {
-      font-size: vw(38);
-      line-height: vw(54);
-    }
-    .content-left-num {
-      width: vw(88);
-      font-size: vw(32);
-      line-height: vw(40);
-      border-radius: vw(12);
-    }
-    .btn-get-reward {
-      width: vw(132);
-      height: vw(52);
-      border-radius: vw(52);
-      font-size: vw(32);
-    }
-    .get-anima-reward {
-      &::before {
-        width: vw(50);
-        height: vw(50);
-        top: 0;
-        left: vw(40);
-      }
-    }
-  }
+
   .pagination-box {
-    margin: vw(156) 0 vw(200);
     gap: vw(32);
     .btn-next {
       height: vw(124);

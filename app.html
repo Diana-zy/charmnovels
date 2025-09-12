@@ -2,8 +2,8 @@
 <html lang="en">
   <head {{ HEAD_ATTRS }}>
     <meta charset="UTF-8" />
-    <script src="/trackEvent.js" type="text/javascript"></script>
-    <script src="/commonsEvent.js" type="text/javascript"></script>
+    <script src="/trackEvent.js" type="text/javascript" defer></script>
+    <script src="/commonsEvent.js" type="text/javascript" defer></script>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHEGG7L6EF"></script>
@@ -34,17 +34,37 @@
     <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
     <script>
       window.googletag = window.googletag || { cmd: [] };
+      let interstitialSlot;
       googletag.cmd.push(function () {
+        interstitialSlot = googletag.defineOutOfPageSlot(
+          "/23197833490/charmnovels/charmnovels_interstitial",
+          googletag.enums.OutOfPageFormat.INTERSTITIAL
+        );
+        if (interstitialSlot) {
+          interstitialSlot.addService(googletag.pubads()).setConfig({
+            interstitial: {
+              triggers: {
+                navBar: true,
+                unhideWindow: true
+              }
+            }
+          });
+        }
+
         googletag.pubads().addEventListener("slotRenderEnded", (event) => {
           const elementId = event.slot.getSlotId().getDomId();
-          const userWatchPageAdIndex = elementId.split("_")[1];
-          window.setUserWatchFirstTwoPageAd(Number(userWatchPageAdIndex) + 1);
-          // 页内填充了广告
-          if (!event.isEmpty) {
-            window.setUserPageAdActionData("show");
-            window.setUserPageAdActionToFaceBookData("show");
+          if (elementId.includes("detail_")) {
+            const userWatchPageAdIndex = elementId.split("_")[1];
+            window.setUserWatchFirstTwoPageAd(Number(userWatchPageAdIndex) + 1);
+            // 页内填充了广告
+            if (!event.isEmpty) {
+              window.setUserPageAdActionData("show");
+              window.setUserPageAdActionToFaceBookData("show");
+            }
           }
         });
+
+        googletag.enableServices();
       });
     </script>
     <script
@@ -107,6 +127,78 @@
       };
     </script>
     <script>
+      googletag.cmd.push(() => {
+        googletag.display(interstitialSlot);
+      });
+
+      window.isPageUnloaded = false;
+      window.clickOpenAL = 0;
+
+      var isLinkClick = false;
+      document.addEventListener(
+        "click",
+        (event) => {
+          if (window.clickOpenAL === 0) {
+            if ((event = event.target.closest("a")) && event.href) {
+              isLinkClick = true;
+              // window.TTPixelTrackEvent("CompleteRegistration");
+            }
+          } else {
+            window.clickOpenAL = 0;
+          }
+        },
+        true
+      );
+      // 监听页面即将卸载事件
+      window.addEventListener("beforeunload", () => {
+        const activeElement = document.activeElement;
+        const elementSrc = activeElement.getAttribute("src");
+        const elementId = activeElement.getAttribute("id");
+
+        if (window.isPageUnloaded) {
+          return;
+        }
+
+        if (1 === window.clickOpenAL) {
+          // 点击穿插广告
+          dataLayer.push({ event: "D_AL" });
+          if (isLinkClick) {
+            // window.TTPixelTrackEvent("AddPaymentInfo");
+            dataLayer.push({ event: "D_AL_LINK" });
+          }
+        } else {
+          // 用户点击跳转
+          dataLayer.push({ event: "D_RE" });
+        }
+        window.isPageUnloaded = true;
+        isLinkClick = false;
+      });
+
+      new MutationObserver((mutations, observer) => {
+        const interstitialAdElement = document.querySelector('ins[data-vignette-loaded="true"]');
+        if (interstitialAdElement) {
+          const mutationObserver = new MutationObserver(() => {
+            var adDisplay = window.getComputedStyle(interstitialAdElement).display;
+            if ("block" === adDisplay || "flex" === adDisplay) {
+              window.clickOpenAL = 1;
+              dataLayer.push({ event: "C_AL" });
+              // window.TTPixelTrackEvent("Contact");
+
+              localStorage.removeItem("__lsv__");
+              mutationObserver.disconnect();
+            }
+          });
+          mutationObserver.observe(interstitialAdElement, {
+            attributes: true,
+            attributeFilter: ["style"]
+          });
+          observer.disconnect();
+        }
+      }).observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
       window.addEventListener("blur", () => {
         const activeElement = document.activeElement,
           activeElementId = activeElement.getAttribute("id");

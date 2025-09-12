@@ -17,33 +17,7 @@
       @handle-click-next-chapter="handleClickNextChapter"
     />
 
-    <module-read-reward ref="readReward" />
-
-    <!-- <module-read-sidebar
-      ref="readSidebar"
-      :current-read-progress="currentReadProgress"
-      @show-chapter-popup="handleShowChapterPopup"
-      @hide-menu-setting="handleHideHeader"
-      @hide-style-setting="handleHideHeader"
-    /> -->
-    <!-- 移动端章节弹窗 -->
-    <transition name="fade">
-      <div v-show="isShowChapterPopup" class="chapter-list-popup">
-        <div class="mask" @click="handleHideChapterPopup"></div>
-        <transition name="slide">
-          <module-read-chapter
-            v-show="isShowChapterPopup"
-            ref="mobileChapterPopup"
-            :chapters="novelChapterList"
-            :purchase-status="currentChapterDetail?.purchase_status"
-            :current-chapter-id="currentChapterDetail?.chapter_id"
-            theme="dark"
-            @close-chapter-popup="handleHideChapterPopup"
-            @handle-click-next-chapter="handleClickNextChapter"
-          />
-        </transition>
-      </div>
-    </transition>
+    <module-read-reward v-if="currentChapterDetail?.chapter_num === 2" ref="readReward" />
 
     <common-notification />
     <common-fixed-bottom />
@@ -95,13 +69,13 @@ export default {
         uid: userId
       });
       // 阅读历史与当前章节不一致，重定向
-      if (Number(chapterId) !== novelDetail.user_last_read_chapter_id) {
-        const updateUrl = generateCustomLink(
-          `/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`
-        );
-        window.location.href = updateUrl;
-        return;
-      }
+      // if (Number(chapterId) !== novelDetail.user_last_read_chapter_id) {
+      //   const updateUrl = generateCustomLink(
+      //     `/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`
+      //   );
+      //   window.location.href = updateUrl;
+      //   return;
+      // }
 
       this.novelChapterList = novelDetail.chapter;
       // 获取上一章和下一章
@@ -129,6 +103,14 @@ export default {
             novel_id: chapterDetail.novel_info.id,
             chapter_id: Number(chapterId)
           });
+        })
+        .catch((error) => {
+          if (error.msg === "chapter not find") {
+            const updateUrl = generateCustomLink(
+              `/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`
+            );
+            window.location.href = updateUrl;
+          }
         });
     },
 

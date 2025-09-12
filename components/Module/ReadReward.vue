@@ -3,11 +3,6 @@
     <section class="read-reward-box">
       <i class="icon-money"></i>
       <span v-if="isShowMoney" class="text-money">$ {{ taskData.money }}</span>
-      <!-- <div
-        :class="['btn-get', isShowHandAnima ? 'get-anima' : '']"
-        @click="handleShowReadRewardPopup"
-        >Get</div
-      > -->
       <div class="btn-get-gif">
         <img
           src="~/assets/images/get-read-reward.gif"
@@ -16,6 +11,8 @@
         />
       </div>
     </section>
+
+    <div class="reward-btn-box" @click="handleOpenRewardAd">激励按钮</div>
 
     <!-- 奖励模块 -->
     <transition name="fade">
@@ -135,7 +132,9 @@ export default {
         money: 100,
         time: 0
       },
-      isShowDisabledTip: false
+      isShowDisabledTip: false,
+      isRequestRewardAdLoading: false, // 是否正在请求奖励广告
+      isSecondRequestRewardAd: false // 是否二次请求奖励广告
     };
   },
   computed: {
@@ -162,6 +161,69 @@ export default {
     handleHideReadRewardPopup() {
       this.isShowReadReward = false;
       document.body.classList.remove("no-scroll");
+    },
+
+    handleOpenRewardAd() {
+      if (this.isRequestRewardAdLoading) {
+        return;
+      }
+      this.isRequestRewardAdLoading = true;
+      const adConfig = {
+        google_ad_loaded_callback: (adInstance) => {
+          if (adInstance !== null) {
+            window.dataLayer.push({
+              event: "Ads_IR",
+              Ads_IR: "C_IR"
+            });
+            this.handleWatchRewardTime();
+            adInstance.show((result) => {
+              clearTimeout(this.rewardTimer);
+              if (result.status === "viewed") {
+                window.dataLayer.push({
+                  event: "Ads_IR",
+                  Ads_IR: "V_IR"
+                });
+                window.trackEventToPixel("V_IR");
+
+                this.setRewardTaskData("money");
+              }
+            });
+          } else {
+            console.log("No rewarded ad loaded");
+            // 第一次请求失败给个提示
+            if (this.isSecondRequestRewardAd === false) {
+              this.isSecondRequestRewardAd = true;
+              this.$globalMethod.showNotification({
+                message: "NetWork Error, Please try again later",
+                type: "warning"
+              });
+            }
+          }
+          this.isRequestRewardAdLoading = false;
+        },
+        google_ad_slot: 6875183545,
+        google_ad_format: "rewarded"
+      };
+
+      window.adsbygoogle = window.adsbygoogle || [];
+      window.adsbygoogle.push({
+        params: adConfig
+      });
+      window.dataLayer.push({
+        event: "Ads_IR",
+        Ads_IR: "Q_IR"
+      });
+    },
+
+    handleWatchRewardTime() {
+      this.rewardTimer && clearTimeout(this.rewardTimer);
+      this.rewardTimer = setTimeout(() => {
+        window.dataLayer.push({
+          event: "Ads_IR",
+          Ads_IR: "V_IR_5S"
+        });
+        clearTimeout(this.rewardTimer);
+      }, 5000);
     },
 
     getRewardTaskData() {
@@ -268,6 +330,17 @@ export default {
       cursor: pointer;
     }
   }
+}
+
+.reward-btn-box {
+  position: fixed;
+  left: 32px;
+  top: 200px;
+  z-index: 999;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background: $color3;
+  color: #fff;
 }
 
 .read-reward-popup {
@@ -530,6 +603,14 @@ export default {
       }
     }
   }
+
+  .reward-btn-box {
+    left: vw(46);
+    top: vw(200);
+    padding: vw(8) vw(12);
+    border-radius: vw(8);
+  }
+
   .reward-content {
     padding: vw(32) vw(46);
     border-radius: vw(46) vw(46) 0 0;

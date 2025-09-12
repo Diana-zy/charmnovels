@@ -22,7 +22,7 @@ export default {
     },
     charInterval: {
       type: Number,
-      default: 600
+      default: 1000
     }
   },
   data() {
