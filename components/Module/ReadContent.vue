@@ -1,6 +1,9 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
   <section v-if="currentChapterDetail" id="read-book-container" class="read-container">
+    <div v-if="isShowRewardTipGif" class="reward-tip-gif">
+      <img src="@/assets/images/emogi.gif" alt="emogi" />
+    </div>
     <!-- 第一章节才展示 top-info-->
     <div v-if="currentChapterDetail.chapter_num === 1" class="top-info">
       <div class="cover">
@@ -29,19 +32,16 @@
         <transition name="slide">
           <!-- 分页模块 -->
           <div v-show="isShowPagination" class="pagination-box">
-            <div class="next-chapter-box">
-              <custom-link
-                ref="nextChapterLinkRef"
-                :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
-                class="btn-next"
-                @click.native="handleClickNextChapter"
-              >
-                <span>{{ nextChapterItem === null ? "Read More" : "Next Chapter" }}</span>
-              </custom-link>
-            </div>
-
             <custom-link v-if="preChapterItem !== null" :to="preChapterPath" class="btn-pre">
               Previous Chapter
+            </custom-link>
+            <custom-link
+              ref="nextChapterLinkRef"
+              :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
+              class="btn-next"
+              @click.native="handleClickNextChapter"
+            >
+              <span>{{ nextChapterItem === null ? "Read More" : "Next Chapter" }}</span>
             </custom-link>
           </div>
         </transition>
@@ -82,7 +82,8 @@ export default {
       isSuccessGetReward: false, // 是否成功领取奖励
       isRequestRewardAdLoading: false, // 是否正在请求奖励广告
       isSecondRequestRewardAd: false, // 是否二次请求奖励广告
-      isShowPagination: false
+      isShowPagination: false,
+      isShowGifTimeout: true
     };
   },
   computed: {
@@ -100,6 +101,9 @@ export default {
       return this.otherRecommendNovelDetail === null
         ? "/"
         : `/read/${this.otherRecommendNovelDetail.novel_info.id}/?ch=${this.otherRecommendNovelDetail.user_last_read_chapter_id}`;
+    },
+    isShowRewardTipGif() {
+      return this.currentChapterDetail.chapter_num === 2 && this.isShowGifTimeout;
     }
   },
   watch: {
@@ -113,6 +117,10 @@ export default {
     }
   },
   mounted() {
+    setTimeout(() => {
+      this.isShowGifTimeout = false;
+    }, 3000);
+
     this.isMobile = window.innerWidth <= 750;
     this.initStorageReadSetting();
 
@@ -208,6 +216,15 @@ export default {
   overflow-y: scroll;
   height: 87vh;
 }
+.reward-tip-gif {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 9999;
+  @include center;
+}
 .top-info {
   display: flex;
   flex-direction: column;
@@ -275,89 +292,36 @@ export default {
 
 .pagination-box {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  .btn-next {
-    @include center;
-    width: 100%;
-    height: 80px;
-    border-radius: 8px;
-    background-color: $color3;
-    color: $color_fff;
-    font-size: 28px;
-    font-family: "sesb";
-  }
+  gap: 24px;
+  .btn-next,
   .btn-pre {
-    text-align: center;
-    color: #a8a8a8;
-    font-size: 18px;
-    text-decoration: underline;
-  }
-  .btn-disable {
-    background: #eeece8;
-    color: #a8a8a8;
-  }
-
-  .next-chapter-box {
+    &::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% + 10px);
+      height: calc(100% + 10px);
+      border-radius: inherit;
+      background-color: rgba($color3, 0.2);
+    }
     position: relative;
     flex: 1;
-    cursor: pointer;
-  }
-  .reward-ad-mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 1;
-  }
-
-  .get-anima-hand {
-    &::after {
-      content: "";
-      position: absolute;
-      top: 40px;
-      left: 50%;
-      @include icon(50px, 50px, "icon-hand.png");
-      animation: handAnim 0.4s linear infinite alternate;
-    }
-    @keyframes handAnim {
-      0% {
-        transform: translate(12px, 12px);
-      }
-      100% {
-        transform: translate(0);
-      }
-    }
-  }
-
-  .reward-ad-loading {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
     @include center;
-    background: rgba(#000, 0.6);
-    &::after {
-      content: "";
-      position: absolute;
-      border: 4px solid rgba(#fff, 0.8);
-      border-left-color: transparent;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      animation: loadingAnim 1s linear infinite;
-    }
-    @keyframes loadingAnim {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
+    height: 60px;
+    border-radius: 60px;
+    background-color: $color3;
+    color: $color_fff;
+    font-size: 26px;
+    font-family: "sesb";
+  }
+  .btn-next {
+    background-color: #f96606;
+  }
+  .btn-pre {
+    background-color: #fd944f;
   }
 }
 .module-related-chapters-content {
@@ -371,7 +335,7 @@ export default {
     max-width: unset;
     height: calc(100dvh - vw(96));
     margin: 0;
-    padding: 0 vw(46) vw(48);
+    padding: 0 vw(46) vw(180);
     background: var(--read-bg-color);
     color: var(--read-text-color);
     box-shadow: none;
@@ -421,50 +385,20 @@ export default {
   }
   .bottom-operation {
     width: vw(658);
-    bottom: vw(32);
+    bottom: vw(64);
   }
 
   .pagination-box {
-    gap: vw(32);
-    .btn-next {
-      height: vw(124);
-      border-radius: vw(16);
-      font-size: vw(46);
-    }
+    gap: vw(40);
+    .btn-next,
     .btn-pre {
-      font-size: vw(32);
-    }
-
-    .get-anima-hand {
       &::after {
-        top: vw(60);
-        left: vw(330);
-        @include icon(vw(80), vw(80), "icon-hand.png");
+        width: calc(100% + vw(12));
+        height: calc(100% + vw(12));
       }
-      @keyframes handAnim {
-        0% {
-          transform: translate(vw(20), vw(20));
-        }
-      }
-    }
-    .reward-ad-loading {
-      border-radius: vw(16);
-      &::after {
-        content: "";
-        border: vw(10) solid rgba(#fff, 0.8);
-        border-left-color: transparent;
-        width: vw(70);
-        height: vw(70);
-        animation: loadingAnim 1s linear infinite;
-      }
-      @keyframes loadingAnim {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
+      height: vw(84);
+      border-radius: vw(84);
+      font-size: vw(28);
     }
   }
   .module-related-chapters-content {

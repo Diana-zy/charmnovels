@@ -362,6 +362,31 @@ function setUserReadChapterToFaceBookData(chapterId) {
   setItem("novel_userReadChapterToFaceBookData", userReadChapterToFaceBookData);
 }
 
+function setUserWatchRewardAdChapter(chapterId) {
+  let userWatchRewardAdChapterData = getItem("novel_userWatchRewardAdChapterData");
+  const userScClid = getCookie("hi_souceClickId") || "unknown";
+  if (!userWatchRewardAdChapterData || userScClid !== userWatchRewardAdChapterData.userScClid) {
+    userWatchRewardAdChapterData = {
+      userScClid,
+      chapterList: []
+    };
+  }
+  !userWatchRewardAdChapterData.chapterList.includes(chapterId) &&
+    userWatchRewardAdChapterData.chapterList.push(chapterId);
+  setItem("novel_userWatchRewardAdChapterData", userWatchRewardAdChapterData);
+}
+
+function getUserWatchRewardAdChapter(chapterId) {
+  const userWatchRewardAdChapterData = getItem("novel_userWatchRewardAdChapterData");
+  if (
+    userWatchRewardAdChapterData &&
+    userWatchRewardAdChapterData.chapterList.includes(chapterId)
+  ) {
+    return true;
+  }
+  return false;
+}
+
 // 设置用户页内广告相关的数据到FaceBook
 // eslint-disable-next-line no-unused-vars
 function setUserPageAdActionToFaceBookData(action, clickAdInfo) {

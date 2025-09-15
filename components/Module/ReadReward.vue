@@ -12,7 +12,21 @@
       </div>
     </section>
 
-    <div class="reward-btn-box" @click="handleOpenRewardAd">激励按钮</div>
+    <div class="reward-btn-box">
+      <div v-if="isShowWatchRewardAd" class="mask" @click="handleOpenRewardAd"> </div>
+      <custom-link
+        :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
+        class="content"
+      >
+        <div class="btn-tip">
+          <p v-if="isShowWatchRewardAd">Get $1</p>
+          <div v-else>
+            <i class="icon-money-min"></i>
+            <p>Next Chap.</p>
+          </div>
+        </div>
+      </custom-link>
+    </div>
 
     <!-- 奖励模块 -->
     <transition name="fade">
@@ -113,6 +127,18 @@
 <script>
 import Storage from "~/utils/storage";
 export default {
+  props: {
+    nextChapterItem: {
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Object | null,
+      required: true
+    },
+    otherRecommendNovelDetail: {
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Object | null,
+      required: true
+    }
+  },
   data() {
     return {
       isShowHandAnima: true, // 是否显示手部动画
@@ -134,7 +160,7 @@ export default {
       },
       isShowDisabledTip: false,
       isRequestRewardAdLoading: false, // 是否正在请求奖励广告
-      isSecondRequestRewardAd: false // 是否二次请求奖励广告
+      isSuccessWatchRewardAd: false // 是否观看完激励
     };
   },
   computed: {
@@ -145,6 +171,22 @@ export default {
     timeProgress() {
       // 上限为100
       return Math.min(Math.floor((this.taskData.time / 1000) * 100), 100);
+    },
+
+    nextChapterPath() {
+      return this.nextChapterItem === null
+        ? "#"
+        : `/read/${this.nextChapterItem.novel_id}/?ch=${this.nextChapterItem.id}`;
+    },
+    otherRecommendNovelPath() {
+      return this.otherRecommendNovelDetail === null
+        ? "/"
+        : `/read/${this.otherRecommendNovelDetail.novel_info.id}/?ch=${this.otherRecommendNovelDetail.user_last_read_chapter_id}`;
+    },
+    isShowWatchRewardAd() {
+      return (
+        !window.getUserWatchRewardAdChapter(this.$route.query.ch) && !this.isSuccessWatchRewardAd
+      );
     }
   },
   mounted() {
@@ -183,6 +225,8 @@ export default {
                   event: "Ads_IR",
                   Ads_IR: "V_IR"
                 });
+                this.isSuccessWatchRewardAd = true;
+                window.setUserWatchRewardAdChapter(this.$route.query.ch);
                 window.trackEventToPixel("V_IR");
 
                 this.setRewardTaskData("money");
@@ -190,14 +234,10 @@ export default {
             });
           } else {
             console.log("No rewarded ad loaded");
-            // 第一次请求失败给个提示
-            if (this.isSecondRequestRewardAd === false) {
-              this.isSecondRequestRewardAd = true;
-              this.$globalMethod.showNotification({
-                message: "NetWork Error, Please try again later",
-                type: "warning"
-              });
-            }
+            this.$globalMethod.showNotification({
+              message: "NetWork Error, Please try again later",
+              type: "warning"
+            });
           }
           this.isRequestRewardAdLoading = false;
         },
@@ -337,10 +377,43 @@ export default {
   left: 32px;
   top: 200px;
   z-index: 999;
-  padding: 10px 20px;
-  border-radius: 6px;
-  background: $color3;
   color: #fff;
+  .mask {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    width: 120px;
+    height: 100%;
+  }
+  .content {
+    position: relative;
+    @include icon(80px, 80px, "icon-reward.png");
+  }
+  .btn-tip {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-46%);
+    @include center;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: 20px;
+    font-size: 14px;
+    background-color: #f96606;
+    box-shadow: inset 0px -1px 1px 0px rgba(255, 246, 181, 0.46);
+  }
+  .icon-money-min {
+    @include icon(20px, 20px, "icon-money-min.png");
+    margin-right: 2px;
+  }
+  div {
+    @include center;
+  }
+  p {
+    text-wrap: nowrap;
+  }
 }
 
 .read-reward-popup {
@@ -606,9 +679,28 @@ export default {
 
   .reward-btn-box {
     left: vw(46);
-    top: vw(200);
-    padding: vw(8) vw(12);
-    border-radius: vw(8);
+    top: vw(300);
+    .mask {
+      width: vw(180);
+    }
+    .content {
+      width: vw(100);
+      height: vw(100);
+    }
+    .btn-tip {
+      bottom: vw(6);
+      transform: translateX(-46%);
+      height: vw(32);
+      padding: 0 vw(10);
+      border-radius: vw(32);
+      font-size: vw(22);
+      box-shadow: inset 0px -1px 1px 0px rgba(255, 246, 181, 0.46);
+    }
+    .icon-money-min {
+      width: vw(28);
+      height: vw(28);
+      margin-right: vw(4);
+    }
   }
 
   .reward-content {

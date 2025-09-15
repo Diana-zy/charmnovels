@@ -17,7 +17,12 @@
       @handle-click-next-chapter="handleClickNextChapter"
     />
 
-    <module-read-reward v-if="currentChapterDetail?.chapter_num === 2" ref="readReward" />
+    <module-read-reward
+      v-if="currentChapterDetail?.chapter_num >= 2"
+      ref="readReward"
+      :next-chapter-item="nextChapterItem"
+      :other-recommend-novel-detail="otherRecommendNovelDetail"
+    />
 
     <common-notification />
     <common-fixed-bottom />
