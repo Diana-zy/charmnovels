@@ -182,6 +182,11 @@ function setUserReadPageClickAction(action) {
   window.dataLayer.push({ event: "Novel_click_action", click_type: action });
 }
 
+// eslint-disable-next-line no-unused-vars
+function setUserReadPageClickActionNew(action) {
+  window.dataLayer.push({ event: "Novel_action_new", detail_action_new: action });
+}
+
 // 设置单用户页内广告相关的数据
 // eslint-disable-next-line no-unused-vars
 function setUserPageAdActionData(action) {
@@ -297,6 +302,77 @@ function setUserWatchFirstTwoPageAd(adIndex) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
+function setUserWatchRewardAdChapter(chapterId) {
+  let userWatchRewardAdChapterData = getItem("novel_userWatchRewardAdChapterData");
+  const userScClid = getCookie("hi_souceClickId") || "unknown";
+  if (!userWatchRewardAdChapterData || userScClid !== userWatchRewardAdChapterData.userScClid) {
+    userWatchRewardAdChapterData = {
+      userScClid,
+      chapterList: []
+    };
+  }
+  !userWatchRewardAdChapterData.chapterList.includes(chapterId) &&
+    userWatchRewardAdChapterData.chapterList.push(chapterId);
+  setItem("novel_userWatchRewardAdChapterData", userWatchRewardAdChapterData);
+}
+
+// eslint-disable-next-line no-unused-vars
+function getUserWatchRewardAdChapter(chapterId) {
+  const userWatchRewardAdChapterData = getItem("novel_userWatchRewardAdChapterData");
+  if (
+    userWatchRewardAdChapterData &&
+    userWatchRewardAdChapterData.chapterList.includes(chapterId)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+// 设置用户展示过激励gif
+function setUserShowGifTimeOut() {
+  let userShowGifTimeOut = getItem("novel_userShowGifTimeOut");
+  const userScClid = getCookie("hi_souceClickId") || "unknown";
+  if (!userShowGifTimeOut || userScClid !== userShowGifTimeOut.userScClid) {
+    userShowGifTimeOut = {
+      userScClid,
+      showGifCount: true
+    };
+    setItem("novel_userShowGifTimeOut", userShowGifTimeOut);
+  }
+}
+function getUserShowGifTimeOut() {
+  const userShowGifTimeOut = getItem("novel_userShowGifTimeOut");
+  const userScClid = getCookie("hi_souceClickId") || "unknown";
+  if (userShowGifTimeOut && userShowGifTimeOut.userScClid === userScClid) {
+    return true;
+  }
+  return false;
+}
+
+function setUserWatchPageAdToChapterList(chapterId, pageAdIndex) {
+  let userWatchPageAdToChapterList = getItem("novel_userWatchPageAdToChapterList");
+  const userScClid = getCookie("hi_souceClickId") || "unknown";
+  if (!userWatchPageAdToChapterList || userScClid !== userWatchPageAdToChapterList.userScClid) {
+    userWatchPageAdToChapterList = {
+      userScClid,
+      scrollToSecondBanner: [],
+      ScrollToThirdBanner: []
+    };
+  }
+  if (pageAdIndex === 2) {
+    !userWatchPageAdToChapterList.scrollToSecondBanner.includes(chapterId) &&
+      userWatchPageAdToChapterList.scrollToSecondBanner.push(chapterId) &&
+      setUserReadPageClickActionNew("scroll_to_second_banner");
+  }
+  if (pageAdIndex === 3) {
+    !userWatchPageAdToChapterList.ScrollToThirdBanner.includes(chapterId) &&
+      userWatchPageAdToChapterList.ScrollToThirdBanner.push(chapterId) &&
+      setUserReadPageClickActionNew("scroll_to_third_banner");
+  }
+  setItem("novel_userWatchPageAdToChapterList", userWatchPageAdToChapterList);
+}
+
 // 上报用户阅读章节数的数据到FaceBook
 // eslint-disable-next-line no-unused-vars
 function setUserReadChapterToFaceBookData(chapterId) {
@@ -360,31 +436,6 @@ function setUserReadChapterToFaceBookData(chapterId) {
   }
 
   setItem("novel_userReadChapterToFaceBookData", userReadChapterToFaceBookData);
-}
-
-function setUserWatchRewardAdChapter(chapterId) {
-  let userWatchRewardAdChapterData = getItem("novel_userWatchRewardAdChapterData");
-  const userScClid = getCookie("hi_souceClickId") || "unknown";
-  if (!userWatchRewardAdChapterData || userScClid !== userWatchRewardAdChapterData.userScClid) {
-    userWatchRewardAdChapterData = {
-      userScClid,
-      chapterList: []
-    };
-  }
-  !userWatchRewardAdChapterData.chapterList.includes(chapterId) &&
-    userWatchRewardAdChapterData.chapterList.push(chapterId);
-  setItem("novel_userWatchRewardAdChapterData", userWatchRewardAdChapterData);
-}
-
-function getUserWatchRewardAdChapter(chapterId) {
-  const userWatchRewardAdChapterData = getItem("novel_userWatchRewardAdChapterData");
-  if (
-    userWatchRewardAdChapterData &&
-    userWatchRewardAdChapterData.chapterList.includes(chapterId)
-  ) {
-    return true;
-  }
-  return false;
 }
 
 // 设置用户页内广告相关的数据到FaceBook
@@ -520,6 +571,10 @@ function trackEventToPixel(eventKey, isCustomEvent = true) {
     Next_chapter_click: {
       tiktok: "Purchase",
       facebook: "Purchase"
+    },
+    D_AL_LINK: {
+      tiktok: "Subscribe",
+      facebook: "Subscribe"
     }
   };
 

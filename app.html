@@ -2,6 +2,7 @@
 <html lang="en">
   <head {{ HEAD_ATTRS }}>
     <meta charset="UTF-8" />
+    <link rel="preload" href="@/assets/images/reward-tip.gif" as="image">
     <script src="/trackEvent.js" type="text/javascript" defer></script>
     <script src="/commonsEvent.js" type="text/javascript" defer></script>
 
@@ -56,6 +57,11 @@
           if (elementId.includes("detail_")) {
             const userWatchPageAdIndex = elementId.split("_")[1];
             window.setUserWatchFirstTwoPageAd(Number(userWatchPageAdIndex) + 1);
+            // 上报用户滑动观看的页内广告
+            const chapterId = window.getParam("ch");
+            if (chapterId && Number(userWatchPageAdIndex) > 0) {
+              window.setUserWatchPageAdToChapterList(chapterId, Number(userWatchPageAdIndex) + 1);
+            }
             // 页内填充了广告
             if (!event.isEmpty) {
               window.setUserPageAdActionData("show");
@@ -141,7 +147,6 @@
           if (window.clickOpenAL === 0) {
             if ((event = event.target.closest("a")) && event.href) {
               isLinkClick = true;
-              // window.TTPixelTrackEvent("CompleteRegistration");
             }
           } else {
             window.clickOpenAL = 0;
@@ -163,8 +168,8 @@
           // 点击穿插广告
           dataLayer.push({ event: "D_AL" });
           if (isLinkClick) {
-            // window.TTPixelTrackEvent("AddPaymentInfo");
             dataLayer.push({ event: "D_AL_LINK" });
+            trackEventToPixel("D_AL_LINK", false);
           }
         } else {
           // 用户点击跳转
@@ -182,7 +187,6 @@
             if ("block" === adDisplay || "flex" === adDisplay) {
               window.clickOpenAL = 1;
               dataLayer.push({ event: "C_AL" });
-              // window.TTPixelTrackEvent("Contact");
 
               localStorage.removeItem("__lsv__");
               mutationObserver.disconnect();

@@ -17,6 +17,7 @@
       <custom-link
         :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
         class="content"
+        @click.native="handleChangeNextChapter"
       >
         <div class="btn-tip">
           <p v-if="isShowWatchRewardAd">Get $1</p>
@@ -253,6 +254,11 @@ export default {
         event: "Ads_IR",
         Ads_IR: "Q_IR"
       });
+      window.setUserReadPageClickActionNew("reward_ads_logo_click");
+    },
+    handleChangeNextChapter() {
+      window.setUserReadPageClickActionNew("reward_next_chap_logo_click");
+      window.dataLayer.push({ event: "Next_chapter_click", button_type: "left_edge_button" });
     },
 
     handleWatchRewardTime() {

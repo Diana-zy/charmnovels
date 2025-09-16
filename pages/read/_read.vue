@@ -18,7 +18,7 @@
     />
 
     <module-read-reward
-      v-if="currentChapterDetail?.chapter_num >= 2"
+      v-if="isShowReward"
       ref="readReward"
       :next-chapter-item="nextChapterItem"
       :other-recommend-novel-detail="otherRecommendNovelDetail"
@@ -46,15 +46,29 @@ export default {
       otherRecommendNovelDetail: null, // 其他推荐小说路径
       novelChapterList: [], // 章节列表
       isShowHeader: false,
-      isShowChapterPopup: false // 移动端章节弹窗
+      isShowChapterPopup: false, // 移动端章节弹窗
+      isWatchedRewardGif: false // 是否观看过奖励动画
     };
+  },
+  computed: {
+    isShowReward() {
+      return this.currentChapterDetail?.chapter_num >= 2 && this.isWatchedRewardGif;
+    }
   },
   created() {
     if (process.client) {
       this.getCurrentChapterDetail();
     }
   },
-  mounted() {},
+  mounted() {
+    if (window.getUserShowGifTimeOut()) {
+      this.isWatchedRewardGif = true;
+    } else {
+      window.addEventListener("eventGifHide", () => {
+        this.isWatchedRewardGif = true;
+      });
+    }
+  },
   methods: {
     getUserId() {
       let userId = Storage.getItem("novel_userId");
@@ -95,6 +109,9 @@ export default {
           const chapterDetail = response;
           // 初始化相关章节
           this.currentChapterDetail = chapterDetail;
+          if (chapterDetail.chapter_num > 2) {
+            this.isWatchedRewardGif = true;
+          }
           // 处理内容初始化后一些操作
           this.handleStartReadBook(chapterDetail);
 

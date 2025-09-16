@@ -2,7 +2,9 @@
 <template>
   <section v-if="currentChapterDetail" id="read-book-container" class="read-container">
     <div v-if="isShowRewardTipGif" class="reward-tip-gif">
-      <img src="@/assets/images/emogi.gif" alt="emogi" />
+      <img src="@/assets/images/icon-gold-coin.png" alt="icon-gold-coin" class="left-icon animate-parabola"></img>
+      <img src="@/assets/images/icon-gold-coin.png" alt="icon-gold-coin" class="right-icon animate-parabola"></img>
+      <img src="@/assets/images/reward-tip.gif" alt="reward-tip" @load="onGifLoad" />
     </div>
     <!-- 第一章节才展示 top-info-->
     <div v-if="currentChapterDetail.chapter_num === 1" class="top-info">
@@ -83,7 +85,7 @@ export default {
       isRequestRewardAdLoading: false, // 是否正在请求奖励广告
       isSecondRequestRewardAd: false, // 是否二次请求奖励广告
       isShowPagination: false,
-      isShowGifTimeout: true
+      isShowGifTimeout: false
     };
   },
   computed: {
@@ -103,7 +105,7 @@ export default {
         : `/read/${this.otherRecommendNovelDetail.novel_info.id}/?ch=${this.otherRecommendNovelDetail.user_last_read_chapter_id}`;
     },
     isShowRewardTipGif() {
-      return this.currentChapterDetail.chapter_num === 2 && this.isShowGifTimeout;
+      return this.currentChapterDetail?.chapter_num === 2 && this.isShowGifTimeout;
     }
   },
   watch: {
@@ -114,12 +116,18 @@ export default {
           this.watchBookContentScroll();
         });
       }
+    },
+    // 监听激励广告提示gif展示
+    isShowRewardTipGif(newValue, oldValue) {
+      if (oldValue === false && newValue === true) {
+        window.setUserShowGifTimeOut();
+        // gif展示上报Gtm
+        window.setUserReadPageClickActionNew("reward_gif_show");
+      }
     }
   },
   mounted() {
-    setTimeout(() => {
-      this.isShowGifTimeout = false;
-    }, 3000);
+    this.initIsShowGifTimeout();
 
     this.isMobile = window.innerWidth <= 750;
     this.initStorageReadSetting();
@@ -145,6 +153,20 @@ export default {
         Storage.setItem("novel_cssReadTextColor", "#c8c8c8");
       Storage.getItem("novel_cssReadLastTheme") ||
         Storage.setItem("novel_cssReadLastTheme", "dark");
+    },
+
+    onGifLoad() {
+      setTimeout(() => {
+        this.isShowGifTimeout = false;
+        const eventGifHide = new Event("eventGifHide");
+        window.dispatchEvent(eventGifHide);
+      }, 2000);
+    },
+
+    initIsShowGifTimeout() {
+      if (!window.getUserShowGifTimeOut()) {
+        this.isShowGifTimeout = true;
+      }
     },
 
     handleShowMenuSetting() {
@@ -195,7 +217,7 @@ export default {
         this.$emit("handle-click-next-chapter", this.nextChapterItem.id);
 
         // 点击下一章
-        window.dataLayer.push({ event: "Next_chapter_click" });
+        window.dataLayer.push({ event: "Next_chapter_click", button_type: "bottom_button" });
         window.trackEventToPixel("Next_chapter_click");
         window.trackEventToPixel("Next_chapter_click", false);
       }
@@ -224,7 +246,12 @@ export default {
   right: 0;
   z-index: 9999;
   @include center;
+  img {
+    width: 300px;
+    height: 300px;
+  }
 }
+
 .top-info {
   display: flex;
   flex-direction: column;
@@ -340,6 +367,71 @@ export default {
     color: var(--read-text-color);
     box-shadow: none;
     border-radius: 0;
+  }
+  .reward-tip-gif {
+    img {
+      width: vw(400);
+      height: vw(400);
+    }
+    .left-icon,
+    .right-icon {
+      position: absolute;
+      width: vw(50);
+      height: vw(50);
+      z-index: 1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 1;
+    }
+    // 抛物线动画类
+    .animate-parabola {
+      animation-duration: 1.5s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-out-quart;
+    }
+
+    // 左侧图标向左上角运动
+    .left-icon.animate-parabola {
+      animation-name: parabola-left;
+    }
+
+    // 右侧图标向右上角运动
+    .right-icon.animate-parabola {
+      animation-name: parabola-right;
+    }
+
+    // 左侧图标抛物线动画（向左上角）
+    @keyframes parabola-left {
+      0% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+
+      80% {
+        opacity: 0.7;
+      }
+
+      100% {
+        transform: translate(-600%, -1000%);
+        opacity: 0;
+      }
+    }
+
+    // 右侧图标抛物线动画（向右上角）
+    @keyframes parabola-right {
+      0% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+      80% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translate(550%, -1580%);
+        opacity: 0;
+      }
+    }
   }
   .top-info {
     border: none;
