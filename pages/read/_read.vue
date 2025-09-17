@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     isShowReward() {
-      return this.currentChapterDetail?.chapter_num >= 2 && this.isWatchedRewardGif;
+      return this.isWatchedRewardGif;
     }
   },
   created() {
@@ -87,14 +87,6 @@ export default {
         novel_id: Number(novelId),
         uid: userId
       });
-      // 阅读历史与当前章节不一致，重定向
-      // if (Number(chapterId) !== novelDetail.user_last_read_chapter_id) {
-      //   const updateUrl = generateCustomLink(
-      //     `/read/${novelId}/?ch=${novelDetail.user_last_read_chapter_id}`
-      //   );
-      //   window.location.href = updateUrl;
-      //   return;
-      // }
 
       this.novelChapterList = novelDetail.chapter;
       // 获取上一章和下一章
@@ -109,7 +101,7 @@ export default {
           const chapterDetail = response;
           // 初始化相关章节
           this.currentChapterDetail = chapterDetail;
-          if (chapterDetail.chapter_num > 2) {
+          if (chapterDetail.chapter_num >= 2) {
             this.isWatchedRewardGif = true;
           }
           // 处理内容初始化后一些操作

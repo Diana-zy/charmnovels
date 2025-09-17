@@ -109,7 +109,7 @@ export default {
         : `/read/${this.otherRecommendNovelDetail.novel_info.id}/?ch=${this.otherRecommendNovelDetail.user_last_read_chapter_id}`;
     },
     isShowRewardTipGif() {
-      return this.currentChapterDetail?.chapter_num === 2 && this.isShowGifTimeout;
+      return this.currentChapterDetail?.chapter_num === 1 && this.isShowGifTimeout;
     }
   },
   watch: {
