@@ -357,7 +357,7 @@ function setUserWatchPageAdToChapterList(chapterId, pageAdIndex) {
     userWatchPageAdToChapterList = {
       userScClid,
       scrollToSecondBanner: [],
-      ScrollToThirdBanner: []
+      scrollToThirdBanner: []
     };
   }
   if (pageAdIndex === 2) {
@@ -366,8 +366,8 @@ function setUserWatchPageAdToChapterList(chapterId, pageAdIndex) {
       setUserReadPageClickActionNew("scroll_to_second_banner");
   }
   if (pageAdIndex === 3) {
-    !userWatchPageAdToChapterList.ScrollToThirdBanner.includes(chapterId) &&
-      userWatchPageAdToChapterList.ScrollToThirdBanner.push(chapterId) &&
+    !userWatchPageAdToChapterList.scrollToThirdBanner.includes(chapterId) &&
+      userWatchPageAdToChapterList.scrollToThirdBanner.push(chapterId) &&
       setUserReadPageClickActionNew("scroll_to_third_banner");
   }
   setItem("novel_userWatchPageAdToChapterList", userWatchPageAdToChapterList);

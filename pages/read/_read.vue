@@ -18,7 +18,7 @@
     />
 
     <module-read-reward
-      v-if="isShowReward"
+      v-show="isShowReward"
       ref="readReward"
       :next-chapter-item="nextChapterItem"
       :other-recommend-novel-detail="otherRecommendNovelDetail"

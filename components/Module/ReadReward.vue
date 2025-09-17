@@ -186,7 +186,9 @@ export default {
     },
     isShowWatchRewardAd() {
       return (
-        !window.getUserWatchRewardAdChapter(this.$route.query.ch) && !this.isSuccessWatchRewardAd
+        process.client &&
+        !window.getUserWatchRewardAdChapter(this.$route.query.ch) &&
+        !this.isSuccessWatchRewardAd
       );
     }
   },
@@ -227,10 +229,12 @@ export default {
                   Ads_IR: "V_IR"
                 });
                 this.isSuccessWatchRewardAd = true;
-                window.setUserWatchRewardAdChapter(this.$route.query.ch);
-                window.trackEventToPixel("V_IR");
+                this.$nextTick(() => {
+                  window.setUserWatchRewardAdChapter(this.$route.query.ch);
+                  window.trackEventToPixel("V_IR");
 
-                this.setRewardTaskData("money");
+                  this.setRewardTaskData("money");
+                });
               }
             });
           } else {
