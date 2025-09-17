@@ -2,8 +2,16 @@
 <template>
   <section v-if="currentChapterDetail" id="read-book-container" class="read-container">
     <div v-if="isShowRewardTipGif" class="reward-tip-gif">
-      <img src="@/assets/images/icon-gold-coin.png" alt="icon-gold-coin" class="left-icon animate-parabola"></img>
-      <img src="@/assets/images/icon-gold-coin.png" alt="icon-gold-coin" class="right-icon animate-parabola"></img>
+      <img
+        src="@/assets/images/icon-gold-coin.png"
+        alt="icon-gold-coin"
+        class="left-icon animate-parabola"
+      />
+      <img
+        src="@/assets/images/icon-gold-coin.png"
+        alt="icon-gold-coin"
+        class="right-icon animate-parabola"
+      />
       <img src="@/assets/images/reward-tip.gif" alt="reward-tip" @load="onGifLoad" />
     </div>
     <!-- 第一章节才展示 top-info-->
@@ -29,26 +37,22 @@
       <read-content-with-ad :content="currentChapterDetail.content" />
     </article>
 
-    <transition name="fade">
-      <section v-show="isShowPagination" class="bottom-operation">
-        <transition name="slide">
-          <!-- 分页模块 -->
-          <div v-show="isShowPagination" class="pagination-box">
-            <custom-link v-if="preChapterItem !== null" :to="preChapterPath" class="btn-pre">
-              Previous Chapter
-            </custom-link>
-            <custom-link
-              ref="nextChapterLinkRef"
-              :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
-              class="btn-next"
-              @click.native="handleClickNextChapter"
-            >
-              <span>{{ nextChapterItem === null ? "Read More" : "Next Chapter" }}</span>
-            </custom-link>
-          </div>
-        </transition>
-      </section>
-    </transition>
+    <section class="bottom-operation">
+      <!-- 分页模块 -->
+      <div class="pagination-box">
+        <custom-link v-if="preChapterItem !== null" :to="preChapterPath" class="btn-pre">
+          Previous Chapter
+        </custom-link>
+        <custom-link
+          ref="nextChapterLinkRef"
+          :to="nextChapterItem === null ? otherRecommendNovelPath : nextChapterPath"
+          class="btn-next"
+          @click.native="handleClickNextChapter"
+        >
+          <span>{{ nextChapterItem === null ? "Read More" : "Next Chapter" }}</span>
+        </custom-link>
+      </div>
+    </section>
   </section>
 </template>
 
