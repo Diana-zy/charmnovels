@@ -5,12 +5,12 @@
       <img
         src="@/assets/images/icon-gold-coin.png"
         alt="icon-gold-coin"
-        class="left-icon animate-parabola"
+        :class="['left-icon', isShowGoldCoin ? 'animate-parabola' : '']"
       />
       <img
         src="@/assets/images/icon-gold-coin.png"
         alt="icon-gold-coin"
-        class="right-icon animate-parabola"
+        :class="['right-icon', isShowGoldCoin ? 'animate-parabola' : '']"
       />
       <img src="@/assets/images/reward-tip.gif" alt="reward-tip" @load="onGifLoad" />
     </div>
@@ -89,7 +89,8 @@ export default {
       isRequestRewardAdLoading: false, // 是否正在请求奖励广告
       isSecondRequestRewardAd: false, // 是否二次请求奖励广告
       isShowPagination: false,
-      isShowGifTimeout: false
+      isShowGifTimeout: false,
+      isShowGoldCoin: false
     };
   },
   computed: {
@@ -160,6 +161,9 @@ export default {
     },
 
     onGifLoad() {
+      setTimeout(() => {
+        this.isShowGoldCoin = true;
+      }, 1000);
       setTimeout(() => {
         this.isShowGifTimeout = false;
         const eventGifHide = new Event("eventGifHide");
@@ -252,7 +256,10 @@ export default {
   @include center;
   img {
     width: 300px;
-    height: 300px;
+  }
+  .left-icon,
+  .right-icon {
+    display: none;
   }
 }
 
@@ -375,10 +382,10 @@ export default {
   .reward-tip-gif {
     img {
       width: vw(400);
-      height: vw(400);
     }
     .left-icon,
     .right-icon {
+      display: block;
       position: absolute;
       width: vw(50);
       height: vw(50);
@@ -386,7 +393,7 @@ export default {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      opacity: 1;
+      opacity: 0;
     }
     // 抛物线动画类
     .animate-parabola {
