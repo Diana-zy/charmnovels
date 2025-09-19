@@ -329,27 +329,6 @@ function getUserWatchRewardAdChapter(chapterId) {
   return false;
 }
 
-// 设置用户展示过激励gif
-function setUserShowGifTimeOut() {
-  let userShowGifTimeOut = getItem("novel_userShowGifTimeOut");
-  const userScClid = getCookie("hi_souceClickId") || "unknown";
-  if (!userShowGifTimeOut || userScClid !== userShowGifTimeOut.userScClid) {
-    userShowGifTimeOut = {
-      userScClid,
-      showGifCount: true
-    };
-    setItem("novel_userShowGifTimeOut", userShowGifTimeOut);
-  }
-}
-function getUserShowGifTimeOut() {
-  const userShowGifTimeOut = getItem("novel_userShowGifTimeOut");
-  const userScClid = getCookie("hi_souceClickId") || "unknown";
-  if (userShowGifTimeOut && userShowGifTimeOut.userScClid === userScClid) {
-    return true;
-  }
-  return false;
-}
-
 function setUserWatchPageAdToChapterList(chapterId, pageAdIndex) {
   let userWatchPageAdToChapterList = getItem("novel_userWatchPageAdToChapterList");
   const userScClid = getCookie("hi_souceClickId") || "unknown";

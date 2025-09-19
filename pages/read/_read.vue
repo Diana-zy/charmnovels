@@ -47,26 +47,12 @@ export default {
       novelChapterList: [], // 章节列表
       isShowHeader: false,
       isShowChapterPopup: false, // 移动端章节弹窗
-      isWatchedRewardGif: false // 是否观看过奖励动画
+      isShowReward: false
     };
-  },
-  computed: {
-    isShowReward() {
-      return this.isWatchedRewardGif;
-    }
   },
   created() {
     if (process.client) {
       this.getCurrentChapterDetail();
-    }
-  },
-  mounted() {
-    if (window.getUserShowGifTimeOut()) {
-      this.isWatchedRewardGif = true;
-    } else {
-      window.addEventListener("eventGifHide", () => {
-        this.isWatchedRewardGif = true;
-      });
     }
   },
   methods: {
@@ -101,9 +87,7 @@ export default {
           const chapterDetail = response;
           // 初始化相关章节
           this.currentChapterDetail = chapterDetail;
-          if (chapterDetail.chapter_num >= 2) {
-            this.isWatchedRewardGif = true;
-          }
+          this.isShowReward = true;
           // 处理内容初始化后一些操作
           this.handleStartReadBook(chapterDetail);
 

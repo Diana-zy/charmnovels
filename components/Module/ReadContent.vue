@@ -1,19 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
   <section v-if="currentChapterDetail" id="read-book-container" class="read-container">
-    <div v-if="isShowRewardTipGif" class="reward-tip-gif">
-      <img
-        src="@/assets/images/icon-gold-coin.png"
-        alt="icon-gold-coin"
-        class="left-icon animate-parabola"
-      />
-      <img
-        src="@/assets/images/icon-gold-coin.png"
-        alt="icon-gold-coin"
-        class="right-icon animate-parabola"
-      />
-      <img src="@/assets/images/reward-tip.gif" alt="reward-tip" @load="onGifLoad" />
-    </div>
     <!-- 第一章节才展示 top-info-->
     <div v-if="currentChapterDetail.chapter_num === 1" class="top-info">
       <div class="cover">
@@ -88,8 +75,7 @@ export default {
       isSuccessGetReward: false, // 是否成功领取奖励
       isRequestRewardAdLoading: false, // 是否正在请求奖励广告
       isSecondRequestRewardAd: false, // 是否二次请求奖励广告
-      isShowPagination: false,
-      isShowGifTimeout: false
+      isShowPagination: false
     };
   },
   computed: {
@@ -107,9 +93,6 @@ export default {
       return this.otherRecommendNovelDetail === null
         ? "/"
         : `/read/${this.otherRecommendNovelDetail.novel_info.id}/?ch=${this.otherRecommendNovelDetail.user_last_read_chapter_id}`;
-    },
-    isShowRewardTipGif() {
-      return this.currentChapterDetail?.chapter_num === 1 && this.isShowGifTimeout;
     }
   },
   watch: {
@@ -120,19 +103,9 @@ export default {
           this.watchBookContentScroll();
         });
       }
-    },
-    // 监听激励广告提示gif展示
-    isShowRewardTipGif(newValue, oldValue) {
-      if (oldValue === false && newValue === true) {
-        window.setUserShowGifTimeOut();
-        // gif展示上报Gtm
-        window.setUserReadPageClickActionNew("reward_gif_show");
-      }
     }
   },
   mounted() {
-    this.initIsShowGifTimeout();
-
     this.isMobile = window.innerWidth <= 750;
     this.initStorageReadSetting();
 
@@ -157,20 +130,6 @@ export default {
         Storage.setItem("novel_cssReadTextColor", "#c8c8c8");
       Storage.getItem("novel_cssReadLastTheme") ||
         Storage.setItem("novel_cssReadLastTheme", "dark");
-    },
-
-    onGifLoad() {
-      setTimeout(() => {
-        this.isShowGifTimeout = false;
-        const eventGifHide = new Event("eventGifHide");
-        window.dispatchEvent(eventGifHide);
-      }, 2000);
-    },
-
-    initIsShowGifTimeout() {
-      if (!window.getUserShowGifTimeOut()) {
-        this.isShowGifTimeout = true;
-      }
     },
 
     handleShowMenuSetting() {
