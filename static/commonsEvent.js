@@ -441,10 +441,10 @@ function recordPurchaseEvent() {
 }
 
 function trackEvent(source, eventName, isCustomEvent = true) {
-  // 特殊处理Purchase事件的去重逻辑
-  if (eventName === "Purchase" && !canReportPurchaseEvent()) {
-    return;
-  }
+  // // 特殊处理Purchase事件的去重逻辑
+  // if (eventName === "Purchase" && !canReportPurchaseEvent()) {
+  //   return;
+  // }
 
   if (source === "tiktok") {
     isCustomEvent === false && window.ttq?.track?.(eventName);
@@ -464,10 +464,10 @@ function trackEvent(source, eventName, isCustomEvent = true) {
   // 标准事件才上报给接口
   isCustomEvent === false && trackEventToApi(eventName);
 
-  // 记录Purchase事件上报状态
-  if (eventName === "Purchase") {
-    recordPurchaseEvent();
-  }
+  // // 记录Purchase事件上报状态
+  // if (eventName === "Purchase") {
+  //   recordPurchaseEvent();
+  // }
 }
 
 function trackEventToPixel(eventKey, isCustomEvent = true) {
