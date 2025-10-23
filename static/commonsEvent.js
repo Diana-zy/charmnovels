@@ -146,7 +146,8 @@ function trackEventToApi(eventName) {
 // 记录fbclid
 (function () {
   const searchParams = new URLSearchParams(window.location.search);
-  const sourceClickId = searchParams.get("fbclid") || searchParams.get("ttclid");
+  const sourceClickId =
+    searchParams.get("fbclid") || searchParams.get("ttclid") || searchParams.get("tblci");
   if (sourceClickId) {
     setCookie("hi_souceClickId", sourceClickId);
   }
@@ -440,7 +441,7 @@ function recordPurchaseEvent() {
   setItem("novel_fbclidPurchaseEvents", purchaseEvents);
 }
 
-function trackEvent(source, eventName, isCustomEvent = true) {
+function trackEvent(source, pixelId, eventName, isCustomEvent = true) {
   // // 特殊处理Purchase事件的去重逻辑
   // if (eventName === "Purchase" && !canReportPurchaseEvent()) {
   //   return;
@@ -459,10 +460,14 @@ function trackEvent(source, eventName, isCustomEvent = true) {
           })
         : window.fbq?.("track", eventName);
     }
+  } else if (source === "taboola") {
+    window._tfa.push({ notify: "event", name: eventName, id: pixelId });
   }
 
   // 标准事件才上报给接口
-  isCustomEvent === false && trackEventToApi(eventName);
+  try {
+    isCustomEvent === false && trackEventToApi(eventName);
+  } catch (error) {}
 
   // // 记录Purchase事件上报状态
   // if (eventName === "Purchase") {
@@ -474,27 +479,33 @@ function trackEventToPixel(eventKey, isCustomEvent = true) {
   const eventNameObj = {
     Chapter_1: {
       tiktok: "ViewContent",
-      facebook: "ViewContent"
+      facebook: "ViewContent",
+      taboola: "view_content"
     },
     Chapter_2_read: {
       tiktok: "CompleteRegistration",
-      facebook: "CompleteRegistration"
+      facebook: "CompleteRegistration",
+      taboola: "complete_registration"
     },
     Chapter_5_read: {
       tiktok: "InitiateCheckout",
-      facebook: "InitiateCheckout"
+      facebook: "InitiateCheckout",
+      taboola: "start_checkout"
     },
     Banner_show_5: {
       tiktok: "AddPaymentInfo",
-      facebook: "StartTrial"
+      facebook: "StartTrial",
+      taboola: "add_payment_info"
     },
     Banner_normal_click: {
       tiktok: "AddToCart",
-      facebook: "AddToCart"
+      facebook: "AddToCart",
+      taboola: "add_to_cart"
     },
     Next_chapter_click: {
       tiktok: "Purchase",
-      facebook: "Purchase"
+      facebook: "Purchase",
+      taboola: "make_purchase"
     }
   };
 
@@ -504,6 +515,6 @@ function trackEventToPixel(eventKey, isCustomEvent = true) {
 
   const pixelId = window.getParam("hi_pc");
   if (source && pixelId && eventName) {
-    trackEvent(source, eventName, isCustomEvent);
+    trackEvent(source, pixelId, eventName, isCustomEvent);
   }
 }
