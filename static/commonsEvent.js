@@ -417,7 +417,7 @@ function setUserPageAdActionToFaceBookData(action, clickAdInfo) {
 // Purchase事件去重检查函数
 function canReportPurchaseEvent() {
   const currentScClid = getCookie("hi_souceClickId") || "unknown";
-  const purchaseEvents = getItem("novel_fbclidPurchaseEvents") || {};
+  const purchaseEvents = getItem("novel_sourceClidPurchaseEvents") || {};
 
   // 检查当前fbclid是否已上报过Purchase事件
   if (purchaseEvents[currentScClid] && purchaseEvents[currentScClid].isPurchaseReported) {
@@ -430,7 +430,7 @@ function canReportPurchaseEvent() {
 // Purchase事件上报记录函数
 function recordPurchaseEvent() {
   const currentScClid = getCookie("hi_souceClickId") || "unknown";
-  const purchaseEvents = getItem("novel_fbclidPurchaseEvents") || {};
+  const purchaseEvents = getItem("novel_sourceClidPurchaseEvents") || {};
 
   // 记录当前fbclid的Purchase事件上报状态
   purchaseEvents[currentScClid] = {
@@ -438,7 +438,7 @@ function recordPurchaseEvent() {
     firstReportTime: new Date().getTime()
   };
 
-  setItem("novel_fbclidPurchaseEvents", purchaseEvents);
+  setItem("novel_sourceClidPurchaseEvents", purchaseEvents);
 }
 
 function trackEvent(source, pixelId, eventName, isCustomEvent = true) {
@@ -461,7 +461,7 @@ function trackEvent(source, pixelId, eventName, isCustomEvent = true) {
         : window.fbq?.("track", eventName);
     }
   } else if (source === "taboola") {
-    window._tfa.push({ notify: "event", name: eventName, id: pixelId });
+    isCustomEvent === false && window._tfa.push({ notify: "event", name: eventName, id: pixelId });
   }
 
   // 标准事件才上报给接口
