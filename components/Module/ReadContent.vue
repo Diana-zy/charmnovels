@@ -3,16 +3,16 @@
   <section v-if="currentChapterDetail" id="read-book-container" class="read-container">
     <!-- 第一章节才展示 top-info-->
     <div v-if="currentChapterDetail.chapter_num === 1" class="top-info">
-      <div class="cover">
-        <nuxt-img
-          :src="currentChapterDetail.novel_info.cover"
-          :alt="currentChapterDetail.novel_info.name"
-          width="200"
-          height="300"
-          format="auto"
-          fit="cover"
-        />
-      </div>
+<!--      <div class="cover">-->
+<!--        <nuxt-img-->
+<!--          :src="currentChapterDetail.novel_info.cover"-->
+<!--          :alt="currentChapterDetail.novel_info.name"-->
+<!--          width="200"-->
+<!--          height="300"-->
+<!--          format="auto"-->
+<!--          fit="cover"-->
+<!--        />-->
+<!--      </div>-->
       <p class="name">{{ currentChapterDetail.novel_info.name }}</p>
       <span class="author">{{ currentChapterDetail.novel_info.author }}</span>
     </div>
@@ -317,6 +317,7 @@ export default {
   width: 610px;
   font-size: 30px;
   line-height: 40px;
+  font-weight: bold;
   margin: 8px 0 16px;
   text-align: center;
   @include ellipsis(2);
@@ -556,7 +557,11 @@ export default {
   grid-template-columns: repeat(auto-fit, minmax(412px, 1fr));
   gap: 16px;
 }
-
+@media screen and (min-width: 750px){
+  ::v-deep .adm-slot-detail_0{
+    display: none ;
+  }
+}
 @media screen and (max-width: 750px) {
   .read-container {
     max-width: unset;
