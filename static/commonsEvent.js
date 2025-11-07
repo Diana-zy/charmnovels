@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+/* eslint-disable no-unused-vars */
 function setItem(key, value) {
   try {
     const serializedValue = JSON.stringify(value);
@@ -17,7 +19,6 @@ function getItem(key) {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
 function removeItem(key) {
   try {
     localStorage.removeItem(key);
@@ -45,7 +46,6 @@ function getSessionStorageItem(key) {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
 function removeSessionStorageItem(key) {
   try {
     sessionStorage.removeItem(key);
@@ -72,6 +72,15 @@ function setCookie(name, value, daysToExpire = 1) {
     name + "=" + (value || "") + expires + "; path=/; domain=" + this.getMainDomain(); // 设置cookie
 }
 
+// 设置cookie存储时间为当天
+function setCookieToDay(name, value) {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  date.setHours(0, 0, 0, 0);
+  const expires = "; expires=" + date.toUTCString();
+  document.cookie = name + "=" + (value || "") + expires + "; path=/; domain=" + getMainDomain();
+}
+
 // eslint-disable-next-line no-unused-vars
 function getCookie(name) {
   const nameEQ = name + "=";
@@ -82,6 +91,55 @@ function getCookie(name) {
     if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
   }
   return null;
+}
+
+function getHostname() {
+  const currentHostName = window.location.hostname;
+  if (currentHostName.startsWith("www")) {
+    const list = currentHostName.split(".");
+    if (list[0] === "www") {
+      return currentHostName.replace("www.", "");
+    }
+    return currentHostName.replace("www", "");
+  }
+  return currentHostName;
+}
+
+function getParam(queryKey) {
+  try {
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.has(queryKey) ? searchParams.get(queryKey).trim() : "";
+  } catch (c) {
+    return "";
+  }
+}
+
+function getValueByURLOrCookie(val) {
+  let key = "hi_" + val;
+  if (val.includes("hi_")) {
+    key = val;
+  }
+  const buffer = getParam(val) || getCookie(key) || "unknown";
+  setCookieToDay(key, buffer);
+  return buffer;
+}
+
+// 获取来源对应的clid
+function getSourceClid(source = "tiktok") {
+  const map = {
+    tiktok: "ttclid",
+    taboola: "tblci",
+    outbrain: "dicbo",
+    facebook: "fbclid"
+  };
+
+  const key = typeof source === "string" ? source.toLowerCase() : "";
+  const param = map[key];
+  if (!param) {
+    return { hi_source_clid: "unknown" };
+  }
+
+  return { hi_source_clid: getValueByURLOrCookie(param) };
 }
 
 // 记录用户首次访问的落地页
@@ -121,17 +179,17 @@ function trackEventToApi(eventName) {
   const landingPageUrl = getCookie("hi_landing_page");
   const userAgent = navigator.userAgent;
   const currentCookie = document.cookie;
-  const sourceClickId = getCookie("hi_souceClickId");
   const source = window.getParam("hi_source");
+  const { hi_source_clid } = getSourceClid(source);
   fetch("https://api.tapmygame.com/api/zh/sjzh", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      site_id: "charmnovels-free",
+      site_id: "charmnovels-freet2",
       hi_source: source, // 媒体渠道
-      scid: sourceClickId || "", // 媒体渠道的ClickID
+      scid: hi_source_clid || "", // 媒体渠道的ClickID
       sjmc: eventName, // 事件名称
       cc: window.youknowwho_ip_country || "", // 国家code
       curl: currentHref, // 发生转化页面的完整url
@@ -142,16 +200,6 @@ function trackEventToApi(eventName) {
     })
   });
 }
-
-// 记录fbclid
-(function () {
-  const searchParams = new URLSearchParams(window.location.search);
-  const sourceClickId =
-    searchParams.get("fbclid") || searchParams.get("ttclid") || searchParams.get("tblci");
-  if (sourceClickId) {
-    setCookie("hi_souceClickId", sourceClickId);
-  }
-})();
 
 // 用户首次站内行为
 // eslint-disable-next-line no-unused-vars
@@ -302,7 +350,8 @@ function setUserWatchFirstTwoPageAd(adIndex) {
 // eslint-disable-next-line no-unused-vars
 function setUserReadChapterToFaceBookData(chapterId) {
   let userReadChapterToFaceBookData = getItem("novel_userReadChapterToFaceBookData");
-  const userScClid = getCookie("hi_souceClickId") || "unknown";
+  const source = window.getParam("hi_source");
+  const { hi_source_clid: userScClid } = getSourceClid(source);
   if (!userReadChapterToFaceBookData) {
     userReadChapterToFaceBookData = {
       userScClid,
@@ -367,7 +416,8 @@ function setUserReadChapterToFaceBookData(chapterId) {
 // eslint-disable-next-line no-unused-vars
 function setUserPageAdActionToFaceBookData(action, clickAdInfo) {
   let userPageAdActionToFaceBookData = getItem("novel_userPageAdActionToFaceBookData");
-  const userScClid = getCookie("hi_souceClickId") || "unknown";
+  const source = window.getParam("hi_source");
+  const { hi_source_clid: userScClid } = getSourceClid(source);
   if (!userPageAdActionToFaceBookData) {
     userPageAdActionToFaceBookData = {
       userScClid,
@@ -416,7 +466,8 @@ function setUserPageAdActionToFaceBookData(action, clickAdInfo) {
 
 // Purchase事件去重检查函数
 function canReportPurchaseEvent() {
-  const currentScClid = getCookie("hi_souceClickId") || "unknown";
+  const source = window.getParam("hi_source");
+  const { hi_source_clid: currentScClid } = getSourceClid(source);
   const purchaseEvents = getItem("novel_sourceClidPurchaseEvents") || {};
 
   // 检查当前fbclid是否已上报过Purchase事件
@@ -429,7 +480,8 @@ function canReportPurchaseEvent() {
 
 // Purchase事件上报记录函数
 function recordPurchaseEvent() {
-  const currentScClid = getCookie("hi_souceClickId") || "unknown";
+  const source = window.getParam("hi_source");
+  const { hi_source_clid: currentScClid } = getSourceClid(source);
   const purchaseEvents = getItem("novel_sourceClidPurchaseEvents") || {};
 
   // 记录当前fbclid的Purchase事件上报状态
@@ -506,6 +558,26 @@ function trackEventToPixel(eventKey, isCustomEvent = true) {
       tiktok: "Purchase",
       facebook: "Purchase",
       taboola: "make_purchase"
+    },
+    Land_User_Home: {
+      tiktok: "Search",
+      facebook: "Search",
+      taboola: "lead"
+    },
+    Land_User_Not_Home: {
+      tiktok: "Download",
+      facebook: "Contact",
+      taboola: "search"
+    },
+    Land_User_Home_Count: {
+      tiktok: "StartTrial",
+      facebook: "Lead",
+      taboola: "sign_up"
+    },
+    Land_User_Not_Home_Count: {
+      tiktok: "AddToWishlist",
+      facebook: "AddToWishlist",
+      taboola: "add_to_wishlist"
     }
   };
 
@@ -517,4 +589,13 @@ function trackEventToPixel(eventKey, isCustomEvent = true) {
   if (source && pixelId && eventName) {
     trackEvent(source, pixelId, eventName, isCustomEvent);
   }
+}
+
+// eslint-disable-next-line no-unused-vars
+function pushEventParamsToGtm(eventName, params = {}) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    ...params
+  });
 }
