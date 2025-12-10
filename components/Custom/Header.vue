@@ -26,32 +26,14 @@
 
     <div class="header-right">
       <common-search-input @handle-search="handleSearch" />
-      <div v-if="showInstallButton" class="btn-pwa" @click="installPWA">
-        <i></i>
-      </div>
-      <custom-link
-        v-if="!isLogin"
-        to="/login/"
-        class="btn-login m-hidden-flex"
-        @click.native="handleLogin"
+      <custom-link v-if="!isLogin" to="/profile/" class="btn-login m-hidden-flex"
         >Login</custom-link
       >
       <div class="avatar-container">
-        <custom-link v-if="!isLogin" to="/login/" @click.native="handleLogin">
-          <i class="avatar"></i>
+        <custom-link v-if="!isLogin" to="/profile/">
+          <i class="avatar-a"></i>
         </custom-link>
-        <i v-if="isLogin" ref="avatarContainer" class="avatar-a" @click.stop="toggleUserMenu"></i>
-        <div v-show="isShowMenu" ref="userMenu" class="user-menu">
-          <custom-link to="/purchased/" class="menu-item menu-purchased">
-            <i class="icon-order"></i>
-            <span>Purchased novels</span>
-          </custom-link>
-          <div class="line"></div>
-          <div class="menu-item" @click="handleLogout">
-            <i class="icon-logout"></i>
-            <span>Log out</span>
-          </div>
-        </div>
+        <custom-link v-if="isLogin" to="/profile/" class="avatar-a"></custom-link>
       </div>
     </div>
   </header>
@@ -59,7 +41,7 @@
 
 <script>
 import Storage from "@/utils/storage";
-import { simulateClick, filterFromPath } from "~/utils/utils";
+import { simulateClick } from "~/utils/utils";
 
 export default {
   props: {
@@ -84,81 +66,15 @@ export default {
           path: "/library/"
         }
       ],
-      isLogin: false,
-      isShowMenu: false,
-      deferredPrompt: null,
-      showInstallButton: false
+      isLogin: false
     };
   },
   mounted() {
     this.isLogin = Boolean(Storage.getCookie("novel_token"));
-    document.addEventListener("click", this.hideUserMenu);
-
-    this.getIsShowInstallButton();
-  },
-  beforeDestroy() {
-    document.removeEventListener("click", this.hideUserMenu);
   },
   methods: {
-    // 判断是否支持 PWA
-    getIsShowInstallButton() {
-      if ("serviceWorker" in navigator && "PushManager" in window) {
-        if (window.deferredPrompt) {
-          this.deferredPrompt = window.deferredPrompt;
-          this.showInstallButton = true;
-        } else {
-          // 如果beforeinstallprompt这个事件在window.onload后 组件mounted时未触发，则重新建立监听
-          window.addEventListener("beforeinstallprompt", (e) => {
-            // console.log("page - beforeinstallprompt", e);
-            e.preventDefault();
-            this.deferredPrompt = e;
-            this.showInstallButton = true;
-          });
-        }
-      }
-    },
-    installPWA() {
-      if (this.deferredPrompt) {
-        // 触发 PWA 安装提示
-        this.deferredPrompt.prompt();
-        // 在用户做出选择后，保存结果
-        this.deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === "accepted") {
-            console.log("User accepted the A2HS prompt");
-          } else {
-            console.log("User dismissed the A2HS prompt");
-          }
-          // 重置 deferredPrompt
-          this.deferredPrompt = null;
-        });
-      }
-    },
     handleSearch(inputValue) {
       simulateClick("/search/", "text", inputValue, "search-button");
-    },
-    handleLogin() {
-      const currenPagePath = window.location.pathname + window.location.search;
-      // 过滤登录注册页存储
-      const filterPath = ["/login/", "/register/", "/reset/"];
-      if (!filterPath.includes(window.location.pathname)) {
-        Storage.setCookie("novel_preLoginPath", currenPagePath);
-      }
-    },
-    handleLogout() {
-      const currenPagePath = window.location.pathname + window.location.search;
-      Storage.setCookie("novel_preLoginPath", currenPagePath);
-      Storage.clearCookie("novel_token");
-      Storage.clearCookie("novel_userId");
-      simulateClick("/", "from", filterFromPath(window.location.pathname), "logout-button");
-    },
-    toggleUserMenu() {
-      this.isShowMenu = !this.isShowMenu;
-    },
-    hideUserMenu(event) {
-      const avatarContainer = this.$refs.avatarContainer;
-      if (avatarContainer && !avatarContainer.contains(event.target)) {
-        this.isShowMenu = false;
-      }
     }
   }
 };
@@ -263,46 +179,6 @@ header {
   }
   .avatar-a {
     @include icon(48px, 48px, "icon-avatar-a.png");
-    // &:focus-within + .user-menu {
-    //   display: block;
-    // }
-  }
-  .user-menu {
-    position: absolute;
-    right: 0;
-    top: 56px;
-    width: 170px;
-    border-radius: 8px;
-    background: $color4;
-    box-shadow: 0px 4px 16px 0px rgba($color6, 0.15);
-  }
-  .line {
-    width: 146px;
-    height: 1px;
-    background: rgba($color2, 0.1);
-    margin: 0 auto;
-  }
-  .menu-item {
-    width: 100%;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    font-family: "sesb";
-    cursor: pointer;
-    &:hover {
-      background: rgba($color3, 0.1);
-    }
-  }
-  .icon-order {
-    @include icon(24px, 24px, "icon-user-order.png");
-    margin-left: 10px;
-    margin-right: 12px;
-  }
-  .icon-logout {
-    @include icon(24px, 24px, "icon-user-logout.png");
-    margin-left: 10px;
-    margin-right: 12px;
   }
 }
 
@@ -380,25 +256,6 @@ header {
     .avatar-a {
       width: vw(80);
       height: vw(80);
-    }
-    .user-menu {
-      top: vw(88);
-      width: vw(340);
-      border-radius: vw(16);
-    }
-    .line {
-      width: vw(292);
-    }
-    .menu-item {
-      height: vw(96);
-      font-size: vw(28);
-    }
-    .icon-order,
-    .icon-logout {
-      width: vw(48);
-      height: vw(48);
-      margin-left: vw(20);
-      margin-right: vw(24);
     }
   }
 }
