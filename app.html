@@ -2,6 +2,8 @@
 <html lang="en">
   <head {{ HEAD_ATTRS }}>
     <meta charset="UTF-8" />
+    {{ HEAD }}
+    <script src="/h5CommonsEvent.js"></script>
     <!-- <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script>
       // VConsole will be exported to `window.VConsole` by default.
@@ -12,67 +14,7 @@
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1853000876464912"
       crossorigin="anonymous"
     ></script>
-    <!-- mediago Pixel Code -->
-    <script type="text/javascript">
-      window._megoaa = window._megoaa || [];
-      window._megoaa.push({ type: "event", name: "pageview", acid: "29866" });
-      window._megoaa.push({ type: "nextjump", link: ["https://charmnovels.com/"] });
-      !(function (t, f, a, x) {
-        if (!document.getElementById(x)) {
-          t.async = 1;
-          t.src = a;
-          t.id = x;
-          f.parentNode.insertBefore(t, f);
-        }
-      })(
-        document.createElement("script"),
-        document.getElementsByTagName("script")[0],
-        "//cdn.mediago.io/js/pixel.js?acid=29866",
-        "pixel_megoaa_script"
-      );
-    </script>
-    <!-- End of mediago Pixel Code -->
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHEGG7L6EF"></script>
-    <link rel="preload" href="https://securepubads.g.doubleclick.net/tag/js/gpt.js" as="script" />
-    <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
-    <script
-      type="text/javascript"
-      src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"
-    ></script>
-    <script>
-      window.googletag = window.googletag || { cmd: [] };
-      let anchorSlot;
 
-      googletag.cmd.push(function () {
-        let anchorPosition = googletag.enums.OutOfPageFormat.BOTTOM_ANCHOR;
-
-        if (
-          window.location.pathname.includes("novel") ||
-          window.location.pathname.includes("read")
-        ) {
-          anchorPosition = googletag.enums.OutOfPageFormat.TOP_ANCHOR;
-        }
-        anchorSlot = googletag.defineOutOfPageSlot(
-          "/23197833490/charmnovels/charmnovels_anchor",
-          anchorPosition
-        );
-
-        if (anchorSlot) {
-          anchorSlot.addService(googletag.pubads());
-        }
-        googletag.enableServices();
-      });
-    </script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-YHEGG7L6EF");
-    </script>
     <!-- Google Tag Manager -->
     <script>
       (function (w, d, s, l, i) {
@@ -87,30 +29,19 @@
       })(window, document, "script", "dataLayer", "GTM-KDDGDX4P");
     </script>
     <!-- End Google Tag Manager -->
-    <script
-      async
-      src="https://fundingchoicesmessages.google.com/i/pub-1853000876464912?ers=1"
-    ></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHEGG7L6EF"></script>
     <script>
-      (function () {
-        function signalGooglefcPresent() {
-          if (!window.frames["googlefcPresent"]) {
-            if (document.body) {
-              const iframe = document.createElement("iframe");
-              iframe.style =
-                "width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;";
-              iframe.style.display = "none";
-              iframe.name = "googlefcPresent";
-              document.body.appendChild(iframe);
-            } else {
-              setTimeout(signalGooglefcPresent, 0);
-            }
-          }
-        }
-        signalGooglefcPresent();
-      })();
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-YHEGG7L6EF");
     </script>
-    {{ HEAD }}
+    <!-- End Google tag (gtag.js) -->
+
     <script>
       window.addEventListener("load", function () {
         if ("serviceWorker" in window.navigator) {
@@ -139,110 +70,83 @@
     <!-- End Google Tag Manager (noscript) -->
     {{ APP }}
     <script>
-      googletag.cmd.push(() => {
-        googletag.display(anchorSlot);
+      window.isPageUnloaded = false;
+      window.isClickOpenAl = false;
+
+      new MutationObserver((mutations, observer) => {
+        const interstitialAdElement = document.querySelector('ins[data-vignette-loaded="true"]');
+        if (interstitialAdElement) {
+          const mutationObserver = new MutationObserver(() => {
+            var adDisplay = window.getComputedStyle(interstitialAdElement).display;
+            if ("block" === adDisplay || "flex" === adDisplay) {
+              window.isClickOpenAl = true;
+              dataLayer.push({ event: "C_AL" });
+              mutationObserver.disconnect();
+            }
+          });
+          mutationObserver.observe(interstitialAdElement, {
+            attributes: true,
+            attributeFilter: ["style"]
+          });
+          observer.disconnect();
+        }
+      }).observe(document.body, {
+        childList: true,
+        subtree: true
       });
-      // 初始化标志变量
-      window.isPageUnloading = false;
+
       // 监听页面即将卸载事件
       window.addEventListener("beforeunload", () => {
-        var eventType,
-          elementUrlIndex = window.dataLayer.findIndex(
-            ({ event: eventType }) => "gtm.linkClick" === eventType
-          );
-        // 如果找到了对应事件，且标志变量为 false，则执行逻辑
-        if (-1 === elementUrlIndex || window.isPageUnloading) {
+        if (window.isPageUnloaded) {
           return;
         }
-        // 获取 gtm.linkClick 事件的元素 URL
-        var elementUrl = window.dataLayer[elementUrlIndex]["gtm.elementUrl"];
-        // 根据条件执行不同逻辑
-        if (1 === window.i_like_it) {
-          // 点击穿插广告
+        if (window.isClickOpenAl) {
           dataLayer.push({ event: "D_AL" });
-          // mediago Pixel Code
-          window._megoaa = window._megoaa || [];
-          window._megoaa.push({
-            type: "event",
-            name: "IIEEHH",
-            acid: "29866",
-            pxd: "1152418542261306"
-          });
-          // End of mediago Pixel Code
         } else {
           dataLayer.push({ event: "D_RE" });
         }
-        window.isPageUnloading = true;
+        window.isPageUnloaded = true;
       });
-      // 监听 hash 变化事件 --- 判断穿插全屏广告出现
-      window.addEventListener("hashchange", () => {
-        if ("#google_vignette" == window.location.hash) {
-          window.i_like_it = 1;
-          // 打点穿插广告出现 - 触发穿插
-          dataLayer.push({ event: "C_AL" });
-        }
-      });
+
       // 监听消息事件
       window.addEventListener("message", (event) => {
-        if (
-          '{"eventType":"adClosed","result":{"status":1},"googMsgType":"fullscreen"}' ===
-            event.data &&
-          "https://googleads.g.doubleclick.net" === event.origin
-        ) {
-          window.i_like_it = 0;
-          // 关闭穿插广告
-          dataLayer.push({ event: "G_AL" });
-        }
+        try {
+          let data = JSON.parse(event.data);
+          if (
+            data?.eventType === "adClosed" &&
+            data?.result?.status == "1" &&
+            data?.googMsgType === "fullscreen"
+          ) {
+            window.isClickOpenAl = false;
+            dataLayer.push({ event: "G_AL" });
+          }
+        } catch (e) {}
       });
-      // 监听失去焦点事件
-      // window.addEventListener("blur", () => {
-      //   const activeElement = document.activeElement,
-      //     sourceAttribute = activeElement.getAttribute("src");
-      //   if (
-      //     sourceAttribute &&
-      //     -1 !== sourceAttribute.indexOf("googleads.g.doubleclick.net/pagead/ads?")
-      //   ) {
-      //     const closestIns = activeElement.closest("ins");
-      //     let adStatus = "unfilled";
-      //     if (closestIns) {
-      //       adStatus = closestIns.getAttribute("data-ad-status") || adStatus;
-      //     }
-      //     if ("filled" == adStatus) {
-      //       // 点击页内广告
-      //       dataLayer.push({ event: "D_IP" });
-      //     }
-      //   } else if (
-      //     sourceAttribute &&
-      //     -1 !== sourceAttribute.indexOf("googleads.g.doubleclick.net/pagead/html/")
-      //   ) {
-      //     if (-1 !== sourceAttribute.indexOf("btvi=")) {
-      //       // 点击锚定广告
-      //       dataLayer.push({ event: "D_FI" });
-      //     }
-      //   }
-      // });
+
       window.addEventListener("blur", () => {
         const activeElement = document.activeElement,
-          sourceAttribute = activeElement.getAttribute("src");
+          activeElementId = activeElement.getAttribute("id"),
+          activeElementSrc = activeElement.getAttribute("src");
         if (
-          sourceAttribute &&
-          -1 !== sourceAttribute.indexOf("googleads.g.doubleclick.net/pagead/ads?")
+          activeElementSrc &&
+          activeElementSrc.includes("googleads.g.doubleclick.net/pagead/ads?")
         ) {
           const closestIns = activeElement.closest("ins");
-          let adStatus = "unfilled";
-          if (closestIns) {
-            adStatus = closestIns.getAttribute("data-ad-status") || adStatus;
-          }
-          if ("filled" == adStatus) {
-            // 点击页内广告
+          let adStatus = closestIns?.getAttribute("data-ad-status") || "unfilled";
+          if ("filled" == adStatus && activeElement.getAttribute("data-ad-slot")) {
             dataLayer.push({ event: "D_IP" });
           }
         }
 
-        const activeElementId = activeElement.getAttribute("id");
-        if (activeElementId && activeElementId.indexOf("/charmnovels_anchor") !== -1) {
-          // 点击锚定广告
-          dataLayer.push({ event: "D_FI" });
+        if (activeElementId && activeElementId.includes("google_ads_iframe_/23197833490")) {
+          if (activeElementId.includes("anchor_0")) {
+            dataLayer.push({ event: "D_FI" });
+          } else if (
+            !activeElementId.includes("interstitial") &&
+            activeElement.getAttribute("data-load-complete")
+          ) {
+            dataLayer.push({ event: "D_IP" });
+          }
         }
       });
     </script>

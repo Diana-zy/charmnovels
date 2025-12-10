@@ -69,22 +69,6 @@
 
       <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
       <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
-
-      <!-- <div class="video-container">
-        <video
-          width="100%"
-          height="100%"
-          controls
-          muted
-          :src="novelDetailInfo.intro_video"
-          @play="handlePlayVideo"
-        >
-        </video>
-      </div> -->
-      <adm-video-player
-        :video-detail="novelDetailInfo.intro_video"
-        :video-cover="novelDetailInfo.cover"
-      ></adm-video-player>
     </section>
     <section class="module-all">
       <common-title-label title="Rec Books" />
