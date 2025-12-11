@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-header :class="{ 'header-active': isShowHeader }" theme="dark" />
+    <!--    <custom-header :class="{ 'header-active': isShowHeader }" theme="dark" />-->
 
     <!-- PC端悬浮章节列表 -->
     <section class="fixed-bar">
@@ -28,6 +28,7 @@
       @show-menu-setting="handleShowMenuSetting"
       @reload="getCurrentChapterDetail"
       @change-chapter="handleOpenIncentiveAd"
+      @handleShowChapterPopup="handleShowChapterPopup"
     />
     <module-read-sidebar
       ref="readSidebar"

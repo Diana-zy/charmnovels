@@ -70,6 +70,7 @@ export default {
     },
     handleClick() {},
     handleClose() {
+      this.$emit("handleClose");
       this.visible = false;
     }
   }

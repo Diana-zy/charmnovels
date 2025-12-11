@@ -1,9 +1,13 @@
 <template>
   <header class="back-header pc-hidden-flex" :class="{ 'header-page-content': isPageContent }">
-    <custom-link :to="url" class="header-url">
+    <custom-link v-if="url" :to="url" class="header-url">
       <div class="header-icon"></div>
       <div class="header-label" v-show="title">{{ title }}</div>
     </custom-link>
+    <div v-else class="header-url" @click="handleClickBack">
+      <div class="header-icon"></div>
+      <div class="header-label" v-show="title">{{ title }}</div>
+    </div>
   </header>
 </template>
 
@@ -25,6 +29,10 @@ export default {
     isPageContent: {
       type: Boolean,
       default: false
+    },
+    needBackModel: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -37,8 +45,38 @@ export default {
     document.documentElement.style.setProperty("--position", this.position);
   },
   methods: {
-    handleClickBack() {
-      this.$router.go(-1);
+    handleClickBack(e) {
+      if (this.needBackModel) {
+        this.$emit("handleOpenRecommendBox");
+        return;
+      }
+      if (navigator.userAgent.includes("MSIE") && !navigator.userAgent.includes("Opera")) {
+        // IE
+        if (history.length > 0) {
+          window.history.go(-1);
+        } else {
+          window.location.href = "/";
+        }
+      } else {
+        // 非IE浏览器
+        // eslint-disable-next-line no-lonely-if
+        if (
+          navigator.userAgent.includes("Firefox") ||
+          navigator.userAgent.includes("Opera") ||
+          navigator.userAgent.includes("Safari") ||
+          navigator.userAgent.includes("Chrome") ||
+          navigator.userAgent.includes("WebKit")
+        ) {
+          if (window.history.length > 1) {
+            window.history.go(-1);
+          } else {
+            window.location.href = "/";
+          }
+        } else {
+          // 未知的浏览器
+          window.history.go(-1);
+        }
+      }
     }
   }
 };

@@ -1,12 +1,18 @@
 <template>
   <div class="expandable-text" :class="{ 'is-expanded': expanded }">
     <slot></slot>
+    <div class="expandable-text-synopsis">Synopsis</div>
     <div class="text-content">
       {{ text }}
     </div>
-    <div class="toggle-button" @click="toggleExpand">
-      {{ expanded ? "Show Less" : "Show More" }}<i class="icon-more"></i>
+    <div class="tips-box">
+      <div class="tips">{{ novelDetailInfo.category }}</div>
+      <!--      <div class="tips">分类</div>-->
+      <!--      <div class="tips">分类</div>-->
     </div>
+    <!--    <div class="toggle-button" @click="toggleExpand">-->
+    <!--      {{ expanded ? "Show Less" : "Show More" }}<i class="icon-more"></i>-->
+    <!--    </div>-->
   </div>
 </template>
 
@@ -16,6 +22,9 @@ export default {
     text: {
       type: String,
       required: true
+    },
+    novelDetailInfo: {
+      type: Object
     }
   },
   data() {
@@ -35,14 +44,12 @@ export default {
 .expandable-text {
   position: relative;
   text-align: center;
-  color: rgba($color2, 0.6);
 }
-
 .text-content {
   overflow: hidden;
   display: -webkit-box;
-  line-clamp: 3;
-  -webkit-line-clamp: 3;
+  line-clamp: 6;
+  -webkit-line-clamp: 6;
   box-orient: vertical;
   -webkit-box-orient: vertical;
   height: auto;
@@ -75,7 +82,28 @@ export default {
   }
 }
 @media screen and (max-width: 750px) {
-  .text-content,
+  .expandable-text {
+    color: rgba($color2, 0.6);
+    width: vw(718);
+    margin-left: vw(-30);
+    height: vw(440);
+    background: #fef1ea;
+    border-radius: vw(32);
+    padding: vw(32);
+  }
+  .expandable-text-synopsis {
+    font-size: vw(32);
+    text-align: left;
+    font-weight: bold;
+    color: $color2;
+    line-height: vw(40);
+  }
+  .text-content {
+    height: vw(184);
+    overflow: hidden;
+    font-size: vw(24);
+    line-height: vw(31);
+  }
   .toggle-button {
     font-size: vw(24);
     line-height: vw(32);
@@ -88,6 +116,27 @@ export default {
   .is-expanded {
     .icon-more {
       transform: translateY(vw(4)) rotate(180deg);
+    }
+  }
+  .tips-box {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    height: vw(50);
+    margin-top: vw(24);
+    gap: vw(40);
+    .tips {
+      line-height: vw(50);
+      color: $color1;
+      font-size: vw(24);
+      flex-shrink: 0;
+      padding: 0 vw(54);
+      background: rgba(#ffa463, 0.9);
+      border-radius: vw(22);
+      font-weight: 600;
     }
   }
 }

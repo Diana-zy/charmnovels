@@ -1,5 +1,5 @@
 <template>
-  <s-model :value.sync="visible" click-layer-hide>
+  <s-model :value.sync="visible" @handleClose="handleClose" click-layer-hide>
     <template v-slot:content>
       <div class="module-rec-mobile">
         <section v-swiper:mySwiper="swiperOption" ref="swiperRef" class="swiper-box">
@@ -40,7 +40,7 @@
               fit="cover"
               width="198"
               height="280"
-              :src="selectBook.cover"
+              :src="selectBook?.cover"
               :alt="selectBook.name"
               class="cover"
             />
@@ -100,11 +100,21 @@ export default {
     };
   },
   mounted() {},
+  watch: {
+    visible(val) {
+      this.$emit("update:visible", val);
+    }
+  },
   methods: {
     handleChange() {
       // this.selectBook = this.recBooks[this.$refs.swiperRef.swiper.activeIndex % 5];
       // this.recIndex = this.$refs.swiperRef.swiper.activeIndex % 5;
       // console.log(this.$refs.swiperRef.swiper.activeIndex % 5, "change");
+    },
+    handleClose() {
+      this.$router.push({
+        path: "/"
+      });
     }
   }
 };

@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-header />
+    <custom-back-header needBackModel @handleOpenRecommendBox="handleOpenRecommendBox" />
     <section v-if="novelDetailInfo" class="module-introduce">
       <div class="introduce-content">
         <div class="cover-container">
@@ -18,22 +18,37 @@
         <div class="introduce-info">
           <h3 class="name">{{ novelDetailInfo.name }}</h3>
           <div class="author-row">
-            <span>{{ novelDetailInfo.category }}</span>
-            <span class="line"></span>
-            <span>{{ novelDetailInfo.author }}</span>
+            <!--            <span>{{ novelDetailInfo.category }}</span>-->
+            <!--            <span class="line"></span>-->
+            <span>By:{{ novelDetailInfo.author }}</span>
+          </div>
+          <div class="author-row updated-time-row">
+            <span>Latest Updated: 2025-12-05</span>
           </div>
 
-          <div class="rating rating-mobile pc-hidden-flex">
-            <i
-              v-for="(item, i) in getStarListStyle(novelDetailInfo.score)"
-              :key="i"
-              :class="item"
-              class="rating-item"
-            ></i>
-            <span class="score">{{ getStarScore(novelDetailInfo.score) }}</span>
+          <!--          最新章节 -->
+          <div class="latest-chapter" @click="handleShowChapterPopup">
+            <div>Latest Chapter Chapter 50</div>
+            <div class="icon-arrow-right"> </div>
           </div>
 
-          <div class="info-row">
+          <!--          是否连载-->
+          <div class="novel-status">
+            <span>Completed!</span>
+            <span>/</span>
+            <span>Update Just Now!</span>
+          </div>
+          <!--          <div class="rating rating-mobile pc-hidden-flex">-->
+          <!--            <i-->
+          <!--              v-for="(item, i) in getStarListStyle(novelDetailInfo.score)"-->
+          <!--              :key="i"-->
+          <!--              :class="item"-->
+          <!--              class="rating-item"-->
+          <!--            ></i>-->
+          <!--            <span class="score">{{ getStarScore(novelDetailInfo.score) }}</span>-->
+          <!--          </div>-->
+
+          <div class="info-row m-hidden-block">
             <div class="m-hidden-block">
               <div class="rating">
                 <i
@@ -65,13 +80,50 @@
         </div>
       </div>
 
-      <google-ad-preload class="google-ad" ad-slot="2858514230" />
+      <!--      <google-ad-preload class="google-ad" ad-slot="2858514230" />-->
 
       <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
-      <module-expandable-text :text="novelDetailInfo.intro" class="pc-hidden-block" />
+      <module-expandable-text
+        :text="novelDetailInfo.intro"
+        :novelDetailInfo="novelDetailInfo"
+        class="pc-hidden-block"
+      >
+        <div class="novel-info-rating">
+          <div class="novel-info-user">
+            <div>{{ novelDetailInfo.view }}</div>
+            <div>Users Viewed</div>
+          </div>
+          <div class="line"></div>
+          <div class="novel-info-rating-box">
+            <div class="score">{{ getStarScore(novelDetailInfo.score) }} Points</div>
+            <div class="rating rating-mobile">
+              <i
+                v-for="(item, i) in getStarListStyle(novelDetailInfo.score)"
+                :key="i"
+                :class="item"
+                class="rating-item"
+              ></i>
+              <span @click="handleRatingBook" class="rating-book"> Rating this book</span>
+            </div>
+          </div>
+        </div>
+      </module-expandable-text>
     </section>
+
+    <section class="novel-info pc-hidden-block">
+      <div class="novel-info-top">
+        <div class="left-title">Chapter 1</div>
+        <div class="right-btn" @click="handleShowChapterPopup"
+          >Chapter List <span class="icon-arrow-right"></span
+        ></div>
+      </div>
+      <div class="novel-content-top novel-content"> {{ novelDetailInfo?.intro }} </div>
+      <google-ad-preload class="google-ad" ad-slot="2858514230" />
+      <div class="novel-content-bottom novel-content"> {{ novelDetailInfo?.intro }} </div>
+    </section>
+
     <section class="module-all">
-      <common-title-label title="Rec Books" />
+      <common-title-label v-if="!isMobile" title="Rec Books" />
       <!-- PC端rec模块 -->
       <common-infinite-scroll-list
         v-if="!isMobile"
@@ -93,34 +145,44 @@
         </template>
       </common-infinite-scroll-list>
       <!-- 移动端rec模块 -->
-      <div v-if="isMobile" class="module-rec-mobile">
-        <div class="module-rec-list">
-          <div
-            v-for="(item, i) in recBooks.slice(0, 5)"
-            :key="i"
-            class="item"
-            @click="handleRecItemClick(i)"
-          >
-            <div :class="['cover', { active: i === currentRecIndex }]">
-              <nuxt-img
-                width="112"
-                height="168"
-                fit="cover"
-                format="auto"
-                :src="item.cover"
-                :alt="item.name"
-              />
-            </div>
-          </div>
-        </div>
-        <item-module-all
-          :item="recBooks[currentRecIndex]"
-          :index="0"
-          :to="`/novel/${recBooks[currentRecIndex].id}/`"
-        />
-      </div>
+      <!--      <div v-if="isMobile" class="module-rec-mobile">-->
+      <!--        <div class="module-rec-list">-->
+      <!--          <div-->
+      <!--            v-for="(item, i) in recBooks.slice(0, 5)"-->
+      <!--            :key="i"-->
+      <!--            class="item"-->
+      <!--            @click="handleRecItemClick(i)"-->
+      <!--          >-->
+      <!--            <div :class="['cover', { active: i === currentRecIndex }]">-->
+      <!--              <nuxt-img-->
+      <!--                width="112"-->
+      <!--                height="168"-->
+      <!--                fit="cover"-->
+      <!--                format="auto"-->
+      <!--                :src="item.cover"-->
+      <!--                :alt="item.name"-->
+      <!--              />-->
+      <!--            </div>-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--        <item-module-all-->
+      <!--          :item="recBooks[currentRecIndex]"-->
+      <!--          :index="0"-->
+      <!--          :to="`/novel/${recBooks[currentRecIndex].id}/`"-->
+      <!--        />-->
+      <!--      </div>-->
     </section>
 
+    <!--    小说评分-->
+    <dialog-rating-box
+      :visible.sync="ratingBook"
+      @handleCloseRatingBook="handleCloseRatingBook"
+    ></dialog-rating-box>
+
+    <dialog-recommend-box
+      :recBooks="recBooks"
+      :visible.sync="showRecommendBox"
+    ></dialog-recommend-box>
     <!-- 移动端章节弹窗 -->
     <transition name="fade">
       <div v-show="isShowChapterPopup" class="chapter-list-popup">
@@ -140,10 +202,10 @@
     </transition>
     <!-- 底部菜单 -->
     <section class="bottom-menu pc-hidden-flex">
-      <div class="menu-item menu-chapters" @click="handleShowChapterPopup">
-        <i class="icon-chapters"></i>
-        <span>Chapters</span>
-      </div>
+      <!--      <div class="menu-item menu-chapters" @click="handleShowChapterPopup">-->
+      <!--        <i class="icon-chapters"></i>-->
+      <!--        <span>Chapters</span>-->
+      <!--      </div>-->
       <custom-link :to="startReadPath" class="menu-item menu-read">
         <i class="icon-reading"></i>
         <span>{{
@@ -209,7 +271,9 @@ export default {
       changeCurrentRecIndexTimer: null,
       changeCurrentRecIndexInterval: 3000,
       isShowChapterPopup: false, // 移动端章节弹窗
-      distanceFromTop: 0 // body距离顶部距离
+      distanceFromTop: 0, // body距离顶部距离
+      ratingBook: false,
+      showRecommendBox: false
     };
   },
   watch: {
@@ -241,7 +305,12 @@ export default {
         this.isMobile = false;
       }
     },
-
+    handleRatingBook() {
+      this.ratingBook = true;
+    },
+    handleCloseRatingBook() {
+      this.ratingBook = false;
+    },
     async getNovelDetailInfo() {
       const novelId = this.$route.params.novel;
       await this.$axios
@@ -294,7 +363,9 @@ export default {
     clearChangeCurrentRecIndexTimer() {
       clearInterval(this.changeCurrentRecIndexTimer);
     },
-
+    handleOpenRecommendBox() {
+      this.showRecommendBox = true;
+    },
     // 展示菜单设置
     handleShowChapterPopup() {
       this.isShowChapterPopup = true;
@@ -518,6 +589,7 @@ export default {
 
 @media screen and (max-width: 750px) {
   main {
+    padding-top: 0;
     padding-bottom: vw(112);
   }
   .module-introduce {
@@ -533,7 +605,7 @@ export default {
   }
   .cover-container {
     width: vw(240);
-    height: vw(360);
+    height: vw(304);
     @include book-edge(vw(4.85), vw(6));
     overflow: hidden;
     border-radius: vw(8);
@@ -548,8 +620,8 @@ export default {
     .name {
       width: vw(394);
       max-width: unset;
-      font-size: vw(40);
-      line-height: vw(54);
+      font-size: vw(32);
+      line-height: vw(39);
     }
     .line {
       display: block;
@@ -561,14 +633,43 @@ export default {
       flex-direction: row;
       align-items: center;
       gap: vw(12);
-      margin: vw(16) 0 vw(24);
+      margin: vw(16) 0 vw(4);
       font-size: vw(24);
       line-height: vw(32);
       & span:first-child {
-        color: rgba($color2, 0.6);
+        color: $color2;
         font-family: "se";
       }
     }
+
+    .updated-time-row {
+      margin: 0 0 vw(16);
+    }
+    .latest-chapter {
+      display: flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      font-weight: 400;
+      font-size: vw(26);
+      color: #ff9345;
+      height: vw(48);
+      line-height: vw(48);
+      text-decoration: underline;
+      .icon-arrow-right {
+        @include icon(vw(48), vw(48), "icon-arrow-right.png");
+      }
+    }
+    .novel-status {
+      margin-top: vw(32);
+      line-height: vw(36);
+      font-size: vw(26);
+      font-weight: bold;
+      color: $color2;
+      span:last-child {
+        font-weight: 400;
+      }
+    }
+
     .rating-mobile {
       margin: auto 0 vw(24);
     }
@@ -604,6 +705,39 @@ export default {
     }
     .btn-read {
       display: none;
+    }
+  }
+
+  .novel-info-rating {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    height: vw(60);
+    line-height: vw(30);
+    margin-bottom: vw(32);
+    font-size: vw(28);
+    text-align: left;
+    color: $color2;
+    font-weight: bold;
+    .novel-info-user {
+      width: vw(179);
+    }
+    .line {
+      width: vw(2);
+      height: 100%;
+      margin: 0 vw(40);
+      background: $color2;
+    }
+    .novel-info-rating-box {
+      .score {
+        color: $color2;
+        font-size: vw(28);
+      }
+      .rating-book {
+        color: rgba($color2, 0.6);
+        text-decoration: underline;
+        font-size: vw(26);
+      }
     }
   }
 
@@ -658,6 +792,8 @@ export default {
       line-height: vw(42);
       font-family: "seb";
       color: $color1;
+      border-radius: vw(80);
+      width: vw(658);
       &:first-child {
         width: vw(272);
       }
@@ -694,6 +830,45 @@ export default {
       left: 0;
       bottom: 0;
       width: 100%;
+    }
+  }
+  .novel-info {
+    padding: vw(32) vw(46);
+    .novel-info-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      line-height: vw(48);
+      .left-title {
+        font-size: vw(28);
+        color: $color2;
+        font-weight: bold;
+      }
+      .right-btn {
+        display: flex;
+        font-size: vw(26);
+        align-items: center;
+        height: vw(48);
+        text-decoration: underline;
+        color: $color3;
+        .icon-arrow-right {
+          @include icon(vw(48), vw(48), "icon-arrow-right.png");
+        }
+      }
+    }
+    .novel-content {
+      font-family: serif;
+      padding: vw(28) 0 vw(20);
+      font-size: vw(28);
+      color: $color2;
+      text-align: left;
+      font-weight: 400;
+      line-height: vw(38);
+    }
+    .novel-content-top {
+    }
+    .novel-content-bottom {
+      padding-top: 0;
     }
   }
 }
