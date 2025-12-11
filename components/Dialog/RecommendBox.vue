@@ -2,65 +2,63 @@
   <s-model :value.sync="visible" @handleClose="handleClose" click-layer-hide>
     <template v-slot:content>
       <div class="module-rec-mobile">
-        <section v-swiper:mySwiper="swiperOption" ref="swiperRef" class="swiper-box">
+        <section v-once v-swiper:mySwiper="swiperOption" ref="swiperRef" class="swiper-box">
           <div class="swiper-wrapper">
             <div
               v-for="(item, i) in recBooks.slice(0, 5)"
               :key="i"
-              class="item swiper-slide"
+              class="swiper-slide"
               @click="handleRecItemClick(i)"
             >
-              <div :class="['cover']">
-                <nuxt-img
-                  width="112"
-                  height="168"
-                  fit="cover"
-                  format="auto"
-                  :src="item.cover"
-                  :alt="item.name"
-                />
+              <nuxt-img width="200" fit="cover" format="auto" :src="item.cover" :alt="item.name" />
+            </div>
+          </div>
+        </section>
+        <section class="book-info-box">
+          <div
+            v-for="(item, i) in recBooks.slice(0, 5)"
+            v-show="i === currentBannerRealIndex"
+            :key="i"
+            class="book-info"
+          >
+            <div class="item-left">
+              <nuxt-img
+                format="auto"
+                fit="cover"
+                width="108"
+                height="162"
+                :src="item.cover"
+                :alt="item.name"
+                class="cover m-hidden-block"
+                loading="lazy"
+              />
+              <nuxt-img
+                format="auto"
+                fit="cover"
+                width="198"
+                height="280"
+                :src="item?.cover"
+                :alt="item.name"
+                class="cover"
+              />
+            </div>
+            <div class="item-right">
+              <p class="name">{{ item.name }}</p>
+              <div class="info-row">
+                <span>{{ item.author }}</span>
+                <span class="line"></span>
+                <span>{{ item.category }}</span>
+              </div>
+              <p class="desc">{{ item.intro }}</p>
+              <div class="info-bottom">
+                <div class="views">
+                  <i class="icon-views"></i>
+                  <span>{{ item.view }}</span>
+                </div>
               </div>
             </div>
           </div>
         </section>
-        <div class="book-info">
-          <div class="item-left">
-            <nuxt-img
-              format="auto"
-              fit="cover"
-              width="108"
-              height="162"
-              :src="selectBook.cover"
-              :alt="selectBook.name"
-              class="cover m-hidden-block"
-              loading="lazy"
-            />
-            <nuxt-img
-              format="auto"
-              fit="cover"
-              width="198"
-              height="280"
-              :src="selectBook?.cover"
-              :alt="selectBook.name"
-              class="cover"
-            />
-          </div>
-          <div class="item-right">
-            <p class="name">{{ selectBook.name }}</p>
-            <div class="info-row">
-              <span>{{ selectBook.author }}</span>
-              <span class="line"></span>
-              <span>{{ selectBook.category }}</span>
-            </div>
-            <p class="desc">{{ selectBook.intro }}</p>
-            <div class="info-bottom">
-              <div class="views">
-                <i class="icon-views"></i>
-                <span>{{ selectBook.view }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </template>
   </s-model>
@@ -88,15 +86,18 @@ export default {
     return {
       recIndex: 0,
       swiperOption: {
-        slidesPerView: "3",
+        slidesPerView: "auto",
+        // centeredSlides: true,
         loop: true,
-        autoplay: true,
+        // autoplay: {
+        //   delay: 3000,
+        //   disableOnInteraction: false
+        // },
         on: {
-          slideChangeTransitionStart: this.handleChange
+          slideChange: this.handleChange
         }
       },
-      Timer: null,
-      selectBook: this.recBooks[0]
+      currentBannerRealIndex: 0
     };
   },
   mounted() {},
@@ -107,9 +108,17 @@ export default {
   },
   methods: {
     handleChange() {
-      // this.selectBook = this.recBooks[this.$refs.swiperRef.swiper.activeIndex % 5];
-      // this.recIndex = this.$refs.swiperRef.swiper.activeIndex % 5;
-      // console.log(this.$refs.swiperRef.swiper.activeIndex % 5, "change");
+      console.log(
+        this.mySwiper && this.mySwiper.activeIndex,
+        this.mySwiper && this.mySwiper.realIndex
+      );
+      if (this.mySwiper && this.mySwiper.realIndex < 5) {
+        console.log(this.mySwiper.realIndex);
+        console.log("this", this);
+        const currentBannerRealIndex = this.mySwiper.realIndex;
+        this.currentBannerRealIndex = currentBannerRealIndex
+        console.log("currentBannerRealIndex", currentBannerRealIndex);
+      }
     },
     handleClose() {
       this.$router.push({
@@ -124,52 +133,48 @@ export default {
 .module-rec-mobile {
   margin-bottom: vw(44);
   width: 100vw;
-  /*padding: 0 vw(0) vw(0) vw(30);*/
+
   .module-rec-list {
     display: flex;
     align-items: center;
     gap: vw(24);
     margin-bottom: vw(48);
   }
-  .item {
-    /*width: vw(224);*/
-    /*height: vw(336);*/
-    /*margin-right: vw(32);*/
-    /*border-radius: vw(4);*/
-  }
-  .cover {
-    width: vw(224);
-    height: vw(336);
-    border-radius: vw(4);
-    @include book-edge(vw(2.26), vw(4));
-    transition: all 0.3s;
-  }
-  .active {
-    /*transform: scale(1.2);*/
-    /*width: vw(244);*/
-    /*height: vw(366);*/
-    //border: vw(4) solid $color3;
-  }
 }
 .swiper-box {
   margin-bottom: vw(48);
+
   .swiper-wrapper {
+    height: vw(404);
+    padding-left: vw(80);
     align-items: flex-end;
   }
-  .swiper-pagination {
-    display: none;
-  }
-  .swiper-slide-active {
-    width: vw(244);
-    height: vw(366);
-    margin-right: vw(28);
-    .cover {
+  .swiper-slide {
+    width: vw(216);
+    height: vw(296);
+    margin-right: vw(20);
+    border-radius: vw(8);
+    transition: all 0.3s;
+    overflow: hidden;
+    img {
       width: 100%;
       height: 100%;
+      object-fit: cover;
     }
   }
+  .swiper-slide-active {
+    width: vw(296);
+    height: vw(404);
+  }
 }
+
+.book-info-box {
+  position: relative;
+  height: 198px;
+}
+
 .book-info {
+  position: absolute;
   display: flex;
   height: 198px;
   padding: 18px 40px 18px 18px;
@@ -243,6 +248,10 @@ export default {
 }
 
 @media screen and (max-width: 750px) {
+  .book-info-box {
+    height: vw(280);
+    padding: 0 vw(46);
+  }
   .book-info {
     height: vw(280);
     padding: 0;

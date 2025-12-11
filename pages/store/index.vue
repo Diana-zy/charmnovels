@@ -1,5 +1,6 @@
 <template>
   <main>
+    <custom-back-header is-page-content="true" title="Charmnovel Store"/>
     <div class="sku-list-content">
       <item-module-sku-special-offer
         v-for="(item, index) in skuSpecialOfferList"
@@ -112,7 +113,7 @@ main {
 @media screen and (max-width: 750px) {
   main {
     width: 100%;
-    padding: vw(96) vw(46) 0;
+    padding: 0 vw(46) 0;
   }
 
   .sku-list-content {
