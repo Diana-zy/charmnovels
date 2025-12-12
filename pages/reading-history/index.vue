@@ -27,10 +27,8 @@ export default {
       isShowLoading: true
     };
   },
-  created() {
-    if (process.client) {
-      window.getCookie("novel_token") && this.getLibraryList();
-    }
+  mounted() {
+    this.getLibraryList();
   },
   methods: {
     async getLibraryList() {
@@ -66,6 +64,9 @@ main {
   grid-template-columns: repeat(3, 99px);
   justify-items: center;
   gap: 16px;
+}
+.empty-content {
+  padding: 100px 0;
 }
 
 @media screen and (min-width: 750px) {
@@ -126,6 +127,9 @@ main {
   .module-library-content {
     grid-template-columns: repeat(3, vw(198));
     gap: vw(32);
+  }
+  .empty-content {
+    padding: vw(200) 0;
   }
 }
 </style>

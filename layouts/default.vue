@@ -13,7 +13,7 @@ export default {
     };
   },
   mounted() {
-    if (window.getCookie("novel_tid")) {
+    if (window.getItem("novel_tid")) {
       this.isShowNuxtContent = true;
     } else {
       this.getUserTid();
@@ -27,7 +27,7 @@ export default {
         })
         .then((response) => {
           if (response.tid) {
-            window.setCookie("novel_tid", response.tid, 365);
+            window.setItem("novel_tid", response.tid);
             this.isShowNuxtContent = true;
           }
         });
