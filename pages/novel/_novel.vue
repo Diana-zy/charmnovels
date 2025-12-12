@@ -1,6 +1,7 @@
 <template>
   <main>
-    <custom-back-header needBackModel @handleOpenRecommendBox="handleOpenRecommendBox" />
+    <custom-header v-if="!isMobile" />
+    <custom-back-header v-else needBackModel @handleOpenRecommendBox="handleOpenRecommendBox" />
     <section v-if="novelDetailInfo" class="module-introduce">
       <div class="introduce-content">
         <div class="cover-container">
@@ -27,13 +28,13 @@
           </div>
 
           <!--          最新章节 -->
-          <div class="latest-chapter" @click="handleShowChapterPopup">
+          <div class="latest-chapter pc-hidden-flex" @click="handleShowChapterPopup">
             <div>Latest Chapter Chapter 50</div>
             <div class="icon-arrow-right"> </div>
           </div>
 
           <!--          是否连载-->
-          <div class="novel-status">
+          <div class="novel-status pc-hidden-block">
             <span>Completed!</span>
             <span>/</span>
             <span>Update Just Now!</span>
@@ -48,7 +49,7 @@
           <!--            <span class="score">{{ getStarScore(novelDetailInfo.score) }}</span>-->
           <!--          </div>-->
 
-          <div class="info-row m-hidden-block">
+          <div class="info-row m-hidden-flex">
             <div class="m-hidden-block">
               <div class="rating">
                 <i

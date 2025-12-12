@@ -32,6 +32,10 @@ export default {
   color: $color1;
   text-align: center;
 }
+.google-ad-parent {
+  height: 176px;
+  overflow: hidden;
+}
 @media screen and (max-width: 750px) {
   .google-ad-parent {
     height: vw(176);

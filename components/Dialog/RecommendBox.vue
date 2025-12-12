@@ -2,6 +2,7 @@
   <s-model :value.sync="visible" @handleClose="handleClose" click-layer-hide>
     <template v-slot:content>
       <div class="module-rec-mobile">
+        <div class="dialog-title">You May Like</div>
         <section v-once v-swiper:mySwiper="swiperOption" ref="swiperRef" class="swiper-box">
           <div class="swiper-wrapper">
             <div
@@ -21,41 +22,18 @@
             :key="i"
             class="book-info"
           >
-            <div class="item-left">
-              <nuxt-img
-                format="auto"
-                fit="cover"
-                width="108"
-                height="162"
-                :src="item.cover"
-                :alt="item.name"
-                class="cover m-hidden-block"
-                loading="lazy"
-              />
-              <nuxt-img
-                format="auto"
-                fit="cover"
-                width="198"
-                height="280"
-                :src="item?.cover"
-                :alt="item.name"
-                class="cover"
-              />
+            <div class="rec-novel-name">{{ item.name }}</div>
+            <div class="rec-novel-status">
+              <div class="rec-status">Completed</div>
+              <div class="rec-category">
+                <div class="rec-category-item">{{ item.category }}</div>
+              </div>
             </div>
-            <div class="item-right">
-              <p class="name">{{ item.name }}</p>
-              <div class="info-row">
-                <span>{{ item.author }}</span>
-                <span class="line"></span>
-                <span>{{ item.category }}</span>
-              </div>
-              <p class="desc">{{ item.intro }}</p>
-              <div class="info-bottom">
-                <div class="views">
-                  <i class="icon-views"></i>
-                  <span>{{ item.view }}</span>
-                </div>
-              </div>
+            <div class="rec-ms">{{ item.intro }}</div>
+            <div class="rec-btn-box">
+              <!--              <custom-link :to="`/novel/${item.id}/`" class="read-now-btn">-->
+              <div class="read-now-btn" @click="handleToRead(item)">Read now</div>
+              <!--              </custom-link>-->
             </div>
           </div>
         </section>
@@ -75,7 +53,7 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      default: true
+      default: false
     },
     recBooks: {
       type: Array,
@@ -89,10 +67,10 @@ export default {
         slidesPerView: "auto",
         // centeredSlides: true,
         loop: true,
-        // autoplay: {
-        //   delay: 3000,
-        //   disableOnInteraction: false
-        // },
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false
+        },
         on: {
           slideChange: this.handleChange
         }
@@ -116,13 +94,19 @@ export default {
         console.log(this.mySwiper.realIndex);
         console.log("this", this);
         const currentBannerRealIndex = this.mySwiper.realIndex;
-        this.currentBannerRealIndex = currentBannerRealIndex
+        this.currentBannerRealIndex = currentBannerRealIndex;
         console.log("currentBannerRealIndex", currentBannerRealIndex);
       }
     },
     handleClose() {
       this.$router.push({
         path: "/"
+      });
+    },
+    handleToRead(val) {
+      console.log(val, "val");
+      this.$router.push({
+        path: `/novel/${val.id}/`
       });
     }
   }
@@ -174,129 +158,95 @@ export default {
 }
 
 .book-info {
-  position: absolute;
-  display: flex;
-  height: 198px;
-  padding: 18px 40px 18px 18px;
+  position: relative;
+  /*height: 198px;*/
+  /*padding: 18px 40px 18px 18px;*/
   border-radius: 16px;
   background: $color5;
-
-  .item-left {
-    flex-shrink: 0;
-    width: 108px;
-    height: 162px;
-    margin-right: 18px;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px 0 rgba($color6, 0.45);
-    overflow: hidden;
-    @include book-edge(2.18px, 3px);
-  }
-  .cover {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .item-right {
-    width: calc(100% - 126px);
-    display: flex;
-    flex-direction: column;
-    padding: 6px 0;
-    font-size: 12px;
-    line-height: 16px;
-    color: rgba($color2, 0.6);
-  }
-  .name {
-    margin-bottom: 8px;
-    font-family: "seb";
-    line-height: 21px;
-    font-size: 16px;
-    color: $color2;
-    @include ellipsis;
-  }
-  .info-row {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    .line {
-      display: none;
-    }
-    span:last-child {
-      color: $color3;
-    }
-  }
-  .desc {
-    margin-top: 8px;
-    @include ellipsis(3);
-  }
-  .info-bottom {
-    margin-top: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .views {
-    @include center;
-    .icon-views {
-      @include icon(16px, 16px, "icon-views.png");
-    }
-  }
-  .item:hover {
-    .name {
-      color: $color3;
-    }
-  }
 }
 
 @media screen and (max-width: 750px) {
+  .dialog-title {
+    font-weight: bold;
+    font-size: vw(52);
+    color: $color1;
+    line-height: vw(70);
+    text-align: center;
+    margin-bottom: vw(84);
+  }
   .book-info-box {
-    height: vw(280);
+    height: auto;
     padding: 0 vw(46);
   }
   .book-info {
-    height: vw(280);
+    /*height: vw(280);*/
     padding: 0;
     border-radius: 0;
     background: none;
-    .item-left {
-      width: vw(198);
-      height: vw(280);
-      margin-right: vw(16);
-      border-radius: vw(4);
-      box-shadow: none;
-      @include book-edge(vw(4), vw(8));
-    }
-    .item-right {
-      width: vw(444);
-      padding: vw(4) 0;
-      font-size: vw(28);
-      line-height: vw(38);
-    }
-    .name {
-      margin-bottom: vw(8);
-      line-height: vw(42);
+    width: vw(658);
+    .rec-novel-name {
+      color: $color1;
+      font-weight: bold;
       font-size: vw(32);
+      line-height: vw(50);
+      text-align: left;
     }
-    .info-row {
+    .rec-novel-status {
+      margin-top: vw(8);
+      height: vw(38);
       display: flex;
-      flex-direction: row-reverse;
       align-items: center;
-      justify-content: flex-end;
-      gap: vw(12);
-      .line {
-        display: block;
-        width: vw(2);
-        height: vw(20);
-        background: $color2;
-        opacity: 0.1;
+      .rec-status {
+        margin-right: vw(36);
+        color: $color3;
+        font-size: vw(28);
+        font-weight: 600;
+      }
+      .rec-category {
+        display: flex;
+        gap: vw(20);
+        align-items: center;
+        .rec-category-item {
+          padding: 0 vw(20);
+          background: linear-gradient(180deg, #ffc67c 0%, #f59a23 100%);
+          border-radius: vw(8);
+          color: $color1;
+          font-weight: 400;
+          text-align: center;
+          line-height: vw(30);
+          font-size: vw(24);
+        }
       }
     }
-    .desc {
-      margin-top: vw(8);
+    .rec-ms {
+      margin-top: vw(20);
+      width: vw(658);
+      height: vw(166);
+      font-weight: 600;
+      font-size: vw(26);
+      color: $color1;
+      line-height: vw(33);
+      @include ellipsis(5);
     }
-    .views {
-      .icon-views {
-        width: vw(32);
-        height: vw(32);
+    .rec-btn-box {
+      width: 100%;
+      margin-top: vw(30);
+      height: vw(92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: vw(34);
+      flex-wrap: nowrap;
+      .read-now-btn {
+        height: vw(92);
+        flex: 1;
+        color: $color1;
+        background: linear-gradient(180deg, #ffc67c 0%, #f59a23 100%);
+        border-radius: vw(12);
+        line-height: vw(92);
+        text-align: center;
+        font-weight: bold;
+        font-size: vw(36);
       }
     }
   }

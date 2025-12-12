@@ -1,6 +1,6 @@
 <template>
   <main>
-    <!--    <custom-header :class="{ 'header-active': isShowHeader }" theme="dark" />-->
+    <custom-header v-if="!isMobile" :class="{ 'header-active': isShowHeader }" theme="dark" />
 
     <!-- PC端悬浮章节列表 -->
     <section class="fixed-bar">
@@ -75,6 +75,7 @@ import {
 export default {
   data() {
     return {
+      isMobile: false,
       currentChapterDetail: null, // 当前阅读章节详情
       relatedChapterList: [], // 相关章节列表
       currentReadProgress: 0, // 当前阅读进度
@@ -102,6 +103,8 @@ export default {
   },
   mounted() {
     document.addEventListener("click", this.handleUserClickEvent);
+    this.handleResize();
+    window.addEventListener("resize", this.handleResize);
   },
   beforeDestroy() {
     document.removeEventListener("click", this.handleUserClickEvent);
@@ -154,7 +157,13 @@ export default {
           this.getFreeNumAndUnlocked();
         });
     },
-
+    handleResize() {
+      if (window.innerWidth <= 750) {
+        this.isMobile = true;
+      } else {
+        this.isMobile = false;
+      }
+    },
     // 获取免费章节以及解锁状态
     getFreeNumAndUnlocked() {
       const chapterId = this.$route.query.ch;

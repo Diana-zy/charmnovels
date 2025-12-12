@@ -4,9 +4,10 @@
     <custom-back-header
       v-if="isMobile"
       isPageContent
-      :position="'reactive'"
+      :position="'relative'"
       :title="currentChapterDetail.novel_info.name"
-      :url="`/novel/${currentChapterDetail.novel_info.id}/`"
+      needBackModel
+      @handleOpenRecommendBox="handleWinBack(true)"
     />
     <!-- 第一章节才展示 top-info-->
     <div v-if="currentChapterDetail.chapter_num === 1 && !isMobile" class="top-info">
@@ -26,7 +27,7 @@
     <!-- 文章内容模块 -->
     <article
       class="read-content"
-      :class="{ 'lock-content': currentChapterDetail?.purchase_status !== 2 }"
+      :class="{ 'lock-content': isLock }"
       ref="parentContentRef"
       @click="handleShowMenuSetting"
     >
@@ -37,22 +38,8 @@
       <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
     </article>
 
-    <!-- PC端未解锁状态隐藏该位置广告 -->
-    <!--    <google-ad-small-->
-    <!--      v-if="-->
-    <!--        currentChapterDetail.purchase_status == 2 ||-->
-    <!--        currentChapterDetail.chapter_num <= 8 ||-->
-    <!--        isMobile-->
-    <!--      "-->
-    <!--      class="ad-1"-->
-    <!--      ad-slot="7793230426"-->
-    <!--    />-->
-
-    <!--    底部按钮-->
-    <div
-      :class="{ 'btn-box-show': showBtnBox || currentChapterDetail?.purchase_status !== 2 }"
-      class="btn-box pc-hidden-flex"
-    >
+    <!--    章节底部按钮-->
+    <div :class="{ 'btn-box-show': showBtnBox || isLock }" class="btn-box pc-hidden-flex">
       <div class="chapter-list btn" @click="handleShowChapterPopup">
         <span class="icon-menu"></span>
         List
@@ -73,7 +60,8 @@
       </custom-link>
     </div>
 
-    <section class="lock-bottom-operation" v-show="currentChapterDetail?.purchase_status !== 2">
+    <!--    付费章节底部模块-->
+    <section class="lock-bottom-operation" v-show="isLock">
       <div class="lock-operation-title">— Looked Chapter —</div>
       <div class="lock-user-info">
         <div>Price: 28 coins </div>
@@ -83,7 +71,7 @@
       <google-ad-preload-small class="ad-1" ad-slot="7793230426" />
       <div class="download-app"> Download App to read this chapter for FREE </div>
       <div class="lock-btn-box">
-        <div class="watch-ad-unlock" :class="{ 'disable-btn': true }">
+        <div class="watch-ad-unlock" @click="handleViewAdUnlock" :class="{ 'disable-btn': false }">
           <div> watch ad to unlock this chapter</div>
           <div> Watched today({{ 0 }}/5)</div>
         </div>
@@ -99,57 +87,67 @@
       </div>
     </section>
 
-    <dialog-top-up-popup :visible.sync="showTopUpPopup"></dialog-top-up-popup>
+    <!--    付费弹出层-->
+    <dialog-top-up-popup
+      :visible.sync="showTopUpPopup"
+      @handlePayByStripe="handlePayByStripe"
+      @handleWinBack="handleWinBack"
+    ></dialog-top-up-popup>
 
-    <!--    <section class="bottom-operation">-->
-    <!--      &lt;!&ndash; 支付模块 &ndash;&gt;-->
-    <!--      <div-->
-    <!--        v-if="currentChapterDetail.purchase_status !== 2"-->
-    <!--        class="pay-box"-->
-    <!--        @click="createPaymentOrder(currentChapterDetail.purchase_status)"-->
-    <!--      >-->
-    <!--        <div class="row-status">-->
-    <!--          <i class="icon-lock"></i>-->
-    <!--          <span>Unlock</span>-->
-    <!--        </div>-->
-    <!--        <div class="row-info">-->
-    <!--          <span v-if="currentChapterDetail.purchase_status !== 1"-->
-    <!--            >${{ currentChapterDetail.novel_info.price }}</span-->
-    <!--          >-->
-    <!--          <span>{{-->
-    <!--            currentChapterDetail.purchase_status === 1-->
-    <!--              ? "Continue payment"-->
-    <!--              : "Enjoy reading this novel"-->
-    <!--          }}</span>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      <div-->
-    <!--        v-if="currentChapterDetail.purchase_status === 1 && currentChapterDetail.chapter_num > 8"-->
-    <!--        class="status-paid"-->
-    <!--        @click="getOrderUnlockStatus"-->
-    <!--      >-->
-    <!--        Paid(Not unlocked)</div-->
-    <!--      >-->
-    <!--      &lt;!&ndash; 分页模块 &ndash;&gt;-->
-    <!--      &lt;!&ndash;      <div class="pagination-box">&ndash;&gt;-->
-    <!--      &lt;!&ndash;        <custom-link&ndash;&gt;-->
-    <!--      &lt;!&ndash;          :to="preChapterPath"&ndash;&gt;-->
-    <!--      &lt;!&ndash;          :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"&ndash;&gt;-->
-    <!--      &lt;!&ndash;          @click.native="(event) => handleClickPageChapter(event, preChapterItem)"&ndash;&gt;-->
-    <!--      &lt;!&ndash;        >&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <i class="icon-prev"></i>&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <span>Previous Chapter</span>&ndash;&gt;-->
-    <!--      &lt;!&ndash;        </custom-link>&ndash;&gt;-->
-    <!--      &lt;!&ndash;        <custom-link&ndash;&gt;-->
-    <!--      &lt;!&ndash;          :to="nextChapterPath"&ndash;&gt;-->
-    <!--      &lt;!&ndash;          :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"&ndash;&gt;-->
-    <!--      &lt;!&ndash;          @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"&ndash;&gt;-->
-    <!--      &lt;!&ndash;        >&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <span>Next Chapter</span>&ndash;&gt;-->
-    <!--      &lt;!&ndash;          <i class="icon-next"></i>&ndash;&gt;-->
-    <!--      &lt;!&ndash;        </custom-link>&ndash;&gt;-->
-    <!--      &lt;!&ndash;      </div>&ndash;&gt;-->
-    <!--    </section>-->
+    <!--    挽回弹窗-->
+    <dialog-win-back-box
+      ref="winBackBoxRef"
+      :url="`/novel/${currentChapterDetail.novel_info.id}/`"
+    ></dialog-win-back-box>
+    <section v-if="!isMobile" class="bottom-operation">
+      <!-- 支付模块 -->
+      <!--      <div-->
+      <!--        v-if="currentChapterDetail.purchase_status !== 2"-->
+      <!--        class="pay-box"-->
+      <!--        @click="createPaymentOrder(currentChapterDetail.purchase_status)"-->
+      <!--      >-->
+      <!--        <div class="row-status">-->
+      <!--          <i class="icon-lock"></i>-->
+      <!--          <span>Unlock</span>-->
+      <!--        </div>-->
+      <!--        <div class="row-info">-->
+      <!--          <span v-if="currentChapterDetail.purchase_status !== 1"-->
+      <!--            >${{ currentChapterDetail.novel_info.price }}</span-->
+      <!--          >-->
+      <!--          <span>{{-->
+      <!--            currentChapterDetail.purchase_status === 1-->
+      <!--              ? "Continue payment"-->
+      <!--              : "Enjoy reading this novel"-->
+      <!--          }}</span>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div-->
+      <!--        v-if="currentChapterDetail.purchase_status === 1 && currentChapterDetail.chapter_num > 8"-->
+      <!--        class="status-paid"-->
+      <!--        @click="getOrderUnlockStatus"-->
+      <!--      >-->
+      <!--        Paid(Not unlocked)</div-->
+      <!--      >-->
+      <!-- 分页模块 -->
+      <div class="pagination-box">
+        <custom-link
+          :to="preChapterPath"
+          :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
+          @click.native="(event) => handleClickPageChapter(event, preChapterItem)"
+        >
+          <i class="icon-prev"></i>
+          <span>Previous Chapter</span>
+        </custom-link>
+        <custom-link
+          :to="nextChapterPath"
+          :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
+          @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"
+        >
+          <span>Next Chapter</span>
+          <i class="icon-next"></i>
+        </custom-link>
+      </div>
+    </section>
     <!-- 相关章节模块 -->
     <!--    <section v-if="relatedChapterList !== 0" class="module-related-chapters">-->
     <!--      <common-title-label title="Related Chapters" />-->
@@ -211,7 +209,8 @@ export default {
       showBtnBox: false,
       offsetTop: null,
       autoUnLock: true,
-      showTopUpPopup: false
+      showTopUpPopup: false,
+      isLock: true
     };
   },
   computed: {
@@ -233,7 +232,7 @@ export default {
   },
   watch: {
     chapterContent(newContent) {
-      if (newContent) {
+      if (newContent && !this.isLock) {
         this.$nextTick(() => {
           const cut30pTags = this.getContentPTagesToLength(30);
           if (cut30pTags) {
@@ -303,6 +302,15 @@ export default {
       console.log(111111);
       this.showTopUpPopup = true;
       // }
+    },
+    handlePayByStripe(val) {
+      this.createPaymentOrder(this.currentChapterDetail.purchase_status);
+    },
+    handleViewAdUnlock() {
+      this.$emit("change-chapter", this.nextChapterItem);
+    },
+    handleWinBack(val) {
+      this.$refs.winBackBoxRef.handleOpen(val);
     },
     initStorageReadSetting() {
       Storage.getCookie("novel_cssReadFontSize") || Storage.setCookie("novel_cssReadFontSize", 18);
@@ -514,6 +522,10 @@ export default {
     line-height: 26px;
   }
 }
+.lock-content {
+  height: 300px;
+  overflow: hidden;
+}
 .content-text {
   ::v-deep .br {
     height: 16px;
@@ -626,6 +638,101 @@ export default {
     color: $color1 !important;
   }
 }
+.lock-bottom-operation {
+  margin-top: 32px;
+  .lock-operation-title {
+    margin-bottom: 24px;
+    font-weight: bold;
+    font-size: 22px;
+    color: $color2;
+    line-height: 30px;
+    text-align: center;
+    width: 100%;
+  }
+  .lock-user-info {
+    width: 100%;
+    height: 128px;
+    line-height: 42px;
+    font-weight: 600;
+    font-size: 24px;
+    color: $color2;
+  }
+  .download-app {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 24px;
+    color: $color3;
+    text-decoration: underline;
+    text-align: center;
+    margin-top: 20px;
+  }
+  .lock-btn-box {
+    cursor: pointer;
+    .watch-ad-unlock {
+      height: 88px;
+      width: 360px;
+      background: rgba(#ff9345, 0.3);
+      border-radius: 44px;
+      margin: 20px auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      div:first-child {
+        font-weight: bold;
+        font-size: 20px;
+        color: $color3;
+        line-height: 32px;
+        text-align: center;
+      }
+      div:last-child {
+        font-size: 16px;
+        font-weight: 400;
+        color: $color2;
+        line-height: 22px;
+        text-align: center;
+      }
+    }
+    .purchase-stripe {
+      height: 88px;
+      width: 360px;
+      background: #ff9345;
+      border-radius: 44px;
+      margin: 20px auto 0;
+      color: $color1;
+      line-height: 88px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 22px;
+    }
+    .auto-btn {
+      width: 348px;
+      height: 32px;
+      margin: 20px auto 0;
+      font-weight: 400;
+      font-size: 22px;
+      color: $color2;
+      display: flex;
+      align-items: center;
+      .check-box {
+        margin-right: 10px;
+        width: 28px;
+        height: 28px;
+        border: 1px solid $color3;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .check-box-inner {
+          width: 15px;
+          height: 15px;
+          border-radius: 50%;
+          background: $color3;
+        }
+      }
+    }
+  }
+}
 @media screen and (max-width: 750px) {
   .read-container {
     max-width: unset;
@@ -657,6 +764,8 @@ export default {
     margin-bottom: 0;
   }
   .read-content {
+    margin-top: vw(48);
+    padding-bottom: vw(80);
     h3 {
       font-size: vw(40);
       line-height: vw(54);
@@ -668,8 +777,9 @@ export default {
     }
   }
   .lock-content {
-    height: vw(532);
+    height: vw(546);
     overflow: hidden;
+    padding-bottom: 0;
   }
 
   .lock-bottom-operation {

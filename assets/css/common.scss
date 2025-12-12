@@ -66,6 +66,14 @@ $starIcons: ("icon-star-on", "icon-star-half",'icon-star-off');
   font-family: "sesb";
 }
 
+.disable-btn {
+  cursor: not-allowed;
+  background: #8D8D94 !important;
+  div:first-child {
+    color: $color1 !important;
+  }
+}
+
 $class-names: ("block", "flex", "grid");
 @each $class-name in $class-names {
   .pc-hidden-#{$class-name} {

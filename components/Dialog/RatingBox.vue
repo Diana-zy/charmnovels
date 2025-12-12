@@ -106,6 +106,7 @@ export default {
   margin-left: vw(32);
   font-size: vw(32);
   color: $color2;
+  width: vw(50);
 }
 .submit-box {
   width: 100%;

@@ -92,11 +92,10 @@ export default {
   top: 0;
   padding: 0 vw(46);
   height: vw(96);
-  background: $color4;
   z-index: 1000;
   display: flex;
   align-items: center;
-  background: rgba(#fce6db, 0.54);
+  background: #fef1ea;
   opacity: 1;
 }
 .header-url {

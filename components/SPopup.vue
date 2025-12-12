@@ -51,6 +51,10 @@ export default {
     isCenter: {
       type: Boolean,
       default: false
+    },
+    closeNeedCallBack: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -85,7 +89,12 @@ export default {
       }
     },
     handleClose() {
-      this.visible = false;
+      if (this.closeNeedCallBack) {
+        this.$emit("handleClose");
+      } else {
+        this.visible = false;
+        this.$emit("handleClose");
+      }
     },
     handleClick() {}
   }
@@ -104,31 +113,48 @@ export default {
 .show-layer {
   background: rgba(#000, 0.4);
   pointer-events: auto;
+  display: flex;
+  justify-content: center;
 }
 .popup-bottom {
   pointer-events: auto;
   position: absolute;
-  left: 0;
   bottom: 0;
-  width: 100%;
+  width: 450px;
+  z-index: 901;
 }
 .popup-container {
   width: 100%;
   background: $color4;
   box-shadow: 0 4px 16px 0 rgba($color6, 0.15);
-  border-radius: 8px;
+  border-radius: 28px 28px 0 0;
 }
 .popup-header {
   display: flex;
   align-items: center;
-  height: 56px;
-  padding-left: 24px;
+  height: 46px;
+  padding-left: 20px;
   border-bottom: 1px solid rgba($color2, 0.1);
 }
+
 .icon-close {
-  display: none;
+  @include icon(20px, 20px, "icon-close-black.png");
+  margin-left: auto;
+  margin-right: 20px;
+}
+.isCenter {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 @media (max-width: 750px) {
+  .popup-bottom {
+    pointer-events: auto;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
   .popup-container {
     width: 100%;
     box-shadow: none;
@@ -136,7 +162,12 @@ export default {
   }
   .popup-header {
     height: vw(96);
-    padding: 0 vw(46);
+    padding: vw(30) vw(46) 0;
+    h3 {
+      font-weight: bold;
+      font-size: vw(28);
+      color: $color2;
+    }
   }
   .icon-close {
     @include icon(vw(48), vw(48), "icon-close-black.png");
