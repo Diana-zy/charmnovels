@@ -139,6 +139,7 @@ function getStarScore(score) {
 }
 
 function getTargetDomain() {
+  return window.location.host;
   const currentDomain = window.location.host;
   let targetDomain = "";
   // eslint-disable-next-line no-useless-escape

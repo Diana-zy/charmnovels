@@ -175,6 +175,8 @@ import Storage from "@/utils/storage";
 import googleAdPreload from "@/components/GoogleAdPreload";
 import googleAdSmall from "@/components/GoogleAdSmall";
 import GoogleAdPreloadSmall from "../GoogleAdPreloadSmall";
+import { getUserInfo, getSKUList } from "~/api/api";
+
 export default {
   components: { GoogleAdPreloadSmall },
   props: {
@@ -264,6 +266,7 @@ export default {
     }
   },
   mounted() {
+    this.updateUserCoins();
     if (this.currentChapterDetail?.purchase_status !== 2) {
     }
 
@@ -460,6 +463,11 @@ export default {
         console.log(" error:", error.msg);
         this.loading = false;
       }
+    },
+    updateUserCoins() {
+      getUserInfo().then((res) => {
+        console.log(res, "res");
+      });
     }
   }
 };

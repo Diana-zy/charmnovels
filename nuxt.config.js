@@ -7,7 +7,9 @@ export default {
     host: "0.0.0.0"
   },
   env: {
-    SITE_ID: process.env.SITE_ID
+    SITE_ID: process.env.SITE_ID,
+    PROD_API_URL: process.env.PROD_API_URL,
+    TEST_API_URL: process.env.TEST_API_URL
   },
   generate: {
     crawler: false,
