@@ -10,7 +10,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     if (process.client) {
-      config.headers.tid = window.getCookie("novel_tid") || "";
+      config.headers.tid = window.getItem("novel_tid") || "";
     }
     return config;
   },
