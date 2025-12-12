@@ -1,30 +1,23 @@
 <template>
-  <custom-link :to="to" class="item">
+  <div class="item">
     <div class="item-top">
-      <span class="order-no">Order {{ item.order_info.order_no }}</span>
-      <span class="status">Paid</span>
+      <span class="order-no">Order {{ item.order_no }}</span>
+      <span class="status">{{ item.pay_channel }}</span>
     </div>
     <div class="item-content">
-      <div class="cover">
-        <nuxt-img
-          width="96"
-          height="144"
-          :src="item.novel_info.cover"
-          :alt="item.novel_info.name"
-          fit="cover"
-          format="auto"
-        />
-      </div>
-      <div class="right-info">
-        <p class="name">{{ item.novel_info.name }}</p>
+      <div class="left-info">
+        <p class="name"> {{ item.display_name }} </p>
         <div class="time-row">
           <i class="icon-time"></i>
-          <span>{{ item.order_info.purchase_time }}</span>
+          <span> {{ item.purchase_time }} </span>
         </div>
-        <p class="price">$ {{ item.order_info.pay_price }}</p>
+      </div>
+      <div class="right-info">
+        <p class="price">$ {{ item.pay_price }} </p>
+        <p class="coins">+ {{ item.coin }} coins</p>
       </div>
     </div>
-  </custom-link>
+  </div>
 </template>
 
 <script>
@@ -32,10 +25,6 @@ export default {
   props: {
     item: {
       type: Object,
-      required: true
-    },
-    to: {
-      type: String,
       required: true
     }
   }
@@ -45,7 +34,6 @@ export default {
 <style lang="scss" scoped>
 .item {
   width: 100%;
-  height: 138px;
   border-radius: 8px;
   border: 1px solid $color5;
   overflow: hidden;
@@ -65,34 +53,25 @@ export default {
   @include ellipsis;
 }
 .status {
-  width: 37px;
-  height: 16px;
+  width: 38px;
+  height: 18px;
   border-radius: 4px;
   background: $color3;
   color: $color1;
   font-size: 12px;
-  font-family: "seb";
   @include center;
 }
 .item-content {
   padding: 8px;
   display: flex;
   align-items: center;
-}
-.cover {
-  width: 60px;
-  height: 90px;
-  border-radius: 2px;
-  margin-right: 12px;
-  @include book-edge(1.21px, 2px);
+  justify-content: space-between;
 }
 .name {
-  height: 38px;
-  font-size: 14px;
-  line-height: 19px;
-  margin-bottom: 6px;
+  font-size: 18px;
+  line-height: 24px;
+  margin-bottom: 8px;
   font-family: "seb";
-  @include ellipsis(2);
 }
 .time-row {
   display: flex;
@@ -105,18 +84,25 @@ export default {
     margin-right: 4px;
   }
 }
-.price {
-  color: $color3;
-  font-size: 14px;
-  line-height: 19px;
-  margin-top: 6px;
+.right-info {
   font-family: "seb";
+  .price {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 19px;
+    text-align: right;
+  }
+  .coins {
+    color: $color3;
+    font-size: 16px;
+    line-height: 21px;
+  }
 }
 
 @media screen and (max-width: 750px) {
   .item {
-    height: vw(276);
     border-radius: vw(16);
+    border: vw(2) solid $color5;
   }
   .item-top {
     height: vw(64);
@@ -127,26 +113,18 @@ export default {
     line-height: vw(32);
   }
   .status {
-    width: vw(74);
-    height: vw(32);
+    width: vw(76);
+    height: vw(36);
     border-radius: vw(8);
     font-size: vw(24);
   }
   .item-content {
     padding: vw(16);
   }
-  .cover {
-    width: vw(120);
-    height: vw(180);
-    border-radius: vw(4);
-    margin-right: vw(24);
-    @include book-edge(vw(2.42), vw(4));
-  }
   .name {
-    height: vw(76);
-    font-size: vw(28);
-    line-height: vw(38);
-    margin-bottom: vw(12);
+    font-size: vw(36);
+    line-height: vw(48);
+    margin-bottom: vw(16);
   }
   .time-row {
     font-size: vw(24);
@@ -157,10 +135,17 @@ export default {
       margin-right: vw(8);
     }
   }
-  .price {
-    font-size: vw(28);
-    line-height: vw(38);
-    margin-top: vw(12);
+
+  .right-info {
+    .price {
+      margin-top: vw(16);
+      font-size: vw(28);
+      line-height: vw(38);
+    }
+    .coins {
+      font-size: vw(32);
+      line-height: vw(42);
+    }
   }
 }
 </style>

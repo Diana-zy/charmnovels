@@ -1,4 +1,3 @@
-import Storage from "@/utils/storage";
 export default function ({ $axios, $globalData, $globalMethod, redirect }) {
   // request interceptor
   $axios.interceptors.request.use(
@@ -6,8 +5,7 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
       // do something before request is sent
       /* 客户端请求 */
       if (process.client) {
-        config.headers.token = Storage.getCookie("novel_token") || "";
-        config.headers.userId = Storage.getCookie("novel_userId") || "";
+        config.headers.tid = window.getCookie("novel_tid") || "";
       }
       return config;
     },
@@ -43,6 +41,4 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
       return Promise.reject(error);
     }
   );
-
- 
 }

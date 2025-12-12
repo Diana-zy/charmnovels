@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-back-header is-page-content="true" title="Charmnovel Store"/>
+    <custom-back-header :is-page-content="true" title="Charmnovel Store" />
     <div class="sku-list-content">
       <item-module-sku-special-offer
         v-for="(item, index) in skuSpecialOfferList"

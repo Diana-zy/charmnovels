@@ -9,7 +9,7 @@
         fit="cover"
         format="auto"
       />
-      <span v-if="item.purchase_status === 2" class="tag-status">Purchased</span>
+      <!-- <span v-if="item.purchase_status === 2" class="tag-status">Purchased</span> -->
     </div>
     <p class="name">{{ item.novel_info.name }}</p>
     <p class="progress">Read {{ currentReadProgress }}%</p>
