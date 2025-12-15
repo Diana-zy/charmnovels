@@ -1,6 +1,6 @@
 <template>
   <main>
-    <div class="btn-back" @click="handleClickBackPage"></div>
+    <custom-link class="btn-back" to="/"></custom-link>
     <div class="user-info-content">
       <img class="icon-user-avatar" src="@/assets/images/icon-user-avatar.png" alt="user-avatar" />
       <div class="right-info">
@@ -82,7 +82,6 @@ export default {
         this.skuVipList = res.data?.sku;
       });
     },
-    handleClickBackPage() {},
     handleClickSkuItem(item) {
       console.log("Clicked SKU item:", item);
     }

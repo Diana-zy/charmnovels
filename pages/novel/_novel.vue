@@ -24,7 +24,7 @@
             <span>By:{{ novelDetailInfo.author }}</span>
           </div>
           <div class="author-row updated-time-row">
-            <span>Latest Updated: 2025-12-05</span>
+            <span>Latest Updated: {{ novelUpdatedDate }}</span>
           </div>
 
           <!--          最新章节 -->
@@ -104,11 +104,7 @@
                 :class="item"
                 class="rating-item"
               ></i>
-              <span
-                v-show="novelDetailInfo.real_score"
-                @click="handleRatingBook"
-                class="rating-book"
-              >
+              <span v-show="!novelDetail.real_score" class="rating-book" @click="handleRatingBook">
                 Rating this book</span
               >
             </div>
@@ -290,13 +286,33 @@ export default {
       content = content?.replace(/\n/g, "<p class='br'></p>");
       return content;
     },
+    novelUpdatedDate() {
+      const date = new Date(this.novelDetailInfo.updated_at).toISOString().split("T")[0];
+      return date;
+    },
     firstP() {
       const parts = this.chapterContent?.split(/(<p[^>]*>.*?<\/p>)/gs);
       return parts?.[0];
     },
     otherP() {
-      const parts = this.chapterContent?.split(/(<p[^>]*>.*?<\/p>)/gs);
-      return parts?.filter((i, index) => index !== 0 && index < 10).join("");
+      const parts = this.chapterContent
+        ?.split(/(<p[^>]*>.*?<\/p>)/gs)
+        .filter((item) => item != " ");
+      let currentTextLength = 0;
+      const maxTextLength = 1000;
+
+      return parts
+        ?.map((item, index) => {
+          if (currentTextLength > maxTextLength || index === 0) {
+            return "";
+          } else {
+            if (!item.includes("<p class='br'></p>")) {
+              currentTextLength += item.length;
+            }
+            return item;
+          }
+        })
+        .join("");
     }
   },
   watch: {
@@ -335,7 +351,9 @@ export default {
       this.ratingBook = false;
       saveNovelScore({
         novel_id: this.novelDetailInfo.id,
-        score: val
+        score: String(val)
+      }).then(() => {
+        this.novelDetail.real_score = val;
       });
     },
     async getNovelDetailInfo() {
@@ -348,12 +366,8 @@ export default {
         .then((response) => {
           const novelDetail = response;
           this.novelDetail = novelDetail;
-          /* 登录过期 */
-          if (!novelDetail.is_login && Storage.getCookie("novel_token")) {
-            this.$globalMethod.showDialog("Your session has expired. Please log in again.");
-          }
-
           this.novelDetailInfo = novelDetail.novel_info;
+
           this.novelChapterList = novelDetail.chapter.map((item) => {
             return { ...item, isUnlocked: true };
           });
@@ -896,6 +910,9 @@ export default {
     }
     .novel-content-bottom {
       padding-top: 0;
+      ::v-deep .br {
+        height: vw(14);
+      }
     }
   }
 }
