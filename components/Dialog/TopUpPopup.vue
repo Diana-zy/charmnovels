@@ -124,7 +124,7 @@ export default {
         return;
       }
       this.loading = true;
-      this.$emit("handlePayByStripe");
+      this.$emit("handlePayByStripe", this.select);
       const timer = setTimeout(() => {
         this.loading = false;
         clearTimeout(timer);

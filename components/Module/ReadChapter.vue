@@ -30,16 +30,8 @@
           >
             <div class="tag-current"><i class="icon-chapter-current"></i></div>
             <span>Chapter {{ item.chapter_num }}</span>
-            <i
-              v-if="
-                !item.isUnlocked &&
-                item.chapter_num >= 2 &&
-                item.chapter_num <= 8 &&
-                purchaseStatus !== 2
-              "
-              class="icon-ad-lock"
-            ></i>
-            <i v-if="item.chapter_num > 8 && purchaseStatus !== 2" class="icon-lock"></i>
+            <!--            <i v-if="!item.is_unlock && purchaseStatus !== 2" class="icon-ad-lock"></i>-->
+            <i v-if="!item.is_unlock && purchaseStatus !== 2" class="icon-lock"></i>
           </custom-link>
         </div>
       </div>

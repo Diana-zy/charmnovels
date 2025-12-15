@@ -66,7 +66,7 @@
       <div class="lock-user-info">
         <div>Price: 28 coins </div>
         <div>Words of this chapter: 2303</div>
-        <div>Balance: 15 coins</div>
+        <div>Balance: {{ userInfo?.coin }} coins</div>
       </div>
       <google-ad-preload-small class="ad-1" ad-slot="7793230426" />
       <div class="download-app"> Download App to read this chapter for FREE </div>
@@ -175,7 +175,7 @@ import Storage from "@/utils/storage";
 import googleAdPreload from "@/components/GoogleAdPreload";
 import googleAdSmall from "@/components/GoogleAdSmall";
 import GoogleAdPreloadSmall from "../GoogleAdPreloadSmall";
-import { getUserInfo, getSKUList } from "~/api/api";
+import { getUserInfo, getSKUList, paymentSKU } from "~/api/api";
 
 export default {
   components: { GoogleAdPreloadSmall },
@@ -212,8 +212,12 @@ export default {
       offsetTop: null,
       autoUnLock: true,
       showTopUpPopup: false,
-      isLock: true
+      isLock: true,
+      userInfo: null
     };
+  },
+  async created() {
+    await this.updateUserCoins();
   },
   computed: {
     chapterContent() {
@@ -222,14 +226,15 @@ export default {
       return content;
     },
     preChapterPath() {
-      return this.preChapterItem === null || !this.preChapterItem.isUnlocked
-        ? "#"
-        : `/read/?ch=${this.preChapterItem.id}`;
+      return this.preChapterItem === null ? "#" : `/read/?ch=${this.preChapterItem.id}`;
     },
     nextChapterPath() {
-      return this.nextChapterItem === null || !this.nextChapterItem.isUnlocked
-        ? "#"
-        : `/read/?ch=${this.nextChapterItem.id}`;
+      return this.nextChapterItem === null ? "#" : `/read/?ch=${this.nextChapterItem.id}`;
+    },
+    isLock: {
+      get() {
+        return !this.currentChapterDetail?.is_unlock && this.currentChapterDetail?.locked_chapter;
+      }
     }
   },
   watch: {
@@ -266,7 +271,6 @@ export default {
     }
   },
   mounted() {
-    this.updateUserCoins();
     if (this.currentChapterDetail?.purchase_status !== 2) {
     }
 
@@ -307,13 +311,16 @@ export default {
       // }
     },
     handlePayByStripe(val) {
-      this.createPaymentOrder(this.currentChapterDetail.purchase_status);
+      this.createPaymentOrder(this.currentChapterDetail.purchase_status, val);
     },
     handleViewAdUnlock() {
       this.$emit("change-chapter", this.nextChapterItem);
     },
     handleWinBack(val) {
-      this.$refs.winBackBoxRef.handleOpen(val);
+      this.loading = true;
+      this.$refs.winBackBoxRef.handleOpen(val, () => {
+        this.loading = false;
+      });
     },
     initStorageReadSetting() {
       Storage.getCookie("novel_cssReadFontSize") || Storage.setCookie("novel_cssReadFontSize", 18);
@@ -406,15 +413,15 @@ export default {
     },
 
     // 创建or支付订单
-    createPaymentOrder(purchaseStatus) {
-      if (!Storage.getCookie("novel_token")) {
-        this.$globalMethod.showDialog("Your account is not logged in, please log in.");
-        return;
-      }
+    createPaymentOrder(purchaseStatus, skuId) {
+      // if (!Storage.getCookie("novel_token")) {
+      //   this.$globalMethod.showDialog("Your account is not logged in, please log in.");
+      //   return;
+      // }
 
       if (purchaseStatus === 0) {
         // 创建新订单
-        this.unlockNovel();
+        this.unlockNovel(skuId);
       } else if (purchaseStatus === 1) {
         // 继续支付
         this.confirmUnlockNovel();
@@ -428,17 +435,27 @@ export default {
     handleShowMenuSetting() {
       this.$emit("show-menu-setting");
     },
-    async unlockNovel() {
+    async unlockNovel(skuId) {
       this.loading = true;
       // 调用接口解锁小说
       try {
-        const res = await this.$axios.$post("/api/payment/unlock_novel", {
-          site_id: process.env.SITE_ID,
+        // const res = await this.$axios.$post("/api/payment/unlock_novel", {
+        //   site_id: process.env.SITE_ID,
+        //   novel_id: this.currentChapterDetail.novel_info.id,
+        //   redirect_url: `${window.location.href}&nov=${this.currentChapterDetail.novel_info.id}`
+        // });
+        const data = {
+          sku_id: skuId,
           novel_id: this.currentChapterDetail.novel_info.id,
+          chapter_id: this.currentChapterDetail.chapter_id,
           redirect_url: `${window.location.href}&nov=${this.currentChapterDetail.novel_info.id}`
+        };
+        await paymentSKU(data).then((res) => {
+          if (res.success) {
+            console.log(" response:", res);
+            window.location.href = res.order_info.url;
+          }
         });
-        console.log(" response:", res);
-        window.location.href = res.order_info.url;
       } catch (error) {
         console.log(" error:", error.msg);
         this.loading = false;
@@ -464,9 +481,19 @@ export default {
         this.loading = false;
       }
     },
-    updateUserCoins() {
-      getUserInfo().then((res) => {
+    async updateUserCoins() {
+      await getUserInfo().then((res) => {
         console.log(res, "res");
+        if (res.success) {
+          this.userInfo = res.data;
+          // if(){
+          //
+          // } else {
+          //
+          // }
+          // if (currentChapterDetail.isNeedUnlock && this.userInfo.coin >= currentChapterDetail.coins && Storage.getItem("novel_auto_unlock") === 1) {
+          // }
+        }
       });
     }
   }
@@ -785,13 +812,14 @@ export default {
     }
   }
   .lock-content {
-    height: vw(546);
+    height: vw(532);
     overflow: hidden;
     padding-bottom: 0;
   }
 
   .lock-bottom-operation {
     margin-top: vw(48);
+    padding-bottom: vw(80);
     .lock-operation-title {
       margin-bottom: vw(24);
       font-weight: bold;

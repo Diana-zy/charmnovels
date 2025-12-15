@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { getUserInfo, getSKUList } from "~/api/api";
 export default {
   name: "WinBackBox",
   props: {
@@ -73,7 +74,14 @@ export default {
         });
       }
     },
-    handleOpen(val = false) {
+    async handleOpen(val = false, callback) {
+      await getSKUList().then((res) => {
+        console.log(res);
+        callback();
+        if (res.success) {
+          const { sku } = res.data;
+        }
+      });
       this.visible = true;
       this.isBacK = val;
     }
