@@ -5,7 +5,7 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
       // do something before request is sent
       /* 客户端请求 */
       if (process.client) {
-        config.headers.tid = window.getCookie("novel_tid") || "";
+        config.headers.tid = window.getItem("novel_tid") || "";
       }
       return config;
     },
