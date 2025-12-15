@@ -64,12 +64,12 @@
     <section class="lock-bottom-operation" v-show="isLock">
       <div class="lock-operation-title">— Looked Chapter —</div>
       <div class="lock-user-info">
-        <div>Price: 28 coins </div>
-        <div>Words of this chapter: 2303</div>
+        <div>Price: {{ currentChapterDetail.coin_price }} coins </div>
+        <div>Words of this chapter: {{ currentChapterDetail.word_count }}</div>
         <div>Balance: {{ userInfo?.coin }} coins</div>
       </div>
       <google-ad-preload-small class="ad-1" ad-slot="7793230426" />
-      <div class="download-app"> Download App to read this chapter for FREE </div>
+      <!--      <div class="download-app"> Download App to read this chapter for FREE </div>-->
       <div class="lock-btn-box">
         <div class="watch-ad-unlock" @click="handleViewAdUnlock" :class="{ 'disable-btn': false }">
           <div> watch ad to unlock this chapter</div>
@@ -176,7 +176,7 @@ import Storage from "@/utils/storage";
 import googleAdPreload from "@/components/GoogleAdPreload";
 import googleAdSmall from "@/components/GoogleAdSmall";
 import GoogleAdPreloadSmall from "../GoogleAdPreloadSmall";
-import { getUserInfo, getSKUList, paymentSKU } from "~/api/api";
+import { getUserInfo, unlockNovelChapter, paymentSKU } from "~/api/api";
 
 export default {
   components: { GoogleAdPreloadSmall },
@@ -218,7 +218,7 @@ export default {
     };
   },
   async created() {
-    await this.updateUserCoins();
+    // await this.updateUserCoins();
   },
   computed: {
     chapterContent() {
@@ -254,21 +254,14 @@ export default {
           // ) {
           this.createCountPTagsAd();
           // }
+          this.updateDomStatus();
         });
       }
     }
   },
   updated() {
-    const dom = document.getElementsByClassName("content-ad-2");
-    if (dom && !this.observer) {
-      this.observer = new IntersectionObserver(this.handleSaveSecondAd, {
-        threshold: 1
-      });
-      setTimeout(() => {
-        if (dom[0]) {
-          this.observer.observe(dom[0]);
-        }
-      }, 0);
+    if (!this.isLock) {
+      this.updateDomStatus();
     }
   },
   mounted() {
@@ -300,18 +293,34 @@ export default {
       this.autoUnLock = !this.autoUnLock;
     },
     //付费
-    handlePurchaseStripe() {
+    async handlePurchaseStripe() {
       //调一遍用户信息接口更新一下钱 再判断
-      // if (false) {
-      //   //todo
-      //   //如果钱够直接扣费
-      // } else {
-      //钱不够，进入充值
-      this.loading = true;
-      this.$refs.topUpPopupRef.handleOpen(() => {
-        this.loading = false;
-      });
-      // }
+      await this.updateUserCoins();
+      if (this.userInfo.coin >= this.currentChapterDetail.coin_price) {
+        this.loading = true;
+        //如果钱够直接扣费
+        unlockNovelChapter({
+          novel_id: this.currentChapterDetail.novel_info.id,
+          chapter_id: this.currentChapterDetail.chapter_id
+        }).then((res) => {
+          this.loading = false;
+          if (res.success) {
+            console.log(res);
+            this.$emit("reload");
+            if (this.autoUnLock) {
+              Storage.setItem("autoUnLock", "yes");
+            } else {
+              Storage.setItem("autoUnLock", "no");
+            }
+          }
+        });
+      } else {
+        //钱不够，进入充值
+        this.loading = true;
+        this.$refs.topUpPopupRef.handleOpen(() => {
+          this.loading = false;
+        });
+      }
     },
     handlePayByStripe(val) {
       this.createPaymentOrder(this.currentChapterDetail.purchase_status, val);
@@ -382,7 +391,7 @@ export default {
       const cutTextCountPTags = this.getContentPTagesToLength(
         this.currentTagIndex * this.followingTagCount + this.firstTagCount
       );
-      console.log(cutTextCountPTags, "cutTextCountPTags");
+      // console.log(cutTextCountPTags, "cutTextCountPTags");
 
       // 可填充且广告数量不超过9
       if (cutTextCountPTags && this.currentTagIndex <= 2) {
@@ -423,8 +432,8 @@ export default {
       // }
 
       if (purchaseStatus === 0) {
-        // 创建新订单
         this.unlockNovel(skuId);
+        // 创建新订单
       } else if (purchaseStatus === 1) {
         // 继续支付
         this.confirmUnlockNovel();
@@ -456,7 +465,9 @@ export default {
         await paymentSKU(data).then((res) => {
           if (res.success) {
             console.log(" response:", res);
-            window.location.href = res.order_info.url;
+            const { url } = res.data.order_info;
+
+            window.location.href = url;
           }
         });
       } catch (error) {
@@ -489,15 +500,24 @@ export default {
         console.log(res, "res");
         if (res.success) {
           this.userInfo = res.data;
-          // if(){
-          //
-          // } else {
-          //
-          // }
-          // if (currentChapterDetail.isNeedUnlock && this.userInfo.coin >= currentChapterDetail.coins && Storage.getItem("novel_auto_unlock") === 1) {
-          // }
         }
       });
+    },
+    updateDomStatus() {
+      const dom = document.getElementsByClassName("content-ad-2");
+      if (dom) {
+        if (this.observer && dom[0]) {
+          this.observer.unobserve(dom[0]);
+        }
+        this.observer = new IntersectionObserver(this.handleSaveSecondAd, {
+          threshold: 1
+        });
+        setTimeout(() => {
+          if (dom[0]) {
+            this.observer.observe(dom[0]);
+          }
+        }, 0);
+      }
     }
   }
 };
@@ -1003,7 +1023,8 @@ export default {
     flex-wrap: nowrap;
     height: vw(80);
     transform: translateY(vw(80));
-    transition: all 0.6s;
+    transition: all 0.3s;
+    z-index: 100;
     .btn {
       width: vw(248);
       height: vw(80);

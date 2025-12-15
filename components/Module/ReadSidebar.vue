@@ -235,7 +235,7 @@ export default {
     right: 0;
     left: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 101;
     color: $color8;
     .mask {
       position: absolute;

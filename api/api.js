@@ -62,3 +62,25 @@ export function saveNovelScore(data) {
     ...data
   });
 }
+
+// 更新sku订单状态
+export function updateSkuOrder(data) {
+  return instance.post("/api/payment/confirm_sku_order", {
+    site_id: process.env.SITE_ID,
+    ...data
+  });
+}
+// 解锁小说章节(扣币)
+export function unlockNovelChapter(data) {
+  return instance.post("/api/novel/novel_chapter_unlock", {
+    site_id: process.env.SITE_ID,
+    ...data
+  });
+}
+// 小说推荐模块
+export function getNovelModule(data) {
+  return instance.post("/api/novel/novel_module", {
+    site_id: process.env.SITE_ID,
+    ...data
+  });
+}

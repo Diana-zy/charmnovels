@@ -21,6 +21,7 @@
     </section>
 
     <module-read-content
+      ref="moduleReadContentRef"
       :current-chapter-detail="currentChapterDetail"
       :related-chapter-list="relatedChapterList"
       :pre-chapter-item="preChapterItem"
@@ -65,6 +66,7 @@
 
 <script>
 import Storage from "~/utils/storage";
+import { getUserInfo, updateSkuOrder, unlockNovelChapter } from "~/api/api";
 import {
   getQueryParam,
   simulateClick,
@@ -111,18 +113,40 @@ export default {
   },
   methods: {
     async getCurrentChapterDetail() {
+      const self = this;
       const chapterId = this.$route.query.ch;
       await this.$axios
         .$post("/api/novel/novel_chapter_content", {
           site_id: process.env.SITE_ID,
           chapter_id: Number(chapterId)
         })
-        .then((response) => {
+        .then(async (response) => {
           const chapterDetail = response;
-          /* 登录过期 */
-          if (!chapterDetail.is_login && Storage.getCookie("novel_token")) {
-            this.$globalMethod.showDialog("Your session has expired. Please log in again.");
+          self.$refs.moduleReadContentRef.loading = false;
+          if (
+            Storage.getItem("autoUnLock") === "yes" &&
+            chapterDetail?.locked_chapter &&
+            !chapterDetail?.is_unlock
+          ) {
+            self.$refs.moduleReadContentRef.loading = true;
+            await getUserInfo().then((res) => {
+              const userInfo = res.data;
+              if (userInfo.coin >= chapterDetail.coin_price) {
+                unlockNovelChapter({
+                  novel_id: chapterDetail.novel_info.id,
+                  chapter_id: chapterDetail.chapter_id
+                }).then((res) => {
+                  if (res.success) {
+                    self.getCurrentChapterDetail();
+                  }
+                });
+              }
+            });
           }
+          /* 登录过期 */
+          // if (!chapterDetail.is_login && Storage.getCookie("novel_token")) {
+          //   this.$globalMethod.showDialog("Your session has expired. Please log in again.");
+          // }
           // 初始化相关章节
           this.currentChapterDetail = chapterDetail;
           this.relatedChapterList = chapterDetail.chapter.map((item) => {
@@ -245,6 +269,9 @@ export default {
     },
     handleShowChapterPopup() {
       this.isShowChapterPopup = true;
+      this.distanceFromTop = document.documentElement.scrollTop;
+      document.body.classList.add("no-scroll");
+      document.body.style.top = `-${this.distanceFromTop}px`;
       this.$nextTick(() => {
         this.$refs.mobileChapterPopup.scrollToActiveChapter();
       });
@@ -261,11 +288,18 @@ export default {
     },
     async confirmUnlockNovel() {
       try {
-        const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
-          site_id: process.env.SITE_ID,
-          novel_id: getQueryParam("nov")
+        // const res = await this.$axios.$post("/api/payment/confirm_unlock_novel", {
+        //   site_id: process.env.SITE_ID,
+        //   novel_id: getQueryParam("nov")
+        // });
+        await updateSkuOrder({
+          order_no: getQueryParam("order_no")
+        }).then((res) => {
+          console.log(" response:", res);
+          if (res.success) {
+            const { order_status } = res.data;
+          }
         });
-        console.log(" response:", res);
       } catch (error) {
         console.log(" error:", error);
       }
@@ -340,7 +374,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 9;
+    z-index: 101;
     .mask {
       position: absolute;
       top: 0;

@@ -69,6 +69,7 @@ export default {
             this.skuVipList = sku.filter((item) => item.sky_type === "period");
             this.skuSpecialOfferList = [];
           }
+          console.log(this.skuSpecialOfferList, this.skuVipList);
         }
       });
 

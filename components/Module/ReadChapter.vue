@@ -31,7 +31,7 @@
             <div class="tag-current"><i class="icon-chapter-current"></i></div>
             <span>Chapter {{ item.chapter_num }}</span>
             <!--            <i v-if="!item.is_unlock && purchaseStatus !== 2" class="icon-ad-lock"></i>-->
-            <i v-if="!item.is_unlock && purchaseStatus !== 2" class="icon-lock"></i>
+            <i v-if="item.locked_chapter && !item.is_unlock" class="icon-lock"></i>
           </custom-link>
         </div>
       </div>
@@ -47,6 +47,14 @@ export default {
       default: () => []
     },
     purchaseStatus: {
+      type: Number,
+      default: 0
+    },
+    locked_chapter: {
+      type: Number,
+      default: 0
+    },
+    is_unlock: {
       type: Number,
       default: 0
     },
@@ -92,10 +100,7 @@ export default {
       });
     },
     handleClickChapter(event, item) {
-      if (!item.isUnlocked && this.purchaseStatus !== 2) {
-        event.preventDefault();
-        this.$emit("change-chapter", item);
-      }
+      this.$emit("change-chapter", item);
     }
   }
 };
