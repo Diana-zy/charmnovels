@@ -4,8 +4,8 @@
     <div class="user-info-content">
       <img class="icon-user-avatar" src="@/assets/images/icon-user-avatar.png" alt="user-avatar" />
       <div class="right-info">
-        <p class="user-name">Guest_UID</p>
-        <div class="user-uid">UID:1654235464</div>
+        <p class="user-name">{{ userName }}</p>
+        <div class="user-uid">UID : {{ userId }}</div>
       </div>
       <!-- <div class="btn-login" @click="handleClickLogin">LOG IN</div> -->
     </div>
@@ -16,7 +16,7 @@
           <span class="cell-title">My Wallet</span>
         </div>
         <div>
-          <span class="balance-value">200</span>
+          <span class="balance-value">{{ userInfoData.coin }}</span>
           <span class="balance-unit">coins balance</span>
         </div>
       </div>
@@ -49,28 +49,39 @@
 </template>
 
 <script>
+import { getUserInfo, getSKUList } from "~/api/api";
 export default {
   data() {
     return {
-      skuVipList: [
-        {
-          title: "Weekly VIP",
-          discountedPrice: "$9.99",
-          originalPrice: "$19.99",
-          coinsValue: 2000,
-          off: "50%"
-        },
-        {
-          title: "Monthly VIP",
-          discountedPrice: "$35.99",
-          originalPrice: "$79.99",
-          coinsValue: 8000,
-          off: "55%"
-        }
-      ]
+      userInfoData: {},
+      skuVipList: []
     };
   },
+  computed: {
+    userName() {
+      return this.userInfoData.tid ? `Guest_${this.userInfoData.tid.slice(-4)}` : "Guest";
+    },
+    userId() {
+      return this.userInfoData.tid ? this.userInfoData.tid.slice(-16) : "*****************";
+    }
+  },
+  mounted() {
+    this.handleGetUserInfo();
+  },
   methods: {
+    async handleGetUserInfo() {
+      await getUserInfo().then((res) => {
+        this.userInfoData = res.data;
+      });
+
+      const data = {
+        site_id: "charmnovel",
+        sku_type: ["period"]
+      };
+      await getSKUList(data).then((res) => {
+        this.skuVipList = res.data?.sku;
+      });
+    },
     handleClickBackPage() {},
     handleClickSkuItem(item) {
       console.log("Clicked SKU item:", item);

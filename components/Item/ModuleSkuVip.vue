@@ -2,15 +2,15 @@
   <div class="item">
     <div class="tag-off" :style="{ 'background-image': `url(${tagOffIcon})` }"></div>
     <div class="item-left">
-      <p class="title">{{ item.title }}</p>
+      <p class="title">{{ item.display_name }}</p>
       <p
-        ><span class="coins-value">{{ item.coinsValue }}</span> coins at once</p
+        ><span class="coins-value">{{ item.coin }}</span> {{ item.info }}</p
       >
       <span class="coins-tip">Spend coins to unlock any chapters you like.</span>
     </div>
     <div class="item-right">
-      <p>{{ item.discountedPrice }}</p>
-      <span>{{ item.originalPrice }}</span>
+      <p>{{ priceUnit }}{{ item.price }}</p>
+      <span>{{ priceUnit }}{{ item.price_old }}</span>
     </div>
   </div>
 </template>
@@ -25,7 +25,19 @@ export default {
   },
   computed: {
     tagOffIcon() {
-      return require(`@/assets/images/tag-sku-${this.item.off}.png`);
+      const off = this.item.discount.split(" ")[0];
+      return require(`@/assets/images/tag-sku-${off}.png`);
+    },
+    priceUnit() {
+      const unitArr = {
+        CNY: "¥", // 人民币
+        USD: "$", // 美元
+        EUR: "€", // 欧元
+        GBP: "£", // 英镑
+        JPY: "¥", // 日元
+        KRW: "₩" // 韩元
+      };
+      return unitArr[this.item.currency] || "$";
     }
   }
 };

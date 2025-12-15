@@ -23,20 +23,15 @@ export default {
       isShowLoading: true
     };
   },
-  created() {
-    if (process.client) {
-      console.log("created-purchase-history", window.getCookie("novel_tid"));
-      this.getPurchaseList();
-    }
-  },
   mounted() {
-    console.log("mounted-purchase-history", window.getCookie("novel_tid"));
+    this.getPurchaseList();
   },
   methods: {
     async getPurchaseList() {
       await this.$axios
-        .$get("/api/user/purchase_sku_history", {
-          site_id: process.env.SITE_ID
+        .$post("/api/user/purchase_sku_history", {
+          site_id: process.env.SITE_ID,
+          order_status: [3]
         })
         .then((response) => {
           response.list && (this.purchaseList = response.list);
