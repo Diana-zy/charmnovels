@@ -3,12 +3,12 @@
     <div class="tag-off" :style="{ 'background-image': `url(${tagOffIcon})` }"></div>
     <div class="item-left">
       <p class="title">{{ item.display_name }}</p>
-      <p class="coins-value">{{item.info}}</p>
+      <p class="coins-value">{{ item.info }}</p>
       <span class="coins-tip">Spend coins to unlock any chapters you like.</span>
     </div>
     <div class="item-right">
-      <p>{{ item.price }}</p>
-      <span>{{ item.price_old }}</span>
+      <p>{{ priceUnit + item.price }}</p>
+      <span>{{ priceUnit + item.price_old }}</span>
     </div>
   </div>
 </template>

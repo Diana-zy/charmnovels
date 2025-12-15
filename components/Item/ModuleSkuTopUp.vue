@@ -8,7 +8,7 @@
       <span class="coins-added">+{{ item.bonus_coin }} coins</span>
     </div>
     <div class="item-right">
-      <p>{{ item.price }}</p>
+      <p>{{ priceUnit + item.price }}</p>
     </div>
   </div>
 </template>
@@ -26,6 +26,17 @@ export default {
       return this.item.discount.includes("!")
         ? this.item.discount.split("!")[0]
         : this.item.discount;
+    },
+    priceUnit() {
+      const unitArr = {
+        CNY: "¥", // 人民币
+        USD: "$", // 美元
+        EUR: "€", // 欧元
+        GBP: "£", // 英镑
+        JPY: "¥", // 日元
+        KRW: "₩" // 韩元
+      };
+      return unitArr[this.item.currency] || "$";
     }
   }
 };

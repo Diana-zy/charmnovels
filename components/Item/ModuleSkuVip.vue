@@ -9,8 +9,8 @@
       <span class="coins-tip">Spend coins to unlock any chapters you like.</span>
     </div>
     <div class="item-right">
-      <p>{{ priceUnit }}{{ item.price }}</p>
-      <span>{{ priceUnit }}{{ item.price_old }}</span>
+      <p>{{ priceUnit + item.price }}</p>
+      <span>{{ priceUnit + item.price_old }}</span>
     </div>
   </div>
 </template>
