@@ -36,31 +36,8 @@ export default {
   data() {
     return {
       visible: false,
-      skuSpecialOfferList: [
-        {
-          title: "Limited time offer!",
-          discountedPrice: "$4.99",
-          originalPrice: "$9.99",
-          coinsValue: 1000,
-          off: "50%"
-        }
-      ],
-      skuVipList: [
-        {
-          title: "Weekly VIP",
-          discountedPrice: "$9.99",
-          originalPrice: "$19.99",
-          coinsValue: 2000,
-          off: "50%"
-        },
-        {
-          title: "Monthly VIP",
-          discountedPrice: "$35.99",
-          originalPrice: "$79.99",
-          coinsValue: 8000,
-          off: "55%"
-        }
-      ],
+      skuSpecialOfferList: [],
+      skuVipList: [],
       isBacK: false
     };
   },
@@ -75,13 +52,26 @@ export default {
       }
     },
     async handleOpen(val = false, callback) {
-      await getSKUList().then((res) => {
-        console.log(res);
-        callback();
+      const data = {
+        sku_type: ["period", "first"]
+      };
+      await getSKUList(data).then((res) => {
+        if (callback instanceof Function) {
+          callback();
+        }
         if (res.success) {
           const { sku } = res.data;
+          const is_paid = sku.find((item) => item.sky_type === "first");
+          if (is_paid) {
+            this.skuSpecialOfferList = [is_paid];
+            this.skuVipList = sku.filter((item) => item.ID === 5); //判断 取出 Monthly VIP
+          } else {
+            this.skuVipList = sku.filter((item) => item.sky_type === "period");
+            this.skuSpecialOfferList = [];
+          }
         }
       });
+
       this.visible = true;
       this.isBacK = val;
     }

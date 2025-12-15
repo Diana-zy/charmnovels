@@ -12,17 +12,17 @@
         <div class="ms-box"> Choose a recharge level and unlock chapters you like! </div>
         <div class="select-box">
           <div
-            v-for="(item, i) in list"
+            v-for="(item, i) in skuTopUpList"
             :key="i"
             class="select-item"
-            :class="{ active: i === select }"
+            :class="{ active: item.ID === select }"
             @click="handleClick(i, undefined, item)"
           >
-            <div class="right-icon-box">+30%</div>
-            <div class="all-coins">1320</div>
-            <div class="old-coins">1200 coins+</div>
-            <div class="give-coins">120 coins</div>
-            <div class="need-money">$11.99</div>
+            <div class="right-icon-box">{{ item.discount }}</div>
+            <div class="all-coins">{{ item.coin }}</div>
+            <div class="old-coins">{{ item.base_coin }} coins+</div>
+            <div class="give-coins">{{ item.bonus_coin }} coins</div>
+            <div class="need-money">${{ item.price }}</div>
           </div>
         </div>
         <div class="top-up-box">
@@ -33,7 +33,7 @@
             @click="handleClick(index, 'vip', item)"
           >
             <item-module-sku-vip
-              :class="{ active: 'vip' + index === select }"
+              :class="{ active: item.ID === select }"
               :item="item"
             ></item-module-sku-vip>
           </div>
@@ -52,58 +52,46 @@
 <script>
 import { directive } from "vue-awesome-swiper";
 import "swiper/css/swiper.min.css";
+import { getUserInfo, getSKUList } from "~/api/api";
 export default {
   name: "TopUpPopup",
   directives: {
     swiper: directive
   },
   props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    list: {
-      type: Array,
-      default: () => [{}, {}, {}]
-    }
+    // visible: {
+    //   type: Boolean,
+    //   default: false
+    // }
+    // skuTopUpList: {
+    //   type: Array,
+    //   default: () => []
+    // },
+    // skuVipList:{
+    //   type: Array,
+    //   default: () => []
+    // }
   },
   data() {
     return {
-      select: 1,
-      skuVipList: [
-        {
-          title: "Weekly VIP",
-          discountedPrice: "$9.99",
-          originalPrice: "$19.99",
-          coinsValue: 2000,
-          off: "50%"
-        },
-        {
-          title: "Monthly VIP",
-          discountedPrice: "$35.99",
-          originalPrice: "$79.99",
-          coinsValue: 8000,
-          off: "55%"
-        }
-      ],
-      loading: false
+      select: 3,
+      skuVipList: [],
+      loading: false,
+      skuTopUpList: [],
+      visible: false
     };
   },
   watch: {
     visible(val) {
-      this.$emit("update:visible", val);
+      // this.$emit("update:visible", val);
       if (val) {
         this.loading = false;
       }
     }
   },
   methods: {
-    handleClick(num, type) {
-      if (type) {
-        this.select = type + num;
-      } else {
-        this.select = num;
-      }
+    handleClick(num, type, item) {
+      this.select = item.ID;
     },
     handlePayByPaypel() {
       this.$globalMethod.showNotification({
@@ -129,6 +117,23 @@ export default {
         this.loading = false;
         clearTimeout(timer);
       }, 2000);
+    },
+    async handleOpen(callback) {
+      const data = {
+        sku_type: ["period", "topup"]
+      };
+      await getSKUList(data).then((res) => {
+        if (callback instanceof Function) {
+          callback();
+        }
+        if (res.success) {
+          const { sku } = res.data;
+          this.skuTopUpList = sku.filter((item) => item.sky_type === "topup");
+          this.skuVipList = sku.filter((item) => item.sky_type === "period");
+          this.skuTopUpList.splice(2, 1, ...this.skuTopUpList.splice(1, 1, this.skuTopUpList[2]));
+          this.visible = true;
+        }
+      });
     }
   }
 };

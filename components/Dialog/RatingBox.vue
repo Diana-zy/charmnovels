@@ -84,7 +84,7 @@ export default {
     },
     handleSave() {
       // Storage.setItem()
-      this.$emit("handleCloseRatingBook");
+      this.$emit("handleCloseRatingBook", this.score);
     }
   }
 };

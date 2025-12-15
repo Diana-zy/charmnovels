@@ -89,6 +89,7 @@
 
     <!--    付费弹出层-->
     <dialog-top-up-popup
+      ref="topUpPopupRef"
       :visible.sync="showTopUpPopup"
       @handlePayByStripe="handlePayByStripe"
       @handleWinBack="handleWinBack"
@@ -212,7 +213,7 @@ export default {
       offsetTop: null,
       autoUnLock: true,
       showTopUpPopup: false,
-      isLock: true,
+      // isLock: true,
       userInfo: null
     };
   },
@@ -233,7 +234,7 @@ export default {
     },
     isLock: {
       get() {
-        return !this.currentChapterDetail?.is_unlock && this.currentChapterDetail?.locked_chapter;
+        return this.currentChapterDetail?.locked_chapter && !this.currentChapterDetail?.is_unlock;
       }
     }
   },
@@ -306,8 +307,10 @@ export default {
       //   //如果钱够直接扣费
       // } else {
       //钱不够，进入充值
-      console.log(111111);
-      this.showTopUpPopup = true;
+      this.loading = true;
+      this.$refs.topUpPopupRef.handleOpen(() => {
+        this.loading = false;
+      });
       // }
     },
     handlePayByStripe(val) {

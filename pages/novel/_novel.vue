@@ -35,9 +35,9 @@
 
           <!--          是否连载-->
           <div class="novel-status pc-hidden-block">
-            <span>Completed!</span>
-            <span>/</span>
-            <span>Update Just Now!</span>
+            <span>{{ novelDetailInfo.is_complete ? "Completed!" : "Update Just Now!" }}</span>
+            <!--            <span>/</span>-->
+            <!--            <span>Update Just Now!</span>-->
           </div>
           <!--          <div class="rating rating-mobile pc-hidden-flex">-->
           <!--            <i-->
@@ -104,7 +104,13 @@
                 :class="item"
                 class="rating-item"
               ></i>
-              <span @click="handleRatingBook" class="rating-book"> Rating this book</span>
+              <span
+                v-show="novelDetailInfo.real_score"
+                @click="handleRatingBook"
+                class="rating-book"
+              >
+                Rating this book</span
+              >
             </div>
           </div>
         </div>
@@ -118,9 +124,9 @@
           >Chapter List <span class="icon-arrow-right"></span
         ></div>
       </div>
-      <div class="novel-content-top novel-content"> {{ novelDetailInfo?.intro }} </div>
+      <div class="novel-content-top novel-content"> {{ firstP }} </div>
       <google-ad-preload class="google-ad" ad-slot="2858514230" />
-      <div class="novel-content-bottom novel-content"> {{ novelDetailInfo?.intro }} </div>
+      <div class="novel-content-bottom novel-content" v-html="otherP"> </div>
     </section>
 
     <section class="module-all">
@@ -232,6 +238,7 @@ import {
   getIsWatchedIncentiveVideo,
   setWatchedIncentiveVideo
 } from "~/utils/utils";
+import { saveNovelScore } from "~/api/api";
 export default {
   async asyncData({ $axios, params, env }) {
     try {
@@ -277,6 +284,21 @@ export default {
       showRecommendBox: false
     };
   },
+  computed: {
+    chapterContent() {
+      let content = this.novelDetail?.first_chapter_content;
+      content = content?.replace(/\n/g, "<p class='br'></p>");
+      return content;
+    },
+    firstP() {
+      const parts = this.chapterContent?.split(/(<p[^>]*>.*?<\/p>)/gs);
+      return parts?.[0];
+    },
+    otherP() {
+      const parts = this.chapterContent?.split(/(<p[^>]*>.*?<\/p>)/gs);
+      return parts?.filter((i, index) => index !== 0 && index < 10).join("");
+    }
+  },
   watch: {
     isMobile(newVal) {
       if (newVal) {
@@ -309,8 +331,12 @@ export default {
     handleRatingBook() {
       this.ratingBook = true;
     },
-    handleCloseRatingBook() {
+    handleCloseRatingBook(val) {
       this.ratingBook = false;
+      saveNovelScore({
+        novel_id: this.novelDetailInfo.id,
+        score: val
+      });
     },
     async getNovelDetailInfo() {
       const novelId = this.$route.params.novel;
@@ -667,7 +693,7 @@ export default {
       font-weight: bold;
       color: $color2;
       span:last-child {
-        font-weight: 400;
+        /*font-weight: 400;*/
       }
     }
 

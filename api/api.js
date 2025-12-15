@@ -54,3 +54,11 @@ export function paymentSKU(data) {
     ...data
   });
 }
+
+// 对小说打分
+export function saveNovelScore(data) {
+  return instance.post("/api/novel/novel_user_score", {
+    site_id: process.env.SITE_ID,
+    ...data
+  });
+}
