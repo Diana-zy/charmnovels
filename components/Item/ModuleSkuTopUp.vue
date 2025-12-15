@@ -1,14 +1,14 @@
 <template>
   <div class="item">
-    <div class="tag-off">+{{ item.off }}</div>
+    <div class="tag-off">{{ newDiscount }}</div>
     <div class="item-left">
       <p
-        ><span class="coins-value">{{ item.coinsValue }}</span> coins</p
+        ><span class="coins-value">{{ item.base_coin }}</span> coins</p
       >
-      <span class="coins-added">+{{ item.addedCoins }} coins</span>
+      <span class="coins-added">+{{ item.bonus_coin }} coins</span>
     </div>
     <div class="item-right">
-      <p>{{ item.discountedPrice }}</p>
+      <p>{{ item.price }}</p>
     </div>
   </div>
 </template>
@@ -19,6 +19,13 @@ export default {
     item: {
       type: Object,
       required: true
+    }
+  },
+  computed: {
+    newDiscount() {
+      return this.item.discount.includes("!")
+        ? this.item.discount.split("!")[0]
+        : this.item.discount;
     }
   }
 };

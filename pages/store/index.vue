@@ -4,13 +4,13 @@
     <div class="sku-list-content">
       <item-module-sku-special-offer
         v-for="(item, index) in skuSpecialOfferList"
-        :key="index"
+        :key="'special' + index"
         :item="item"
         @click.native="handleClickSkuItem(item)"
       ></item-module-sku-special-offer>
       <item-module-sku-vip
         v-for="(item, index) in skuVipList"
-        :key="index"
+        :key="'vip' + index"
         :item="item"
         @click.native="handleClickSkuItem(item)"
       ></item-module-sku-vip>
@@ -18,7 +18,7 @@
     <div class="sku-list-content sku-top-up-content">
       <item-module-sku-top-up
         v-for="(item, index) in skuTopUpList"
-        :key="index"
+        :key="'topup' + index"
         :item="item"
         @click.native="handleClickSkuItem(item)"
       ></item-module-sku-top-up>
@@ -27,63 +27,31 @@
 </template>
 
 <script>
+import { getSKUList } from "~/api/api";
 export default {
   data() {
     return {
-      skuSpecialOfferList: [
-        {
-          title: "Limited time offer!",
-          discountedPrice: "$4.99",
-          originalPrice: "$9.99",
-          coinsValue: 1000,
-          off: "50%"
-        }
-      ],
-      skuVipList: [
-        {
-          title: "Weekly VIP",
-          discountedPrice: "$9.99",
-          originalPrice: "$19.99",
-          coinsValue: 2000,
-          off: "50%"
-        },
-        {
-          title: "Monthly VIP",
-          discountedPrice: "$35.99",
-          originalPrice: "$79.99",
-          coinsValue: 8000,
-          off: "55%"
-        }
-      ],
-      skuTopUpList: [
-        {
-          title: "",
-          discountedPrice: "$11.99",
-          originalPrice: "",
-          coinsValue: 1200,
-          addedCoins: 120,
-          off: "10%"
-        },
-        {
-          title: "",
-          discountedPrice: "$19.99",
-          originalPrice: "",
-          coinsValue: 2000,
-          addedCoins: 300,
-          off: "15%"
-        },
-        {
-          title: "",
-          discountedPrice: "$24.99",
-          originalPrice: "",
-          coinsValue: 2500,
-          addedCoins: 750,
-          off: "30%"
-        }
-      ]
+      skuSpecialOfferList: [],
+      skuVipList: [],
+      skuTopUpList: []
     };
   },
+  mounted() {
+    this.handleGetSKUList();
+  },
   methods: {
+    async handleGetSKUList() {
+      const data = {
+        site_id: "charmnovel",
+        sku_type: ["topup", "period", "first"]
+      };
+      await getSKUList(data).then((res) => {
+        const skuList = res.data?.sku;
+        this.skuSpecialOfferList = skuList.filter((item) => item.sky_type === "first");
+        this.skuVipList = skuList.filter((item) => item.sky_type === "period");
+        this.skuTopUpList = skuList.filter((item) => item.sky_type === "topup");
+      });
+    },
     handleClickSkuItem(item) {
       console.log("Clicked SKU item:", item);
     }
