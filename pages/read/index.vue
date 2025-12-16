@@ -97,18 +97,30 @@ export default {
       callback: null
     };
   },
-  created() {
+  created() {},
+  mounted() {
     if (process.client) {
-      if (getQueryParam("nov") && getQueryParam("pay_status") === "success") {
+      if (
+        getQueryParam("nov") &&
+        getQueryParam("pay_status") === "success" &&
+        getQueryParam("order_no")
+      ) {
         dataLayer.push({ event: "Content_Pay_successful" });
         this.confirmUnlockNovel();
       } else {
+        if (getQueryParam("order_no") && getQueryParam("pay_status") === "cancel") {
+          window.dataLayer.push({
+            event: "Purchase_action",
+            purchase_action: "purchase_fail_by_userexit"
+          });
+          this.$globalMethod.updateUrlQuery(this, "order_no");
+          this.$nextTick(() => {
+            this.$refs.moduleReadContentRef.handleWinBack();
+          });
+        }
         this.getCurrentChapterDetail();
       }
-      console.log("getQueryParam('pay_status'):", getQueryParam("pay_status"));
     }
-  },
-  mounted() {
     document.addEventListener("click", this.handleUserClickEvent);
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
@@ -143,6 +155,9 @@ export default {
                   unlock_type: 2
                 }).then((res) => {
                   if (res.success) {
+                    window.dataLayer.push({
+                      event: "Unlock_Succeed"
+                    });
                     self.getCurrentChapterDetail();
                   }
                 });
@@ -261,6 +276,9 @@ export default {
         this.$refs.moduleReadContentRef.handleCloseLoading();
         if (res.success) {
           // console.log(res);
+          window.dataLayer.push({
+            event: "Unlock_Succeed"
+          });
           this.getCurrentChapterDetail();
         }
       });
@@ -322,6 +340,24 @@ export default {
           console.log(" response:", res);
           if (res.success) {
             const { order_status } = res.data;
+            if (order_status === 3) {
+              window.dataLayer.push({
+                event: "Purchase_Completed"
+              });
+              window.dataLayer.push({
+                event: "Purchase_action",
+                purchase_action: "purchase_completed"
+              });
+              window.dataLayer.push({
+                event: "Purchase_action",
+                purchase_action: window.getCookie("purchase_action")
+              });
+              window.dataLayer.push({
+                event: "Purchase_action",
+                purchase_action: window.getCookie("purchase_dialog")
+              });
+              this.$globalMethod.updateUrlQuery(this, "order_no");
+            }
           }
         });
       } catch (error) {

@@ -1,7 +1,7 @@
 <template>
   <transition name="fade">
     <div
-      v-if="visible"
+      v-show="visible"
       class="model-overlay"
       :class="{ 'show-layer': showLayer }"
       @click="handleClickLayer"
@@ -39,6 +39,10 @@ export default {
     closeNeedCallBack: {
       type: Boolean,
       default: false
+    },
+    isDestroy: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -66,6 +70,7 @@ export default {
       this.visible = val;
     }
   },
+  mounted() {},
   methods: {
     handleClickLayer() {
       if (this.showLayer && this.clickLayerHide) {

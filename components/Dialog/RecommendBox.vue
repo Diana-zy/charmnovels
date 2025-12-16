@@ -76,6 +76,7 @@ export default {
         }
       },
       currentBannerRealIndex: 0
+      // visible: false
     };
   },
   mounted() {},
@@ -86,10 +87,10 @@ export default {
   },
   methods: {
     handleChange() {
-      console.log(
-        this.mySwiper && this.mySwiper.activeIndex,
-        this.mySwiper && this.mySwiper.realIndex
-      );
+      // console.log(
+      //   this.mySwiper && this.mySwiper.activeIndex,
+      //   this.mySwiper && this.mySwiper.realIndex
+      // );
       if (this.mySwiper && this.mySwiper.realIndex < 5) {
         // console.log(this.mySwiper.realIndex);
         // console.log("this", this);
@@ -104,7 +105,7 @@ export default {
       });
     },
     handleToRead(val) {
-      console.log(val, "val");
+      // console.log(val, "val");
       this.$router.push({
         path: `/novel/${val.id}/`
       });

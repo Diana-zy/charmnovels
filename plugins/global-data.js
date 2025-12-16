@@ -44,6 +44,29 @@ export default ({ app }, inject) => {
     hideDialog: () => {
       globalData.dialog.show = false;
       globalData.dialog.message = "";
+    },
+    updateUrlQuery: (context, attribute) => {
+      if (context && attribute) {
+        if (attribute instanceof Array) {
+          const route = context.$route;
+          const query = Object.assign({}, context.$route.query);
+          attribute.forEach((item) => {
+            delete query[item];
+          });
+          context.$router.replace({
+            path: route.path,
+            query: query
+          });
+        } else if (typeof attribute === "string") {
+          const route = context.$route;
+          const query = Object.assign({}, context.$route.query);
+          delete query[attribute];
+          context.$router.replace({
+            path: route.path,
+            query: query
+          });
+        }
+      }
     }
   });
 };

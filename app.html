@@ -56,6 +56,25 @@
         });
       });
     </script>
+
+    <script>
+      function getTypeByID(id) {
+        switch (id) {
+          case 1:
+            return "1199";
+          case 2:
+            return "1999";
+          case 3:
+            return "2499";
+          case 4:
+            return "week";
+          case 5:
+            return "month";
+          case 6:
+            return "499";
+        }
+      }
+    </script>
   </head>
   <body {{ BODY_ATTRS }}>
     <!-- Google Tag Manager (noscript) -->

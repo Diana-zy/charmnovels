@@ -79,6 +79,7 @@ export default {
       loading: false,
       skuTopUpList: [],
       visible: false
+      // sku: []
     };
   },
   watch: {
@@ -89,11 +90,17 @@ export default {
       }
     }
   },
+  mounted() {},
   methods: {
     handleClick(num, type, item) {
       this.select = item.ID;
     },
     handlePayByPaypel() {
+      window.dataLayer.push({
+        event: "Novel_Purchase_Dialog",
+        purchase_dialog: "paypal_button_click"
+      });
+      window.setCookie("purchase_dialog", "purchase_completed_with_dialog");
       this.$globalMethod.showNotification({
         message: "PayPal is currently unavailable.Please use Stripe to complete your payment",
         type: "warning"
@@ -106,6 +113,10 @@ export default {
       //todo
       //关闭弹窗挽回
       this.$emit("handleWinBack");
+      window.dataLayer.push({
+        event: "Novel_Purchase_Dialog",
+        purchase_dialog: "closeing_show_second_purchase_page"
+      });
     },
     handlePayByStripe() {
       if (this.loading) {
@@ -113,6 +124,18 @@ export default {
       }
       this.loading = true;
       this.$emit("handlePayByStripe", this.select);
+      window.setCookie(
+        "purchase_action",
+        `purchase_completed_with_${window.getTypeByID(this.select)}`
+      );
+      window.dataLayer.push({
+        event: "Novel_Purchase_Dialog",
+        purchase_dialog: `purchase_dialog_with_${window.getTypeByID(this.select)}`
+      });
+      window.dataLayer.push({
+        event: "Novel_Purchase_Dialog",
+        purchase_dialog: "purchase_button_stripe"
+      });
       const timer = setTimeout(() => {
         this.loading = false;
         clearTimeout(timer);
@@ -128,9 +151,14 @@ export default {
         }
         if (res.success) {
           const { sku } = res.data;
+          // this.sku = sku;
           this.skuTopUpList = sku.filter((item) => item.sky_type === "topup");
           this.skuVipList = sku.filter((item) => item.sky_type === "period");
           this.skuTopUpList.splice(2, 1, ...this.skuTopUpList.splice(1, 1, this.skuTopUpList[2]));
+          window.dataLayer.push({
+            event: "Novel_Purchase_Dialog",
+            purchase_dialog: "purchase_dialog_show "
+          });
           this.visible = true;
         }
       });

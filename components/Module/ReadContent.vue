@@ -1,96 +1,165 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <section v-if="currentChapterDetail" class="read-container">
-    <custom-back-header
-      v-if="isMobile"
-      isPageContent
-      :position="'relative'"
-      :title="currentChapterDetail.novel_info.name"
-      needBackModel
-      @handleOpenRecommendBox="handleWinBack(true)"
-    />
-    <!-- 第一章节才展示 top-info-->
-    <div v-if="currentChapterDetail.chapter_num === 1 && !isMobile" class="top-info">
-      <div class="cover">
-        <nuxt-img
-          :src="currentChapterDetail.novel_info.cover"
-          :alt="currentChapterDetail.novel_info.name"
-          width="200"
-          height="300"
-          format="auto"
-          fit="cover"
-        />
+  <section>
+    <section v-if="currentChapterDetail" class="read-container">
+      <custom-back-header
+        v-if="isMobile"
+        isPageContent
+        :position="'relative'"
+        :title="currentChapterDetail.novel_info.name"
+        needBackModel
+        :url="`/novel/${currentChapterDetail.novel_info.id}/`"
+      />
+      <!-- 第一章节才展示 top-info-->
+      <div v-if="currentChapterDetail.chapter_num === 1 && !isMobile" class="top-info">
+        <div class="cover">
+          <nuxt-img
+            :src="currentChapterDetail.novel_info.cover"
+            :alt="currentChapterDetail.novel_info.name"
+            width="200"
+            height="300"
+            format="auto"
+            fit="cover"
+          />
+        </div>
+        <p class="name">{{ currentChapterDetail.novel_info.name }}</p>
+        <span class="author">{{ currentChapterDetail.novel_info.author }}</span>
       </div>
-      <p class="name">{{ currentChapterDetail.novel_info.name }}</p>
-      <span class="author">{{ currentChapterDetail.novel_info.author }}</span>
-    </div>
-    <!-- 文章内容模块 -->
-    <article
-      class="read-content"
-      :class="{ 'lock-content': isLock }"
-      ref="parentContentRef"
-      @click="handleShowMenuSetting"
-    >
-      <h3
-        >Chapter {{ currentChapterDetail.chapter_num }}
-        <!--        {{ currentChapterDetail.chapter_name }}-->
-      </h3>
-      <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
-    </article>
-
-    <!--    章节底部按钮-->
-    <div :class="{ 'btn-box-show': showBtnBox || isLock }" class="btn-box pc-hidden-flex">
-      <div class="chapter-list btn" @click="handleShowChapterPopup">
-        <span class="icon-menu"></span>
-        List
-      </div>
-      <custom-link
-        :to="preChapterPath"
-        :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
-        @click.native="(event) => handleClickPageChapter(event, preChapterItem)"
+      <!-- 文章内容模块 -->
+      <article
+        class="read-content"
+        :class="{ 'lock-content': isLock }"
+        ref="parentContentRef"
+        @click="handleShowMenuSetting"
       >
-        <div class="previous btn"> previous</div>
-      </custom-link>
-      <custom-link
-        :to="nextChapterPath"
-        :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
-        @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"
-      >
-        <div class="next btn"> Next</div>
-      </custom-link>
-    </div>
+        <h3
+          >Chapter {{ currentChapterDetail.chapter_num }}
+          <!--        {{ currentChapterDetail.chapter_name }}-->
+        </h3>
+        <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
+      </article>
 
-    <!--    付费章节底部模块-->
-    <section class="lock-bottom-operation" v-show="isLock">
-      <div class="lock-operation-title">— Looked Chapter —</div>
-      <div class="lock-user-info">
-        <div>Price: {{ currentChapterDetail.coin_price }} coins </div>
-        <div>Words of this chapter: {{ currentChapterDetail.word_count }}</div>
-        <div>Balance: {{ userInfo?.coin }} coins</div>
-      </div>
-      <google-ad-preload-small class="ad-1" ad-slot="7793230426" />
-      <!--      <div class="download-app"> Download App to read this chapter for FREE </div>-->
-      <div class="lock-btn-box">
-        <div
-          class="watch-ad-unlock"
-          @click="handleViewAdUnlock"
-          :class="{ 'disable-btn': !userInfo?.user_free_count }"
+      <!--    章节底部按钮-->
+      <div :class="{ 'btn-box-show': showBtnBox || isLock }" class="btn-box pc-hidden-flex">
+        <div class="chapter-list btn" @click="handleShowChapterPopup">
+          <span class="icon-menu"></span>
+          List
+        </div>
+        <custom-link
+          :to="preChapterPath"
+          :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
+          @click.native="(event) => handleClickPageChapter(event, preChapterItem)"
         >
-          <div> watch ad to unlock this chapter</div>
-          <div> Watched today({{ 5 - userInfo?.user_free_count }}/5)</div>
-        </div>
-        <div class="purchase-stripe" @click="handlePurchaseStripe">
-          Unlock this chapter with {{ 28 }} coins
-        </div>
-        <div class="auto-btn" @click="handleClickAutoUnLock">
-          <span class="check-box">
-            <span v-show="autoUnLock" class="check-box-inner"></span>
-          </span>
-          <span class="check-box-title">Auto unlock next chapter</span>
-        </div>
+          <div class="previous btn"> previous</div>
+        </custom-link>
+        <custom-link
+          :to="nextChapterPath"
+          :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
+          @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"
+        >
+          <div class="next btn"> Next</div>
+        </custom-link>
       </div>
-    </section>
 
+      <!--    付费章节底部模块-->
+      <section class="lock-bottom-operation" v-show="isLock">
+        <div class="lock-operation-title">— Looked Chapter —</div>
+        <div class="lock-user-info">
+          <div>Price: {{ currentChapterDetail.coin_price }} coins </div>
+          <div>Words of this chapter: {{ currentChapterDetail.word_count }}</div>
+          <div>Balance: {{ userInfo?.coin }} coins</div>
+        </div>
+        <google-ad-preload-small class="ad-1" ad-slot="7793230426" />
+        <!--      <div class="download-app"> Download App to read this chapter for FREE </div>-->
+        <div class="lock-btn-box">
+          <div
+            class="watch-ad-unlock"
+            @click="handleViewAdUnlock"
+            :class="{ 'disable-btn': !userInfo?.user_free_count }"
+          >
+            <div> watch ad to unlock this chapter</div>
+            <div> Watched today({{ 5 - userInfo?.user_free_count }}/5)</div>
+          </div>
+          <div class="purchase-stripe" @click="handlePurchaseStripe">
+            Unlock this chapter with {{ 28 }} coins
+          </div>
+          <div class="auto-btn" @click="handleClickAutoUnLock">
+            <span class="check-box">
+              <span v-show="autoUnLock" class="check-box-inner"></span>
+            </span>
+            <span class="check-box-title">Auto unlock next chapter</span>
+          </div>
+        </div>
+      </section>
+
+      <section v-if="!isMobile" class="bottom-operation">
+        <!-- 支付模块 -->
+        <!--      <div-->
+        <!--        v-if="currentChapterDetail.purchase_status !== 2"-->
+        <!--        class="pay-box"-->
+        <!--        @click="createPaymentOrder(currentChapterDetail.purchase_status)"-->
+        <!--      >-->
+        <!--        <div class="row-status">-->
+        <!--          <i class="icon-lock"></i>-->
+        <!--          <span>Unlock</span>-->
+        <!--        </div>-->
+        <!--        <div class="row-info">-->
+        <!--          <span v-if="currentChapterDetail.purchase_status !== 1"-->
+        <!--            >${{ currentChapterDetail.novel_info.price }}</span-->
+        <!--          >-->
+        <!--          <span>{{-->
+        <!--            currentChapterDetail.purchase_status === 1-->
+        <!--              ? "Continue payment"-->
+        <!--              : "Enjoy reading this novel"-->
+        <!--          }}</span>-->
+        <!--        </div>-->
+        <!--      </div>-->
+        <!--      <div-->
+        <!--        v-if="currentChapterDetail.purchase_status === 1 && currentChapterDetail.chapter_num > 8"-->
+        <!--        class="status-paid"-->
+        <!--        @click="getOrderUnlockStatus"-->
+        <!--      >-->
+        <!--        Paid(Not unlocked)</div-->
+        <!--      >-->
+        <!-- 分页模块 -->
+        <div class="pagination-box">
+          <custom-link
+            :to="preChapterPath"
+            :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
+            @click.native="(event) => handleClickPageChapter(event, preChapterItem)"
+          >
+            <i class="icon-prev"></i>
+            <span>Previous Chapter</span>
+          </custom-link>
+          <custom-link
+            :to="nextChapterPath"
+            :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
+            @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"
+          >
+            <span>Next Chapter</span>
+            <i class="icon-next"></i>
+          </custom-link>
+        </div>
+      </section>
+      <!-- 相关章节模块 -->
+      <!--    <section v-if="relatedChapterList !== 0" class="module-related-chapters">-->
+      <!--      <common-title-label title="Related Chapters" />-->
+      <!--      <div class="module-related-chapters-content">-->
+      <!--        <item-module-related-chapter-->
+      <!--          v-for="(item, i) in relatedChapterList"-->
+      <!--          :key="i"-->
+      <!--          :item="item"-->
+      <!--          :to="-->
+      <!--            item.isUnlocked && currentChapterDetail.purchase_status !== 2-->
+      <!--              ? `/read/?ch=${item.id}`-->
+      <!--              : ''-->
+      <!--          "-->
+      <!--          @handle-click-chapter="$emit('change-chapter', item)"-->
+      <!--        />-->
+      <!--      </div>-->
+      <!--    </section>-->
+    </section>
+    <common-loading-max v-if="loading" />
     <!--    付费弹出层-->
     <dialog-top-up-popup
       ref="topUpPopupRef"
@@ -105,75 +174,7 @@
       :userInfo="userInfo"
       @handlePayByStripe="handlePayByStripe"
       @handleViewAdUnlock="handleViewAdUnlock"
-      :url="`/novel/${currentChapterDetail.novel_info.id}/`"
     ></dialog-win-back-box>
-    <section v-if="!isMobile" class="bottom-operation">
-      <!-- 支付模块 -->
-      <!--      <div-->
-      <!--        v-if="currentChapterDetail.purchase_status !== 2"-->
-      <!--        class="pay-box"-->
-      <!--        @click="createPaymentOrder(currentChapterDetail.purchase_status)"-->
-      <!--      >-->
-      <!--        <div class="row-status">-->
-      <!--          <i class="icon-lock"></i>-->
-      <!--          <span>Unlock</span>-->
-      <!--        </div>-->
-      <!--        <div class="row-info">-->
-      <!--          <span v-if="currentChapterDetail.purchase_status !== 1"-->
-      <!--            >${{ currentChapterDetail.novel_info.price }}</span-->
-      <!--          >-->
-      <!--          <span>{{-->
-      <!--            currentChapterDetail.purchase_status === 1-->
-      <!--              ? "Continue payment"-->
-      <!--              : "Enjoy reading this novel"-->
-      <!--          }}</span>-->
-      <!--        </div>-->
-      <!--      </div>-->
-      <!--      <div-->
-      <!--        v-if="currentChapterDetail.purchase_status === 1 && currentChapterDetail.chapter_num > 8"-->
-      <!--        class="status-paid"-->
-      <!--        @click="getOrderUnlockStatus"-->
-      <!--      >-->
-      <!--        Paid(Not unlocked)</div-->
-      <!--      >-->
-      <!-- 分页模块 -->
-      <div class="pagination-box">
-        <custom-link
-          :to="preChapterPath"
-          :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
-          @click.native="(event) => handleClickPageChapter(event, preChapterItem)"
-        >
-          <i class="icon-prev"></i>
-          <span>Previous Chapter</span>
-        </custom-link>
-        <custom-link
-          :to="nextChapterPath"
-          :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
-          @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"
-        >
-          <span>Next Chapter</span>
-          <i class="icon-next"></i>
-        </custom-link>
-      </div>
-    </section>
-    <!-- 相关章节模块 -->
-    <!--    <section v-if="relatedChapterList !== 0" class="module-related-chapters">-->
-    <!--      <common-title-label title="Related Chapters" />-->
-    <!--      <div class="module-related-chapters-content">-->
-    <!--        <item-module-related-chapter-->
-    <!--          v-for="(item, i) in relatedChapterList"-->
-    <!--          :key="i"-->
-    <!--          :item="item"-->
-    <!--          :to="-->
-    <!--            item.isUnlocked && currentChapterDetail.purchase_status !== 2-->
-    <!--              ? `/read/?ch=${item.id}`-->
-    <!--              : ''-->
-    <!--          "-->
-    <!--          @handle-click-chapter="$emit('change-chapter', item)"-->
-    <!--        />-->
-    <!--      </div>-->
-    <!--    </section>-->
-    <common-loading-max v-if="loading" />
   </section>
 </template>
 
@@ -264,6 +265,15 @@ export default {
           this.updateDomStatus();
         });
       }
+    },
+    isLock(val) {
+      if (val && !window.Novel_Chapter_Read) {
+        window.Novel_Chapter_Read = true;
+        window.dataLayer.push({
+          event: "Novel_Chapter_Read",
+          novel_chapter_read: `novel_${this.currentChapterDetail.novel_info.id}_chap_${this.currentChapterDetail.chapter_num}`
+        });
+      }
     }
   },
   updated() {
@@ -272,9 +282,6 @@ export default {
     }
   },
   mounted() {
-    if (this.currentChapterDetail?.purchase_status !== 2) {
-    }
-
     this.isMobile = window.innerWidth <= 750;
     this.initStorageReadSetting();
 
@@ -301,10 +308,10 @@ export default {
     },
     //付费
     async handlePurchaseStripe() {
+      this.loading = true;
       //调一遍用户信息接口更新一下钱 再判断
       await this.updateUserCoins();
       if (this.userInfo.coin >= this.currentChapterDetail.coin_price) {
-        this.loading = true;
         //如果钱够直接扣费
         unlockNovelChapter({
           novel_id: this.currentChapterDetail.novel_info.id,
@@ -314,6 +321,9 @@ export default {
           this.loading = false;
           if (res.success) {
             // console.log(res);
+            window.dataLayer.push({
+              event: "Unlock_Succeed"
+            });
             this.$emit("reload");
             if (this.autoUnLock) {
               Storage.setItem("autoUnLock", "yes");
@@ -324,7 +334,7 @@ export default {
         });
       } else {
         //钱不够，进入充值
-        this.loading = true;
+        // this.loading = true;
         this.$refs.topUpPopupRef.handleOpen(() => {
           this.loading = false;
         });
@@ -341,7 +351,7 @@ export default {
     },
     handleWinBack(val) {
       this.loading = true;
-      this.$refs.winBackBoxRef.handleOpen(val, () => {
+      this.$refs.winBackBoxRef?.handleOpen(val, () => {
         this.loading = false;
       });
     },
@@ -480,7 +490,16 @@ export default {
           if (res.success) {
             console.log(" response:", res);
             const { url } = res.data.order_info;
-
+            if (res.success) {
+              window.dataLayer.push({
+                event: "Purchase_action",
+                purchase_action: "start_purchase_with_stripe"
+              });
+              window.dataLayer.push({
+                event: "Start_Purchase_Novel",
+                purchase_novel: `id_${this.currentChapterDetail.chapter_id}`
+              });
+            }
             window.location.href = url;
           }
         });

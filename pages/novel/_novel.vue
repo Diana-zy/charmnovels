@@ -338,6 +338,11 @@ export default {
   },
   mounted() {
     // this.configAdBreak();
+    window.dataLayer.push({
+      event: "Novel_Intro_Page",
+      hi_ttclid: window.getValueByURLOrCookie("ttclid"),
+      hi_ip: window.getValueByURLOrCookie("ip")
+    });
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
   },
