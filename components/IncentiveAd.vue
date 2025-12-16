@@ -26,7 +26,7 @@ export default {
     loadRewardedAd(rewardedAd) {
       if (rewardedAd == null) {
         // 加载失败
-        this.showAdBreak();
+        // this.showAdBreak();
         return;
       }
       rewardedAd.show((result) => {
@@ -37,6 +37,7 @@ export default {
           window.dataLayer.push({
             event: "V_IR"
           });
+          this.$emit("viewed-ad");
         }
         // 用户关闭广告
         else if (closeStatus === "dismissed") {

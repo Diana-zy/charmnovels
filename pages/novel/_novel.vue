@@ -29,7 +29,7 @@
 
           <!--          最新章节 -->
           <div class="latest-chapter pc-hidden-flex" @click="handleShowChapterPopup">
-            <div>Latest Chapter Chapter 50</div>
+            <div>Latest Chapter Chapter {{ novelChapterList.length }}</div>
             <div class="icon-arrow-right"> </div>
           </div>
 
@@ -183,7 +183,7 @@
     ></dialog-rating-box>
 
     <dialog-recommend-box
-      :recBooks="recBooks"
+      :recBooks="trending.filter((item) => item.id !== novelDetailInfo?.id).slice(0, 5)"
       :visible.sync="showRecommendBox"
     ></dialog-recommend-box>
     <!-- 移动端章节弹窗 -->
@@ -238,7 +238,7 @@ import { saveNovelScore } from "~/api/api";
 export default {
   async asyncData({ $axios, params, env }) {
     try {
-      const [allBooksResponse, recBooksResponse] = await Promise.all([
+      const [allBooksResponse, recBooksResponse, trendingResponse] = await Promise.all([
         $axios.$post("/api/novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
@@ -250,12 +250,19 @@ export default {
           module_id: "all",
           page_size: 20,
           page: 1
+        }),
+        $axios.$post("/api/novel/novel_module", {
+          site_id: env.SITE_ID,
+          module_id: "trending",
+          page_size: 6,
+          page: 1
         })
       ]);
       const recBooks = shuffleArray(recBooksResponse.novel_list).slice(0, 5);
       return {
         allBooks: allBooksResponse.novel_list,
-        recBooks
+        recBooks,
+        trending: trendingResponse.novel_list
       };
     } catch (error) {
       console.error("Error fetching data:", error);

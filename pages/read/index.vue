@@ -58,7 +58,11 @@
     </transition>
 
     <!-- 激励视频广告 -->
-    <incentive-ad ref="refIncentiveAd" @close-incentive-ad="closeIncentiveAd" />
+    <incentive-ad
+      ref="refIncentiveAd"
+      @close-incentive-ad="closeIncentiveAd"
+      @viewed-ad="handleViewAd"
+    />
     <common-notification />
     <common-fixed-bottom />
   </main>
@@ -134,7 +138,8 @@ export default {
               if (userInfo.coin >= chapterDetail.coin_price) {
                 unlockNovelChapter({
                   novel_id: chapterDetail.novel_info.id,
-                  chapter_id: chapterDetail.chapter_id
+                  chapter_id: chapterDetail.chapter_id,
+                  unlock_type: 2
                 }).then((res) => {
                   if (res.success) {
                     self.getCurrentChapterDetail();
@@ -240,7 +245,20 @@ export default {
       this.getFreeNumAndUnlocked();
       simulateClick("/read/", "ch", this.clickChapterId);
     },
-
+    //处理观看激励广告后解锁
+    handleViewAd() {
+      unlockNovelChapter({
+        novel_id: this.currentChapterDetail.novel_info.id,
+        chapter_id: this.currentChapterDetail.chapter_id,
+        unlock_type: 1
+      }).then((res) => {
+        this.loading = false;
+        if (res.success) {
+          // console.log(res);
+          this.getCurrentChapterDetail();
+        }
+      });
+    },
     changeShowChapters() {
       this.isShowChapters = !this.isShowChapters;
       if (this.isShowChapters) {

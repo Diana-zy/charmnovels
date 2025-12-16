@@ -91,11 +91,11 @@ export default {
         this.mySwiper && this.mySwiper.realIndex
       );
       if (this.mySwiper && this.mySwiper.realIndex < 5) {
-        console.log(this.mySwiper.realIndex);
-        console.log("this", this);
+        // console.log(this.mySwiper.realIndex);
+        // console.log("this", this);
         const currentBannerRealIndex = this.mySwiper.realIndex;
         this.currentBannerRealIndex = currentBannerRealIndex;
-        console.log("currentBannerRealIndex", currentBannerRealIndex);
+        // console.log("currentBannerRealIndex", currentBannerRealIndex);
       }
     },
     handleClose() {

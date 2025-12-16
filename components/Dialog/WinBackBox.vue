@@ -2,21 +2,27 @@
   <s-model :value.sync="visible" @handleClose="handleClose">
     <template v-slot:content>
       <div class="win-back-content">
-        <div class="watch-ad-unlock" @click="handleViewAdUnlock" :class="{ 'disable-btn': false }">
+        <div
+          class="watch-ad-unlock"
+          @click="handleViewAdUnlock"
+          :class="{ 'disable-btn': !userInfo?.user_free_count }"
+        >
           <div> watch ad to unlock this chapter</div>
-          <div> Watched today({{ 0 }}/5)</div>
+          <div> Watched today({{ 5 - userInfo?.user_free_count }}/5)</div>
         </div>
 
         <div class="top-up-out-box">
           <item-module-sku-special-offer
             v-for="(item, index) in skuSpecialOfferList"
-            :key="index"
+            :key="'special' + index"
             :item="item"
+            @click.native="handleClick(item)"
           ></item-module-sku-special-offer>
           <item-module-sku-vip
             v-for="(item, index) in skuVipList"
             :key="index"
             :item="item"
+            @click.native="handleClick(item)"
           ></item-module-sku-vip>
         </div>
       </div>
@@ -31,6 +37,9 @@ export default {
   props: {
     url: {
       type: String
+    },
+    userInfo: {
+      type: Object
     }
   },
   data() {
@@ -42,7 +51,9 @@ export default {
     };
   },
   methods: {
-    handleViewAdUnlock() {},
+    handleViewAdUnlock() {
+      this.$emit("handleViewAdUnlock");
+    },
     handleClose() {
       this.$emit("handleClose");
       if (this.isBacK) {
@@ -50,6 +61,9 @@ export default {
           path: this.url
         });
       }
+    },
+    handleClick(val) {
+      this.$emit("handlePayByStripe", val.ID);
     },
     async handleOpen(val = false, callback) {
       const data = {

@@ -77,10 +77,3 @@ export function unlockNovelChapter(data) {
     ...data
   });
 }
-// 小说推荐模块
-export function getNovelModule(data) {
-  return instance.post("/api/novel/novel_module", {
-    site_id: process.env.SITE_ID,
-    ...data
-  });
-}

@@ -71,9 +71,13 @@
       <google-ad-preload-small class="ad-1" ad-slot="7793230426" />
       <!--      <div class="download-app"> Download App to read this chapter for FREE </div>-->
       <div class="lock-btn-box">
-        <div class="watch-ad-unlock" @click="handleViewAdUnlock" :class="{ 'disable-btn': false }">
+        <div
+          class="watch-ad-unlock"
+          @click="handleViewAdUnlock"
+          :class="{ 'disable-btn': !userInfo?.user_free_count }"
+        >
           <div> watch ad to unlock this chapter</div>
-          <div> Watched today({{ 0 }}/5)</div>
+          <div> Watched today({{ 5 - userInfo?.user_free_count }}/5)</div>
         </div>
         <div class="purchase-stripe" @click="handlePurchaseStripe">
           Unlock this chapter with {{ 28 }} coins
@@ -98,6 +102,9 @@
     <!--    挽回弹窗-->
     <dialog-win-back-box
       ref="winBackBoxRef"
+      :userInfo="userInfo"
+      @handlePayByStripe="handlePayByStripe"
+      @handleViewAdUnlock="handleViewAdUnlock"
       :url="`/novel/${currentChapterDetail.novel_info.id}/`"
     ></dialog-win-back-box>
     <section v-if="!isMobile" class="bottom-operation">
@@ -218,7 +225,7 @@ export default {
     };
   },
   async created() {
-    // await this.updateUserCoins();
+    await this.updateUserCoins();
   },
   computed: {
     chapterContent() {
@@ -301,11 +308,12 @@ export default {
         //如果钱够直接扣费
         unlockNovelChapter({
           novel_id: this.currentChapterDetail.novel_info.id,
-          chapter_id: this.currentChapterDetail.chapter_id
+          chapter_id: this.currentChapterDetail.chapter_id,
+          unlock_type: 2
         }).then((res) => {
           this.loading = false;
           if (res.success) {
-            console.log(res);
+            // console.log(res);
             this.$emit("reload");
             if (this.autoUnLock) {
               Storage.setItem("autoUnLock", "yes");
@@ -326,7 +334,9 @@ export default {
       this.createPaymentOrder(this.currentChapterDetail.purchase_status, val);
     },
     handleViewAdUnlock() {
-      this.$emit("change-chapter", this.nextChapterItem);
+      if (this.userInfo?.user_free_count) {
+        this.$emit("change-chapter", this.nextChapterItem);
+      }
     },
     handleWinBack(val) {
       this.loading = true;
