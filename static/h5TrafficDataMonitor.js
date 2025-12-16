@@ -81,9 +81,9 @@ function interceptGaFetch() {
   window.fetch = async (...args) => {
     let [resource, config] = args;
     if (resource.includes("https://www.google-analytics.com/g/collect")) {
-      for (let key in userProperties) {
-        if (!resource.includes(`up.${key}=${userProperties[key]}`)) {
-          resource = resource + `&up.${key}=${userProperties[key]}`;
+      for (let key in userPropertiesData) {
+        if (!resource.includes(`up.${key}=${userPropertiesData[key]}`)) {
+          resource = resource + `&up.${key}=${userPropertiesData[key]}`;
         }
       }
     }
