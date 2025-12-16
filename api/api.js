@@ -47,7 +47,7 @@ export function getSKUList(data) {
     ...data
   });
 }
-//购买sku币包
+// 购买sku币包
 export function paymentSKU(data) {
   return instance.post("/api/payment/purchase_sku", {
     site_id: process.env.SITE_ID,

@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-back-header :is-page-content="true" title="Purchase History" />
+    <custom-back-header url="/profile/" :is-page-content="true" title="Purchase History" />
     <section v-if="!isShowLoading" class="module-common module-purchase">
       <div class="module-purchase-content">
         <item-module-purchased v-for="(item, i) in purchaseList" :key="i" :item="item" />

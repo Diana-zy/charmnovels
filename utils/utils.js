@@ -67,6 +67,8 @@ function generateCustomLink(url) {
   currentParams.delete("from");
   currentParams.delete("ch");
   currentParams.delete("pay_status");
+  currentParams.delete("after_pay");
+  currentParams.delete("order_no");
   currentParams.delete("nov");
 
   if (currentPathname === "/search/") {

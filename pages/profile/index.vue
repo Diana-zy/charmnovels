@@ -45,11 +45,12 @@
         <i class="icon-more"></i>
       </custom-link>
     </div>
+    <common-notification />
   </main>
 </template>
 
 <script>
-import { getUserInfo, getSKUList } from "~/api/api";
+import { getUserInfo, getSKUList, paymentSKU, updateSkuOrder } from "~/api/api";
 export default {
   data() {
     return {
@@ -67,6 +68,7 @@ export default {
   },
   mounted() {
     this.handleGetUserInfo();
+    this.handleGetOrderPayStatus();
   },
   methods: {
     async handleGetUserInfo() {
@@ -82,8 +84,46 @@ export default {
         this.skuVipList = res.data?.sku;
       });
     },
-    handleClickSkuItem(item) {
-      console.log("Clicked SKU item:", item);
+    async handleClickSkuItem(item) {
+      const data = {
+        sku_id: item.ID,
+        redirect_url: `${window.location.href}`
+      };
+      await paymentSKU(data).then((res) => {
+        const { url } = res.data.order_info;
+        window.location.href = url;
+      });
+    },
+    async handleGetOrderPayStatus() {
+      const orderNo = window.getParam("order_no");
+      const payStatus = window.getParam("pay_status");
+      if (orderNo) {
+        if (payStatus === "success") {
+          await updateSkuOrder({ order_no: orderNo }).then((res) => {
+            if (res.data.order_status === 3) {
+              // 订单成功
+              this.$globalMethod.showNotification({
+                message: "Payment successful!",
+                type: "success"
+              });
+            }
+          });
+        } else if (payStatus === "cancel") {
+          // 订单取消
+          this.$globalMethod.showNotification({
+            message: "Cancel payment!",
+            type: "warning"
+          });
+        }
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.delete("order_no");
+        searchParams.delete("pay_status");
+        searchParams.delete("after_pay");
+        const newUrl = `${window.location.origin}${
+          window.location.pathname
+        }?${searchParams.toString()}`;
+        window.history.replaceState({}, "", newUrl);
+      }
     }
   }
 };

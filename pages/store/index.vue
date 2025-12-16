@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-back-header :is-page-content="true" title="Charmnovel Store" />
+    <custom-back-header url="/profile/" :is-page-content="true" title="Charmnovel Store" />
     <div class="sku-list-content">
       <item-module-sku-special-offer
         v-for="(item, index) in skuSpecialOfferList"
@@ -23,11 +23,12 @@
         @click.native="handleClickSkuItem(item)"
       ></item-module-sku-top-up>
     </div>
+    <common-notification />
   </main>
 </template>
 
 <script>
-import { getSKUList } from "~/api/api";
+import { getSKUList, paymentSKU, updateSkuOrder } from "~/api/api";
 export default {
   data() {
     return {
@@ -38,6 +39,7 @@ export default {
   },
   mounted() {
     this.handleGetSKUList();
+    this.handleGetOrderPayStatus();
   },
   methods: {
     async handleGetSKUList() {
@@ -52,8 +54,47 @@ export default {
         this.skuTopUpList = skuList.filter((item) => item.sky_type === "topup");
       });
     },
-    handleClickSkuItem(item) {
-      console.log("Clicked SKU item:", item);
+    async handleClickSkuItem(item) {
+      const data = {
+        sku_id: item.ID,
+        redirect_url: `${window.location.href}`
+      };
+      await paymentSKU(data).then((res) => {
+        const { url } = res.data.order_info;
+        window.location.href = url;
+      });
+    },
+
+    async handleGetOrderPayStatus() {
+      const orderNo = window.getParam("order_no");
+      const payStatus = window.getParam("pay_status");
+      if (orderNo) {
+        if (payStatus === "success") {
+          await updateSkuOrder({ order_no: orderNo }).then((res) => {
+            if (res.data.order_status === 3) {
+              // 订单成功
+              this.$globalMethod.showNotification({
+                message: "Payment successful!",
+                type: "success"
+              });
+            }
+          });
+        } else if (payStatus === "cancel") {
+          // 订单取消
+          this.$globalMethod.showNotification({
+            message: "Cancel payment!",
+            type: "warning"
+          });
+        }
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.delete("order_no");
+        searchParams.delete("pay_status");
+        searchParams.delete("after_pay");
+        const newUrl = `${window.location.origin}${
+          window.location.pathname
+        }?${searchParams.toString()}`;
+        window.history.replaceState({}, "", newUrl);
+      }
     }
   }
 };
@@ -63,7 +104,7 @@ export default {
 main {
   position: relative;
   width: 375px;
-  padding: 48px 23px 0;
+  padding: 0 23px;
   box-sizing: border-box;
 }
 
@@ -78,10 +119,34 @@ main {
   gap: 21px;
   margin-top: 30px;
 }
+
+@media screen and (min-width: 750px) {
+  ::v-deep .back-header {
+    display: flex !important;
+    width: 375px;
+    height: 48px;
+    left: 0;
+    padding: 0 23px;
+    margin-left: -23px;
+    .header-url {
+      align-items: center;
+    }
+    .header-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+    .header-label {
+      font-size: 14px;
+      line-height: 19px;
+    }
+  }
+}
+
 @media screen and (max-width: 750px) {
   main {
     width: 100%;
-    padding: 0 vw(46) 0;
+    padding: 0 vw(46);
   }
 
   .sku-list-content {

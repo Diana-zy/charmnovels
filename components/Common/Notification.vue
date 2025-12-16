@@ -32,8 +32,8 @@ export default {
   max-width: 400px;
   bottom: 40px;
   left: 20px;
+  background: rgba($color2, 0.4);
   padding: 10px 16px;
-  background: $color3;
   border-radius: 10px;
   color: #ffffff;
   line-height: 24px;
@@ -42,6 +42,7 @@ export default {
   transition: transform 0.5s ease; /* 添加过渡效果 */
   z-index: 999;
   &.success {
+    background: $color3;
   }
 }
 
