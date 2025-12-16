@@ -321,6 +321,7 @@ export default {
           this.loading = false;
           if (res.success) {
             // console.log(res);
+            window.trackEventToPixel("Unlock_Succeed");
             window.dataLayer.push({
               event: "Unlock_Succeed"
             });

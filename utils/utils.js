@@ -49,6 +49,16 @@ function simulateClick(route, key, value, className) {
   document.body.removeChild(link);
 }
 
+function simulateClickToPath(path) {
+  const linkUrl = generateCustomLink(path);
+  const newLink = document.createElement("a");
+  newLink.href = linkUrl;
+  newLink.style.display = "none";
+  document.body.appendChild(newLink);
+  newLink.click();
+  document.body.removeChild(newLink);
+}
+
 function generateCustomLink(url) {
   let targetPath = url;
   let chapterId = "";
@@ -210,6 +220,7 @@ function setWatchedIncentiveVideo(chapterId) {
 
 export {
   simulateClick,
+  simulateClickToPath,
   generateCustomLink,
   filterFromPath,
   validateEmail,

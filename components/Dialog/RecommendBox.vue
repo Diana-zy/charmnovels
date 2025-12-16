@@ -31,9 +31,7 @@
             </div>
             <div class="rec-ms">{{ item.intro }}</div>
             <div class="rec-btn-box">
-              <!--              <custom-link :to="`/novel/${item.id}/`" class="read-now-btn">-->
-              <div class="read-now-btn" @click="handleToRead(item)">Read now</div>
-              <!--              </custom-link>-->
+              <custom-link :to="`/novel/${item.id}/`" class="read-now-btn">Read now </custom-link>
             </div>
           </div>
         </section>
@@ -45,6 +43,7 @@
 <script>
 import { directive } from "vue-awesome-swiper";
 import "swiper/css/swiper.min.css";
+import { simulateClickToPath } from "~/utils/utils";
 export default {
   directives: {
     swiper: directive
@@ -100,15 +99,7 @@ export default {
       }
     },
     handleClose() {
-      this.$router.push({
-        path: "/"
-      });
-    },
-    handleToRead(val) {
-      // console.log(val, "val");
-      this.$router.push({
-        path: `/novel/${val.id}/`
-      });
+      simulateClickToPath("/");
     }
   }
 };

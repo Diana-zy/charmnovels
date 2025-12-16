@@ -43,6 +43,7 @@ export default {
         if (closeStatus === "viewed") {
           // 用户观看了激励广告
           this.$emit("close-incentive-ad", true);
+          window.trackEventToPixel("Watch_Ad_Completed");
           window.dataLayer.push({
             event: "V_IR"
           });

@@ -155,6 +155,7 @@ export default {
                   unlock_type: 2
                 }).then((res) => {
                   if (res.success) {
+                    window.trackEventToPixel("Unlock_Succeed");
                     window.dataLayer.push({
                       event: "Unlock_Succeed"
                     });
@@ -276,6 +277,7 @@ export default {
         this.$refs.moduleReadContentRef.handleCloseLoading();
         if (res.success) {
           // console.log(res);
+          window.trackEventToPixel("Unlock_Succeed");
           window.dataLayer.push({
             event: "Unlock_Succeed"
           });
@@ -341,6 +343,7 @@ export default {
           if (res.success) {
             const { order_status } = res.data;
             if (order_status === 3) {
+              window.trackEventToPixel("Purchase_Completed");
               window.dataLayer.push({
                 event: "Purchase_Completed"
               });

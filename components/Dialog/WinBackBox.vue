@@ -32,6 +32,7 @@
 
 <script>
 import { getUserInfo, getSKUList } from "~/api/api";
+import { simulateClickToPath } from "~/utils/utils";
 export default {
   name: "WinBackBox",
   props: {
@@ -67,9 +68,7 @@ export default {
     handleClose() {
       this.$emit("handleClose");
       if (this.isBacK) {
-        this.$router.push({
-          path: this.url
-        });
+        simulateClickToPath(this.url);
       }
     },
     handleClick(val) {
