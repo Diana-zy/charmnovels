@@ -3,7 +3,9 @@
   <head {{ HEAD_ATTRS }}>
     <meta charset="UTF-8" />
     {{ HEAD }}
+    <script src="/h5ChannelTrackEvent.js"></script>
     <script src="/h5CommonsEvent.js"></script>
+    <script src="/h5TrafficDataMonitor.js"></script>
     <!-- <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script>
       // VConsole will be exported to `window.VConsole` by default.
@@ -33,12 +35,43 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHEGG7L6EF"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
+      let uuid = window.getCookie("hi_user_id");
+      if (!uuid) {
+        uuid = window.createUserId();
+        window.setCookie("hi_user_id", uuid);
+      }
+
+      const hi_source = getValueByURLOrCookie("hi_source");
+      const {
+        hi_source_clid,
+        hi_source_aid,
+        hi_source_site,
+        hi_source_site_name,
+        hi_section_id,
+        hi_section_name
+      } = getInfoBySource(hi_source);
+      let userPropertiesData = {
+        hi_user_id: uuid,
+        hi_user_sub_site: getHostname(),
+        hi_user_source: hi_source,
+        hi_user_source_clid: hi_source_clid,
+        hi_user_source_aid: hi_source_aid,
+        hi_user_source_site: hi_source_site,
+        hi_user_source_site_name: hi_source_site_name,
+        hi_user_section: hi_section_id,
+        hi_user_section_name: hi_section_name,
+        hi_user_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown"
+      };
+      gtag("set", "user_properties", userPropertiesData);
+
       function gtag() {
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
 
       gtag("config", "G-YHEGG7L6EF");
+
+      interceptGaFetch();
     </script>
     <!-- End Google tag (gtag.js) -->
 
@@ -89,8 +122,35 @@
     <!-- End Google Tag Manager (noscript) -->
     {{ APP }}
     <script>
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = "https://wc.bunchthings.com/youknowwho.js?" + Date.now();
+      document.head.appendChild(script);
+      script.onload = () => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: "Page_View_Ip", hi_ip: window.youknowwho_ip });
+      };
+    </script>
+    <script>
       window.isPageUnloaded = false;
       window.isClickOpenAl = false;
+
+      var isLinkClick = false;
+      document.addEventListener(
+        "click",
+        (event) => {
+          if (window.clickOpenAL === 0) {
+            if ((event = event.target.closest("a")) && event.href) {
+              isLinkClick = true;
+              window.handleClickPageContentLink();
+              window.handleUserFirstClickAdOrContent("Content");
+            }
+          } else {
+            window.clickOpenAL = 0;
+          }
+        },
+        true
+      );
 
       new MutationObserver((mutations, observer) => {
         const interstitialAdElement = document.querySelector('ins[data-vignette-loaded="true"]');
@@ -121,6 +181,10 @@
         }
         if (window.isClickOpenAl) {
           dataLayer.push({ event: "D_AL" });
+          window.handleUserFirstClickAdOrContent("D_AL");
+          if (isLinkClick) {
+            dataLayer.push({ event: "D_AL_LINK" });
+          }
         } else {
           dataLayer.push({ event: "D_RE" });
         }
@@ -154,17 +218,20 @@
           let adStatus = closestIns?.getAttribute("data-ad-status") || "unfilled";
           if ("filled" == adStatus && activeElement.getAttribute("data-ad-slot")) {
             dataLayer.push({ event: "D_IP" });
+            window.handleUserFirstClickAdOrContent("D_IP");
           }
         }
 
         if (activeElementId && activeElementId.includes("google_ads_iframe_/23197833490")) {
           if (activeElementId.includes("anchor_0")) {
             dataLayer.push({ event: "D_FI" });
+            window.handleUserFirstClickAdOrContent("D_FI");
           } else if (
             !activeElementId.includes("interstitial") &&
             activeElement.getAttribute("data-load-complete")
           ) {
             dataLayer.push({ event: "D_IP" });
+            window.handleUserFirstClickAdOrContent("D_IP");
           }
         }
       });
