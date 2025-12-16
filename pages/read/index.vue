@@ -93,7 +93,8 @@ export default {
       isShowChapters: false, // PC端悬浮章节列表
       isShowHeader: false,
       isShowChapterPopup: false, // 移动端章节弹窗
-      distanceFromTop: 0 // body距离顶部距离
+      distanceFromTop: 0, // body距离顶部距离
+      callback: null
     };
   },
   created() {
@@ -229,30 +230,35 @@ export default {
 
     // 激励广告关闭
     closeIncentiveAd(isGetReward) {
+      this.$refs.moduleReadContentRef.handleCloseLoading();
       if (isGetReward) {
         this.handleAfterIncentiveAd();
       }
     },
-    handleOpenIncentiveAd(item) {
+    handleOpenIncentiveAd(item, callback) {
       this.clickChapterId = item.id;
+      this.callback = callback;
       // 激励视频已初始化;
       this.$refs.refIncentiveAd.showRewardedAd();
     },
 
     // 观看完激励广告，或无激励广告
     handleAfterIncentiveAd() {
-      setWatchedIncentiveVideo(`${this.clickChapterId}`);
-      this.getFreeNumAndUnlocked();
-      simulateClick("/read/", "ch", this.clickChapterId);
+      // setWatchedIncentiveVideo(`${this.clickChapterId}`);
+      // this.getFreeNumAndUnlocked();
+      // simulateClick("/read/", "ch", this.clickChapterId);
     },
     //处理观看激励广告后解锁
     handleViewAd() {
+      if (this.callback instanceof Function) {
+        this.callback();
+      }
       unlockNovelChapter({
         novel_id: this.currentChapterDetail.novel_info.id,
         chapter_id: this.currentChapterDetail.chapter_id,
         unlock_type: 1
       }).then((res) => {
-        this.loading = false;
+        this.$refs.moduleReadContentRef.handleCloseLoading();
         if (res.success) {
           // console.log(res);
           this.getCurrentChapterDetail();

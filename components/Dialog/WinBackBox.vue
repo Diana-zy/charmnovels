@@ -52,7 +52,9 @@ export default {
   },
   methods: {
     handleViewAdUnlock() {
-      this.$emit("handleViewAdUnlock");
+      this.$emit("handleViewAdUnlock", () => {
+        this.visible = false;
+      });
     },
     handleClose() {
       this.$emit("handleClose");

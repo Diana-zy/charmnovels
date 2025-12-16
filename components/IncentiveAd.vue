@@ -14,16 +14,25 @@ export default {
       window.dataLayer.push({
         event: "Q_IR"
       });
-      // eslint-disable-next-line no-undef
-      (adsbygoogle = window.adsbygoogle || []).push({
-        params: {
-          google_ad_loaded_callback: this.loadRewardedAd,
-          google_ad_slot: 6875183545,
-          google_ad_format: "rewarded"
-        }
-      });
+      const timer = setTimeout(() => {
+        this.$emit("close-incentive-ad", false);
+        clearTimeout(timer);
+      }, 5000);
+      try {
+        // eslint-disable-next-line no-undef
+        (adsbygoogle = window.adsbygoogle || []).push({
+          params: {
+            google_ad_loaded_callback: this.loadRewardedAd,
+            google_ad_slot: 6875183545,
+            google_ad_format: "rewarded"
+          }
+        });
+      } catch (e) {
+        this.$emit("close-incentive-ad", false);
+      }
     },
     loadRewardedAd(rewardedAd) {
+      this.$emit("close-incentive-ad", false);
       if (rewardedAd == null) {
         // 加载失败
         // this.showAdBreak();

@@ -333,9 +333,10 @@ export default {
     handlePayByStripe(val) {
       this.createPaymentOrder(this.currentChapterDetail.purchase_status, val);
     },
-    handleViewAdUnlock() {
+    handleViewAdUnlock(callback) {
       if (this.userInfo?.user_free_count) {
-        this.$emit("change-chapter", this.nextChapterItem);
+        this.loading = true;
+        this.$emit("change-chapter", this.currentChapterDetail, callback);
       }
     },
     handleWinBack(val) {
@@ -354,6 +355,9 @@ export default {
         Storage.setCookie("novel_cssReadTextColor", "#41414c");
       Storage.getCookie("novel_cssReadLastTheme") ||
         Storage.setCookie("novel_cssReadLastTheme", "light");
+    },
+    handleCloseLoading() {
+      this.loading = false;
     },
 
     // 获取指定字符长度后的第一个p标签
