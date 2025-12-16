@@ -1,6 +1,6 @@
 <template>
   <main>
-    <custom-back-header :is-page-content="true" title="Reading History" />
+    <custom-back-header url="/profile/" :is-page-content="true" title="Reading History" />
     <section v-if="!isShowLoading" class="module-common module-library">
       <div class="module-library-content">
         <item-module-library
