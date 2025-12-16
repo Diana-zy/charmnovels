@@ -60,9 +60,15 @@ export default {
         redirect_url: `${window.location.href}`
       };
       await paymentSKU(data).then((res) => {
+        window.dataLayer.push({
+          event: "Purchase_action",
+          purchase_action: "start_purchase_with_stripe"
+        });
         const { url } = res.data.order_info;
         window.location.href = url;
       });
+
+      window.setCookie("purchase_action", `purchase_completed_with_${window.getTypeByID(item.ID)}`);
     },
 
     async handleGetOrderPayStatus() {
@@ -77,6 +83,19 @@ export default {
                 message: "Payment successful!",
                 type: "success"
               });
+
+              window.trackEventToPixel("Purchase_Completed");
+              window.dataLayer.push({
+                event: "Purchase_Completed"
+              });
+              window.dataLayer.push({
+                event: "Purchase_action",
+                purchase_action: "purchase_completed"
+              });
+              window.dataLayer.push({
+                event: "Purchase_action",
+                purchase_action: window.getCookie("purchase_action")
+              });
             }
           });
         } else if (payStatus === "cancel") {
@@ -84,6 +103,11 @@ export default {
           this.$globalMethod.showNotification({
             message: "Cancel payment!",
             type: "warning"
+          });
+
+          window.dataLayer.push({
+            event: "Purchase_action",
+            purchase_action: "purchase_fail_by_userexit"
           });
         }
         const searchParams = new URLSearchParams(window.location.search);

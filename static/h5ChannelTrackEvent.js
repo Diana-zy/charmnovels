@@ -112,6 +112,18 @@ function trackEventToPixel(eventKey) {
     Land_User_Not_Home_Count: {
       tiktok: "ViewContent",
       facebook: "ViewContent"
+    },
+    Purchase_Completed: {
+      tiktok: "Purchase",
+      facebook: "Purchase"
+    },
+    Watch_Ad_Completed: {
+      tiktok: "AddPaymentInfo",
+      facebook: "AddPaymentInfo"
+    },
+    Unlock_Succeed: {
+      tiktok: "CompleteRegistration",
+      facebook: "CompleteRegistration"
     }
   };
   const source = window.getParam("hi_source");
