@@ -139,7 +139,7 @@ export default {
         })
         .then(async (response) => {
           const chapterDetail = response;
-          self.$refs.moduleReadContentRef.loading = false;
+          self.$refs.moduleReadContentRef && (self.$refs.moduleReadContentRef.loading = false);
           if (
             Storage.getItem("autoUnLock") === "yes" &&
             chapterDetail?.locked_chapter &&
@@ -269,6 +269,10 @@ export default {
       if (this.callback instanceof Function) {
         this.callback();
       }
+      window.dataLayer.push({
+        event: "Novel_Lock_Chap_Page",
+        novel_chapter_read: "lock_chap_watch_ad_completed"
+      });
       unlockNovelChapter({
         novel_id: this.currentChapterDetail.novel_info.id,
         chapter_id: this.currentChapterDetail.chapter_id,

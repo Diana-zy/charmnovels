@@ -55,7 +55,7 @@
         <custom-link
           :to="nextChapterPath"
           :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
-          @click.native="(event) => handleClickPageChapter(event, nextChapterItem)"
+          @click.native="(event) => handleClickPageChapter(event, nextChapterItem, 'next')"
         >
           <div class="next btn"> Next</div>
         </custom-link>
@@ -81,7 +81,7 @@
             <div> Watched today({{ 5 - userInfo?.user_free_count }}/5)</div>
           </div>
           <div class="purchase-stripe" @click="handlePurchaseStripe">
-            Unlock this chapter with {{ 28 }} coins
+            Unlock this chapter with {{ this.currentChapterDetail.coin }} coins
           </div>
           <div class="auto-btn" @click="handleClickAutoUnLock">
             <span class="check-box">
@@ -247,12 +247,30 @@ export default {
     }
   },
   watch: {
+    currentChapterDetail: {
+      handler(val) {
+        if (val) {
+          if (!val?.locked_chapter) {
+            window.handleFreeNovelPush(val.chapter_num);
+          }
+          if (!this.isLock && !window.Novel_Chapter_Read) {
+            window.Novel_Chapter_Read = true;
+            window.dataLayer.push({
+              event: "Novel_Chapter_Read",
+              novel_chapter_read: `novel_${this.currentChapterDetail.novel_info.id}_chap_${this.currentChapterDetail.chapter_num}`
+            });
+          }
+        }
+      },
+      immediate: true,
+      deep: true
+    },
     chapterContent(newContent) {
       if (newContent && !this.isLock) {
         this.$nextTick(() => {
           const cut30pTags = this.getContentPTagesToLength(30);
           if (cut30pTags) {
-            this.insertContentAd(cut30pTags, "content-ad-1", "page", "7045171250", true);
+            this.insertContentAd(cut30pTags, "content-ad-1", "page", "7045171250", true, 1);
           }
 
           // 免费章节或解锁章节，插入中间段落广告
@@ -266,19 +284,25 @@ export default {
         });
       }
     },
-    isLock(val) {
-      if (val && !window.Novel_Chapter_Read) {
-        window.Novel_Chapter_Read = true;
-        window.dataLayer.push({
-          event: "Novel_Chapter_Read",
-          novel_chapter_read: `novel_${this.currentChapterDetail.novel_info.id}_chap_${this.currentChapterDetail.chapter_num}`
-        });
-      }
+    isLock: {
+      handler(val) {
+        if (val && !window.Novel_Lock_Chap_Page) {
+          window.Novel_Lock_Chap_Page = true;
+          window.dataLayer.push({
+            event: "Novel_Lock_Chap_Page",
+            novel_chapter_read: "lock_chap_show "
+          });
+        }
+      },
+      immediate: true
     }
   },
   updated() {
     if (!this.isLock) {
       this.updateDomStatus();
+      if (this.currentChapterDetail?.locked_chapter === 0) {
+        window.handleObserveInsert(this.currentChapterDetail.chapter_num);
+      }
     }
   },
   mounted() {
@@ -293,6 +317,17 @@ export default {
   },
   methods: {
     handleSaveSecondAd(e) {
+      if (
+        e[0].isIntersecting &&
+        this.currentChapterDetail.chapter_num === 1 &&
+        !window.first_chap_action_button
+      ) {
+        window.first_chap_action_button = true;
+        window.dataLayer.push({
+          event: "Novel_Free_Chap_Page",
+          free_chap_show: "first_chap_action_button "
+        });
+      }
       this.offsetTop = e[0].target.offsetTop - e[0].target.clientHeight;
       if (this.offsetTop) {
         this.showBtnBox = e[0].isIntersecting || window.scrollY >= this.offsetTop;
@@ -309,6 +344,11 @@ export default {
     //付费
     async handlePurchaseStripe() {
       this.loading = true;
+      //点击金币解锁
+      window.dataLayer.push({
+        event: "Novel_Lock_Chap_Page",
+        novel_chapter_read: "lock_chap_button_coins_click"
+      });
       //调一遍用户信息接口更新一下钱 再判断
       await this.updateUserCoins();
       if (this.userInfo.coin >= this.currentChapterDetail.coin_price) {
@@ -336,6 +376,10 @@ export default {
       } else {
         //钱不够，进入充值
         // this.loading = true;
+        window.dataLayer.push({
+          event: "Novel_Lock_Chap_Page",
+          novel_chapter_read: "lock_chap_purchase_dialog_show"
+        });
         this.$refs.topUpPopupRef.handleOpen(() => {
           this.loading = false;
         });
@@ -346,6 +390,10 @@ export default {
     },
     handleViewAdUnlock(callback) {
       if (this.userInfo?.user_free_count) {
+        window.dataLayer.push({
+          event: "Novel_Lock_Chap_Page",
+          novel_chapter_read: "lock_chap_button_watch_ad_click"
+        });
         this.loading = true;
         this.$emit("change-chapter", this.currentChapterDetail, callback);
       }
@@ -405,8 +453,10 @@ export default {
       });
       componentInstance.$mount();
       componentInstance.$el?.classList.add(className);
-      if (isSecond) {
+      if (isSecond === true) {
         componentInstance.$el?.classList.add("content-ad-2");
+      } else if (!isSecond) {
+        componentInstance.$el?.classList.add("content-ad-3");
       }
       markEl.insertAdjacentElement("afterend", componentInstance.$el);
     },
@@ -422,8 +472,8 @@ export default {
       if (cutTextCountPTags && this.currentTagIndex <= 2) {
         const adSlotArr = [
           "7313227898", // page-1
-          "4933744044", // page-2
-          "8770052860" // page-3
+          "4933744044" // page-2
+          // "8770052860" // page-3
         ];
         // const adTypeArr = ["page"];
         const adType = "page"; // ["page","inline","info"]
@@ -439,14 +489,33 @@ export default {
       }
     },
 
-    handleClickPageChapter(event, item) {
-      if (item === null || !item.isUnlocked) {
-        // event.preventDefault();
-        // 有章节且需要解锁
-        // if (item !== null && !item.isUnlocked) {
-        //   this.$emit("change-chapter", item);
-        // }
+    handleClickPageChapter(event, item, type) {
+      if (type === "next" && this.currentChapterDetail?.locked_chapter === 0) {
+        if (this.currentChapterDetail.chapter_num === 1) {
+          window.dataLayer.push({
+            event: "Novel_Free_Chap_Click",
+            free_chap_show: "first_chap_button_next_click"
+          });
+        } else {
+          window.dataLayer.push({
+            event: "Novel_Free_Chap_Click",
+            free_chap_show: "other_chap_button_next_click"
+          });
+        }
       }
+      if (item !== null && this.isLock) {
+        window.dataLayer.push({
+          event: "Novel_Lock_Chap_Page",
+          free_chap_show: "lock_chap_button_prev_next_click"
+        });
+      }
+      // if (item === null || !item.isUnlocked) {
+      //   // event.preventDefault();
+      //   // 有章节且需要解锁
+      //   // if (item !== null && !item.isUnlocked) {
+      //   //   this.$emit("change-chapter", item);
+      //   // }
+      // }
     },
 
     // 创建or支付订单

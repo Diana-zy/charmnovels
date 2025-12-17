@@ -91,6 +91,9 @@
     </script>
 
     <script>
+      window.done = false;
+      window.is_free_chapter = false;
+      window.chapter_num = 0;
       function getTypeByID(id) {
         switch (id) {
           case 1:
@@ -105,6 +108,93 @@
             return "month";
           case 6:
             return "499";
+        }
+      }
+      //小说免费章节详情页面展示统计
+      function handleFreeNovelPush(data) {
+        if (!window.done) {
+          window.is_free_chapter = true;
+          window.done = false;
+          if (data === 1) {
+            window.chapter_num = 1;
+            window.dataLayer.push({
+              event: "Novel_Free_Chap_Page",
+              free_chap_show: "first_chap_page"
+            });
+          } else {
+            window.dataLayer.push({
+              event: "Novel_Free_Chap_Page",
+              free_chap_show: "other_chap_page"
+            });
+          }
+        }
+      }
+      //监控小说阅读页页内
+      function handleObserveInsert(chapter_num) {
+        if (window.isObserveInsert) {
+          return;
+        }
+        function handleObserve(e, observer, dom, attribute) {
+          // console.log(e, dom);
+          if (e[0].isIntersecting) {
+            observer.unobserve(dom);
+            let adsDom = dom.getElementsByTagName("ins")[0];
+            // console.log(adsDom.getAttribute("data-ad-status"));
+            new MutationObserver((mutations, observer1) => {
+              const adsType = adsDom.getAttribute("data-ad-status");
+              // console.log(
+              //   adsDom.getAttribute("data-ad-status"),
+              //   adsType,
+              //   dom,
+              //   attribute,
+              //   "attribute"
+              // );
+              if (["unfill-optimized", "filled"].includes(adsType)) {
+                observer1.disconnect();
+                window.dataLayer.push({
+                  event: "Novel_Free_Chap_Page",
+                  free_chap_show: chapter_num === 1 ? attribute : "other_chap_banner"
+                });
+              } else if ("unfilled" === adsType) {
+                observer1.disconnect();
+              }
+              // observer.disconnect();
+            }).observe(adsDom, {
+              attributes: true
+            });
+          }
+        }
+        const dom1 = document.getElementsByClassName("content-ad-1")[0];
+        const dom2 = document.getElementsByClassName("content-ad-2")[0];
+        const dom3 = document.getElementsByClassName("content-ad-3")[0];
+        // console.log(dom1, dom2, dom3);
+        const observer1 = new IntersectionObserver(
+          (e) => handleObserve(e, observer1, dom1, "first_chap_first_banner"),
+          {
+            threshold: 1
+          }
+        );
+        const observer2 = new IntersectionObserver(
+          (e) => handleObserve(e, observer2, dom2, "first_chap_second_banner"),
+          {
+            threshold: 1
+          }
+        );
+        const observer3 = new IntersectionObserver(
+          (e) => handleObserve(e, observer3, dom3, "first_chap_third_banner"),
+          {
+            threshold: 1
+          }
+        );
+        if (dom1) {
+          window.isObserveInsert = true;
+          observer1.observe(dom1);
+        }
+        if (dom2) {
+          observer2.observe(dom2);
+        }
+        if (dom3) {
+          observer3.observe(dom3);
         }
       }
     </script>
@@ -218,6 +308,33 @@
           let adStatus = closestIns?.getAttribute("data-ad-status") || "unfilled";
           if ("filled" == adStatus && activeElement.getAttribute("data-ad-slot")) {
             dataLayer.push({ event: "D_IP" });
+            //判断是否点击阅读页页内
+            if (window.location.path.includes("/read/") && window.is_free_chapter) {
+              if (window.chapter_num === 1) {
+                const ad_slot = closestIns?.getAttribute("data-ad-slot");
+                if (ad_slot === "7045171250") {
+                  window.dataLayer.push({
+                    event: "Novel_Free_Chap_Click",
+                    free_chap_show: "first_chap_first_banner_click "
+                  });
+                } else if (ad_slot === "7313227898") {
+                  window.dataLayer.push({
+                    event: "Novel_Free_Chap_Click",
+                    free_chap_show: "first_chap_second_banner_click "
+                  });
+                } else if (ad_slot === "4933744044") {
+                  window.dataLayer.push({
+                    event: "Novel_Free_Chap_Click",
+                    free_chap_show: "first_chap_third_banner_click "
+                  });
+                }
+              } else {
+                window.dataLayer.push({
+                  event: "Novel_Free_Chap_Click",
+                  free_chap_show: "other_chap_banner_click "
+                });
+              }
+            }
             window.handleUserFirstClickAdOrContent("D_IP");
           }
         }

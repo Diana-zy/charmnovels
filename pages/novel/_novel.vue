@@ -28,7 +28,7 @@
           </div>
 
           <!--          最新章节 -->
-          <div class="latest-chapter pc-hidden-flex" @click="handleShowChapterPopup">
+          <div class="latest-chapter pc-hidden-flex" @click="handleShowChapterPopup('top')">
             <div>Latest Chapter Chapter {{ novelChapterList.length }}</div>
             <div class="icon-arrow-right"> </div>
           </div>
@@ -209,7 +209,7 @@
       <!--        <i class="icon-chapters"></i>-->
       <!--        <span>Chapters</span>-->
       <!--      </div>-->
-      <custom-link :to="startReadPath" class="menu-item menu-read">
+      <custom-link :to="startReadPath" @click.native="handleClickRead" class="menu-item menu-read">
         <i class="icon-reading"></i>
         <span>{{
           novelDetail?.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
@@ -341,7 +341,8 @@ export default {
     window.dataLayer.push({
       event: "Novel_Intro_Page",
       hi_ttclid: window.getValueByURLOrCookie("ttclid"),
-      hi_ip: window.getValueByURLOrCookie("ip")
+      hi_ip: window.youknowwho_ip,
+      url: window.location.href
     });
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
@@ -349,6 +350,12 @@ export default {
   methods: {
     getStarListStyle,
     getStarScore,
+    handleClickRead() {
+      window.dataLayer.push({
+        event: "Novel_Intro_Page_Click",
+        intro_click: "continue_reading_button"
+      });
+    },
     handleResize() {
       if (window.innerWidth <= 750) {
         this.isMobile = true;
@@ -358,9 +365,17 @@ export default {
     },
     handleRatingBook() {
       this.ratingBook = true;
+      window.dataLayer.push({
+        event: "Novel_Intro_Page_Click",
+        intro_click: "rating_dialog "
+      });
     },
     handleCloseRatingBook(val) {
       this.ratingBook = false;
+      window.dataLayer.push({
+        event: "Novel_Intro_Page_Click",
+        intro_click: "rating_dialog_rate "
+      });
       saveNovelScore({
         novel_id: this.novelDetailInfo.id,
         score: String(val)
@@ -417,10 +432,25 @@ export default {
       clearInterval(this.changeCurrentRecIndexTimer);
     },
     handleOpenRecommendBox() {
+      window.dataLayer.push({
+        event: "Novel_Intro_Page_Click",
+        intro_click: "click_nav_bar"
+      });
       this.showRecommendBox = true;
     },
     // 展示菜单设置
-    handleShowChapterPopup() {
+    handleShowChapterPopup(val) {
+      if (val === "top") {
+        window.dataLayer.push({
+          event: "Novel_Intro_Page_Click",
+          intro_click: "chapter_list_top"
+        });
+      } else {
+        window.dataLayer.push({
+          event: "Novel_Intro_Page_Click",
+          intro_click: "chapter_list_bottom"
+        });
+      }
       this.isShowChapterPopup = true;
       this.distanceFromTop = document.documentElement.scrollTop;
       document.body.classList.add("no-scroll");
