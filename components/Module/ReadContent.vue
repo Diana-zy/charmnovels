@@ -293,7 +293,7 @@ export default {
           window.Novel_Lock_Chap_Page = true;
           window.dataLayer.push({
             event: "Novel_Lock_Chap_Page",
-            novel_chapter_read: "lock_chap_show "
+            lock_chap_page: "lock_chap_show "
           });
         }
       },
@@ -350,7 +350,7 @@ export default {
       //点击金币解锁
       window.dataLayer.push({
         event: "Novel_Lock_Chap_Page",
-        novel_chapter_read: "lock_chap_button_coins_click"
+        lock_chap_page: "lock_chap_button_coins_click"
       });
       //调一遍用户信息接口更新一下钱 再判断
       await this.updateUserCoins();
@@ -381,7 +381,7 @@ export default {
         // this.loading = true;
         window.dataLayer.push({
           event: "Novel_Lock_Chap_Page",
-          novel_chapter_read: "lock_chap_purchase_dialog_show"
+          lock_chap_page: "lock_chap_purchase_dialog_show"
         });
         this.$refs.topUpPopupRef.handleOpen(() => {
           this.loading = false;
@@ -395,7 +395,7 @@ export default {
       if (this.userInfo?.user_free_count) {
         window.dataLayer.push({
           event: "Novel_Lock_Chap_Page",
-          novel_chapter_read: "lock_chap_button_watch_ad_click"
+          lock_chap_page: "lock_chap_button_watch_ad_click"
         });
         this.loading = true;
         this.$emit("change-chapter", this.currentChapterDetail, callback);
@@ -497,19 +497,19 @@ export default {
         if (this.currentChapterDetail.chapter_num === 1) {
           window.dataLayer.push({
             event: "Novel_Free_Chap_Click",
-            free_chap_show: "first_chap_button_next_click"
+            free_chap_click: "first_chap_button_next_click"
           });
         } else {
           window.dataLayer.push({
             event: "Novel_Free_Chap_Click",
-            free_chap_show: "other_chap_button_next_click"
+            free_chap_click: "other_chap_button_next_click"
           });
         }
       }
       if (item !== null && this.isLock) {
         window.dataLayer.push({
           event: "Novel_Lock_Chap_Page",
-          free_chap_show: "lock_chap_button_prev_next_click"
+          lock_chap_page: "lock_chap_button_prev_next_click"
         });
       }
       // if (item === null || !item.isUnlocked) {

@@ -271,7 +271,7 @@ export default {
       }
       window.dataLayer.push({
         event: "Novel_Lock_Chap_Page",
-        novel_chapter_read: "lock_chap_watch_ad_completed"
+        lock_chap_page: "lock_chap_watch_ad_completed"
       });
       unlockNovelChapter({
         novel_id: this.currentChapterDetail.novel_info.id,
@@ -360,8 +360,8 @@ export default {
                 purchase_action: window.getCookie("purchase_action")
               });
               window.dataLayer.push({
-                event: "Purchase_action",
-                purchase_action: window.getCookie("purchase_dialog")
+                event: "Novel_Purchase_Dialog",
+                purchase_dialog: window.getCookie("purchase_dialog")
               });
               this.$globalMethod.updateUrlQuery(this, "order_no");
             }

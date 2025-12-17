@@ -74,9 +74,10 @@ export default {
     handleClick(val) {
       window.dataLayer.push({
         event: "Novel_Purchase_Dialog",
-        purchase_dialog: `second_page_click_button_${window.getTypeByID(this.select)}`
+        purchase_dialog: `second_page_click_button_${window.getTypeByID(val.ID)}`
       });
       window.setCookie("purchase_dialog", "purchase_completed_with_second_page");
+      window.setCookie("purchase_action", `purchase_completed_with_${window.getTypeByID(val.ID)}`);
       this.$emit("handlePayByStripe", val.ID);
     },
     async handleOpen(val = false, callback) {
