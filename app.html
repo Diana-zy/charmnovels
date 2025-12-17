@@ -134,57 +134,92 @@
         if (window.isObserveInsert) {
           return;
         }
-        function handleObserve(e, observer, dom, attribute) {
-          // console.log(e, dom);
+        let time1 = 1,
+          time2 = 1,
+          time3 = 1;
+        function handleObserve(e, observer, dom, attribute, obj, times) {
           if (e[0].isIntersecting) {
             observer.unobserve(dom);
             let adsDom = dom.getElementsByTagName("ins")[0];
-            // console.log(adsDom.getAttribute("data-ad-status"));
-            new MutationObserver((mutations, observer1) => {
-              const adsType = adsDom.getAttribute("data-ad-status");
-              // console.log(
-              //   adsDom.getAttribute("data-ad-status"),
-              //   adsType,
-              //   dom,
-              //   attribute,
-              //   "attribute"
-              // );
-              if (["unfill-optimized", "filled"].includes(adsType)) {
-                observer1.disconnect();
-                window.dataLayer.push({
-                  event: "Novel_Free_Chap_Page",
-                  free_chap_show: chapter_num === 1 ? attribute : "other_chap_banner"
-                });
-              } else if ("unfilled" === adsType) {
-                observer1.disconnect();
-              }
-              // observer.disconnect();
-            }).observe(adsDom, {
-              attributes: true
-            });
+            // console.log(adsDom, dom, 2222);
+            if (adsDom) {
+              obj = new MutationObserver(() => {
+                const adsType = adsDom.getAttribute("data-ad-status");
+                if (adsType && times) {
+                  times = 0;
+                  // console.log(
+                  //   adsDom.getAttribute("data-ad-status"),
+                  //   adsType,
+                  //   dom,
+                  //   attribute,
+                  //   "attribute",
+                  //   "adsDom"
+                  // );
+                  if (["unfill-optimized", "filled"].includes(adsType)) {
+                    obj?.disconnect();
+                    window.dataLayer.push({
+                      event: "Novel_Free_Chap_Page",
+                      free_chap_show: chapter_num === 1 ? attribute : "other_chap_banner"
+                    });
+                  } else if ("unfilled" === adsType) {
+                    obj?.disconnect();
+                  }
+                }
+              }).observe(adsDom, {
+                attributes: true
+              });
+            } else {
+              obj = new MutationObserver((mutations, observer1) => {
+                let adsDom = dom.getElementsByTagName("ins")[0];
+                if (adsDom && times) {
+                  times = 0;
+                  // console.log(adsDom, 111);
+                  obj?.disconnect();
+                  new MutationObserver((mutations, observer) => {
+                    const adsType = adsDom.getAttribute("data-ad-status");
+                    if (adsType) {
+                      // console.log(
+                      //   adsDom.getAttribute("data-ad-status"),
+                      //   adsType,
+                      //   dom,
+                      //   attribute,
+                      //   "attribute"
+                      // );
+                      if (["unfill-optimized", "filled"].includes(adsType)) {
+                        observer.disconnect();
+                        window.dataLayer.push({
+                          event: "Novel_Free_Chap_Page",
+                          free_chap_show: chapter_num === 1 ? attribute : "other_chap_banner"
+                        });
+                      } else if ("unfilled" === adsType) {
+                        observer?.disconnect();
+                      }
+                    }
+                  }).observe(adsDom, {
+                    attributes: true
+                  });
+                }
+
+                // observer1.disconnect();
+              }).observe(dom, {
+                attributes: true,
+                childList: true
+              });
+            }
           }
         }
         const dom1 = document.getElementsByClassName("content-ad-1")[0];
         const dom2 = document.getElementsByClassName("content-ad-2")[0];
         const dom3 = document.getElementsByClassName("content-ad-3")[0];
-        // console.log(dom1, dom2, dom3);
-        const observer1 = new IntersectionObserver(
-          (e) => handleObserve(e, observer1, dom1, "first_chap_first_banner"),
-          {
-            threshold: 1
-          }
+        console.log(dom1, dom2, dom3);
+        const observer1 = new IntersectionObserver((e) =>
+          handleObserve(e, observer1, dom1, "first_chap_first_banner", {}, time1)
         );
-        const observer2 = new IntersectionObserver(
-          (e) => handleObserve(e, observer2, dom2, "first_chap_second_banner"),
-          {
-            threshold: 1
-          }
+        const observer2 = new IntersectionObserver((e) =>
+          handleObserve(e, observer2, dom2, "first_chap_second_banner", {}, time2)
         );
-        const observer3 = new IntersectionObserver(
-          (e) => handleObserve(e, observer3, dom3, "first_chap_third_banner"),
-          {
-            threshold: 1
-          }
+        const observer3 = new IntersectionObserver((e) =>
+          handleObserve(e, observer3, dom3, "first_chap_third_banner", {}, time3)
         );
         if (dom1) {
           window.isObserveInsert = true;
@@ -306,7 +341,7 @@
         ) {
           const closestIns = activeElement.closest("ins");
           let adStatus = closestIns?.getAttribute("data-ad-status") || "unfilled";
-          if ("filled" == adStatus && activeElement.getAttribute("data-ad-slot")) {
+          if ("filled" == adStatus && closestIns.getAttribute("data-ad-slot")) {
             dataLayer.push({ event: "D_IP" });
             //判断是否点击阅读页页内
             if (window.location.path.includes("/read/") && window.is_free_chapter) {

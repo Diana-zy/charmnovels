@@ -281,6 +281,9 @@ export default {
           this.createCountPTagsAd();
           // }
           this.updateDomStatus();
+          if (this.currentChapterDetail?.locked_chapter === 0) {
+            window.handleObserveInsert(this.currentChapterDetail.chapter_num);
+          }
         });
       }
     },
