@@ -24,7 +24,7 @@ export default {
   computed: {
     tagOffIcon() {
       const off = this.item.discount.split(" ")[0];
-      return require(`@/assets/images/tag-sku-${off}-rec.png`);
+      return require(`@/assets/images/tag-sku-${off.replace("%", "")}-rec.png`);
     },
     priceUnit() {
       const unitArr = {
