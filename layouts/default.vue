@@ -38,6 +38,11 @@ export default {
             // 设置缓存
             window.setItem("novel_tid", response.tid);
             window.setItem("novel_tid_time", currentTime);
+            window.dataLayer.push({
+              event: "Create_Tid",
+              hi_tid: response.tid,
+              create_time: currentTime
+            });
             this.isShowNuxtContent = true;
           }
         });
