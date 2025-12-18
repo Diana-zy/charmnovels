@@ -32,7 +32,7 @@ export default {
   max-width: 400px;
   bottom: 40px;
   left: 20px;
-  background: rgba($color2, 0.4);
+  background: rgba($color2, 0.8);
   padding: 10px 16px;
   border-radius: 10px;
   color: #ffffff;
