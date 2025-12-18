@@ -128,7 +128,7 @@ export default {
 
     .item-left {
       .coins-value {
-        font-size: vw(24);
+        font-size: vw(28);
         line-height: vw(38);
       }
       .coins-tip {
