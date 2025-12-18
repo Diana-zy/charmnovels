@@ -140,7 +140,24 @@ export default {
         .then(async (response) => {
           const chapterDetail = response;
           self.$refs.moduleReadContentRef && (self.$refs.moduleReadContentRef.loading = false);
-          if (
+          if (window.getCookie("is_Purchase_Completed") === "yes") {
+            window.setCookie("is_Purchase_Completed", "no");
+            unlockNovelChapter({
+              novel_id: chapterDetail.novel_info.id,
+              chapter_id: chapterDetail.chapter_id,
+              unlock_type: 2
+            }).then((res) => {
+              if (res.success) {
+                if (res.data.status === 1) {
+                  window.trackEventToPixel("Unlock_Succeed");
+                  window.dataLayer.push({
+                    event: "Unlock_Succeed"
+                  });
+                }
+                self.getCurrentChapterDetail();
+              }
+            });
+          } else if (
             Storage.getItem("autoUnLock") === "yes" &&
             chapterDetail?.locked_chapter &&
             !chapterDetail?.is_unlock
@@ -155,10 +172,12 @@ export default {
                   unlock_type: 2
                 }).then((res) => {
                   if (res.success) {
-                    window.trackEventToPixel("Unlock_Succeed");
-                    window.dataLayer.push({
-                      event: "Unlock_Succeed"
-                    });
+                    if (res.data.status === 1) {
+                      window.trackEventToPixel("Unlock_Succeed");
+                      window.dataLayer.push({
+                        event: "Unlock_Succeed"
+                      });
+                    }
                     self.getCurrentChapterDetail();
                   }
                 });
@@ -281,10 +300,12 @@ export default {
         this.$refs.moduleReadContentRef.handleCloseLoading();
         if (res.success) {
           // console.log(res);
-          window.trackEventToPixel("Unlock_Succeed");
-          window.dataLayer.push({
-            event: "Unlock_Succeed"
-          });
+          if (res.data.status === 1) {
+            window.trackEventToPixel("Unlock_Succeed");
+            window.dataLayer.push({
+              event: "Unlock_Succeed"
+            });
+          }
           this.getCurrentChapterDetail();
         }
       });
@@ -347,6 +368,7 @@ export default {
           if (res.success) {
             const { order_status } = res.data;
             if (order_status === 3) {
+              window.setCookie("is_Purchase_Completed", "yes");
               window.trackEventToPixel("Purchase_Completed");
               window.dataLayer.push({
                 event: "Purchase_Completed"

@@ -46,20 +46,22 @@
           <span class="icon-menu"></span>
           List
         </div>
-        <custom-link
+        <div
           :to="preChapterPath"
           :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
-          @click.native="(event) => handleClickPageChapter(event, preChapterItem)"
+          @click="(event) => handleClickPageChapter(event, preChapterItem, preChapterPath)"
         >
           <div class="previous btn"> previous</div>
-        </custom-link>
-        <custom-link
+        </div>
+        <div
           :to="nextChapterPath"
           :class="['btn-change', 'btn-next', { 'btn-disable': nextChapterItem === null }]"
-          @click.native="(event) => handleClickPageChapter(event, nextChapterItem, 'next')"
+          @click="
+            (event) => handleClickPageChapter(event, nextChapterItem, nextChapterPath, 'next')
+          "
         >
           <div class="next btn"> Next</div>
-        </custom-link>
+        </div>
       </div>
 
       <!--    付费章节底部模块-->
@@ -186,6 +188,7 @@ import googleAdPreload from "@/components/GoogleAdPreload";
 import googleAdSmall from "@/components/GoogleAdSmall";
 import GoogleAdPreloadSmall from "../GoogleAdPreloadSmall";
 import { getUserInfo, unlockNovelChapter, paymentSKU } from "~/api/api";
+import { simulateClickToPath } from "~/utils/utils";
 
 export default {
   components: { GoogleAdPreloadSmall },
@@ -374,10 +377,12 @@ export default {
           this.loading = false;
           if (res.success) {
             // console.log(res);
-            window.trackEventToPixel("Unlock_Succeed");
-            window.dataLayer.push({
-              event: "Unlock_Succeed"
-            });
+            if (res.data.status === 1) {
+              window.trackEventToPixel("Unlock_Succeed");
+              window.dataLayer.push({
+                event: "Unlock_Succeed"
+              });
+            }
             this.$emit("reload");
             if (this.autoUnLock) {
               Storage.setItem("autoUnLock", "yes");
@@ -509,7 +514,7 @@ export default {
       }
     },
 
-    handleClickPageChapter(event, item, type) {
+    handleClickPageChapter(event, item, path, type) {
       if (type === "next" && this.currentChapterDetail?.locked_chapter === 0) {
         if (this.currentChapterDetail.chapter_num === 1) {
           window.dataLayer.push({
@@ -528,6 +533,27 @@ export default {
           event: "Novel_Lock_Chap_Page",
           lock_chap_page: "lock_chap_button_prev_next_click"
         });
+      }
+      if (item !== null && path) {
+        if (Storage.getItem("autoUnLock") === "yes" && item?.locked_chapter && !item?.is_unlock) {
+          unlockNovelChapter({
+            novel_id: item.novel_id,
+            chapter_id: item.id,
+            unlock_type: 2
+          }).then(async (res) => {
+            if (res.success && res.data.status === 1) {
+              window.trackEventToPixel("Unlock_Succeed");
+              await window.dataLayer.push({
+                event: "Unlock_Succeed"
+              });
+            }
+            setTimeout(() => {
+              simulateClickToPath(path);
+            });
+          });
+        } else {
+          simulateClickToPath(path);
+        }
       }
       // if (item === null || !item.isUnlocked) {
       //   // event.preventDefault();
@@ -1002,7 +1028,7 @@ export default {
       margin-top: vw(20);
     }
     .ad-1 {
-      margin-bottom: vw(100);
+      margin-bottom: vw(30);
     }
     .lock-btn-box {
       position: sticky;
@@ -1046,7 +1072,7 @@ export default {
         font-size: vw(28);
       }
       .auto-btn {
-        width: vw(348);
+        width: auto;
         height: vw(48);
         margin: vw(24) auto 0;
         font-weight: 400;
@@ -1054,6 +1080,7 @@ export default {
         // color: $color2;
         display: flex;
         align-items: center;
+        justify-content: center;
         .check-box {
           margin-right: vw(10);
           width: vw(28);

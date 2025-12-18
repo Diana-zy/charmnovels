@@ -100,6 +100,11 @@ export default {
         // console.log("currentBannerRealIndex", currentBannerRealIndex);
       }
     },
+    handleClick(item, i) {
+      console.log(i);
+      const currentBannerRealIndex = i;
+      this.currentBannerRealIndex = currentBannerRealIndex;
+    },
     handleClose() {
       simulateClickToPath("/");
     }
