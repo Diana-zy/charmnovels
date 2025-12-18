@@ -984,7 +984,7 @@ export default {
     }
   }
   .lock-content {
-    height: calc(var(--read-font-size) * var(--read-font-space) * 5 + vw(88));
+    height: calc(var(--read-font-size) * var(--read-font-space) * 5 + vw(102));
     overflow: hidden;
     padding-bottom: 0;
     position: relative;
