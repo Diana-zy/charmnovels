@@ -880,6 +880,7 @@ export default {
   }
   .lock-btn-box {
     cursor: pointer;
+    background: var(--read-bg-color);
     .watch-ad-unlock {
       height: 88px;
       width: 360px;
