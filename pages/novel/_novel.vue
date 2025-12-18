@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main v-if="novelDetail">
     <custom-header v-if="!isMobile" />
     <custom-back-header v-else needBackModel @handleOpenRecommendBox="handleOpenRecommendBox" />
     <section v-if="novelDetailInfo" class="module-introduce">
