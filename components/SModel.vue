@@ -101,7 +101,7 @@ export default {
     z-index: 1000;
   }
   .show-layer {
-    background: rgba(#000, 0.7);
+    background: rgba(#000, 0.8);
     pointer-events: auto;
   }
   .model-center {
@@ -130,7 +130,7 @@ export default {
     z-index: 1000;
   }
   .show-layer {
-    background: rgba(#000, 0.7);
+    background: rgba(#000, 0.8);
     pointer-events: auto;
   }
   .model-center {

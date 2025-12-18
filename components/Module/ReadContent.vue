@@ -37,6 +37,7 @@
           <!--        {{ currentChapterDetail.chapter_name }}-->
         </h3>
         <p ref="contentTextRef" class="content-text" v-html="chapterContent"></p>
+        <div class="lock-content-bottom pc-hidden-block" v-show="isLock"></div>
       </article>
 
       <!--    章节底部按钮-->
@@ -62,14 +63,14 @@
       </div>
 
       <!--    付费章节底部模块-->
-      <section class="lock-bottom-operation" v-show="isLock">
-        <div class="lock-operation-title">— Looked Chapter —</div>
+      <section class="lock-bottom-operation" v-if="isLock">
+        <div class="lock-operation-title">— Locked Chapter —</div>
         <div class="lock-user-info">
           <div>Price: {{ currentChapterDetail.coin_price }} coins </div>
           <div>Words of this chapter: {{ currentChapterDetail.word_count }}</div>
           <div>Balance: {{ userInfo?.coin }} coins</div>
         </div>
-        <google-ad-preload-small class="ad-1" ad-slot="7793230426" />
+        <google-ad-preload class="ad-1" ad-slot="7793230426" />
         <!--      <div class="download-app"> Download App to read this chapter for FREE </div>-->
         <div class="lock-btn-box">
           <div
@@ -77,17 +78,17 @@
             @click="handleViewAdUnlock"
             :class="{ 'disable-btn': !userInfo?.user_free_count }"
           >
-            <div> watch ad to unlock this chapter</div>
-            <div> Watched today({{ 5 - userInfo?.user_free_count }}/5)</div>
+            <div> Watch Ad To Unlock This Chapter</div>
+            <div> Watched Today({{ 5 - userInfo?.user_free_count }}/5)</div>
           </div>
           <div class="purchase-stripe" @click="handlePurchaseStripe">
-            Unlock this chapter with {{ this.currentChapterDetail.coin }} coins
+            Unlock This Chapter With {{ this.currentChapterDetail.coin }} Coins
           </div>
           <div class="auto-btn" @click="handleClickAutoUnLock">
             <span class="check-box">
               <span v-show="autoUnLock" class="check-box-inner"></span>
             </span>
-            <span class="check-box-title">Auto unlock next chapter</span>
+            <span class="check-box-title">Auto Unlock Next Chapter</span>
           </div>
         </div>
       </section>
@@ -316,7 +317,16 @@ export default {
     root.style.setProperty("--read-font-size", Storage.getCookie("novel_cssReadFontSize") + "px");
     root.style.setProperty("--read-font-space", Storage.getCookie("novel_cssReadFontSpace"));
     root.style.setProperty("--read-bg-color", Storage.getCookie("novel_cssReadBackgroundColor"));
+    // root.style.setProperty("--read-bg-color-num", Storage.getCookie("novel_cssReadBackgroundColorNum"));
     root.style.setProperty("--read-text-color", Storage.getCookie("novel_cssReadTextColor"));
+    root.style.setProperty(
+      "--linear-gradient",
+      `linear-gradient(
+        180deg,
+        rgba(${Storage.getCookie("novel_cssReadBackgroundColorNum")}, 0.5),
+        rgba(${Storage.getCookie("novel_cssReadBackgroundColorNum")}, 1)
+      )`
+    );
   },
   methods: {
     handleSaveSecondAd(e) {
@@ -417,6 +427,8 @@ export default {
         Storage.setCookie("novel_cssReadTextColor", "#41414c");
       Storage.getCookie("novel_cssReadLastTheme") ||
         Storage.setCookie("novel_cssReadLastTheme", "light");
+      Storage.getCookie("novel_cssReadBackgroundColorNum") ||
+        Storage.setCookie("novel_cssReadBackgroundColorNum", `255,252,247`);
     },
     handleCloseLoading() {
       this.loading = false;
@@ -819,7 +831,7 @@ export default {
     line-height: 42px;
     font-weight: 600;
     font-size: 24px;
-    color: $color2;
+    //color: $color2;
   }
   .download-app {
     cursor: pointer;
@@ -875,7 +887,7 @@ export default {
       margin: 20px auto 0;
       font-weight: 400;
       font-size: 22px;
-      color: $color2;
+      // color: $color2;
       display: flex;
       align-items: center;
       .check-box {
@@ -928,7 +940,7 @@ export default {
     margin-bottom: 0;
   }
   .read-content {
-    margin-top: vw(48);
+    /*margin-top: vw(48);*/
     padding-bottom: vw(80);
     h3 {
       font-size: vw(40);
@@ -941,14 +953,23 @@ export default {
     }
   }
   .lock-content {
-    height: vw(532);
+    height: calc(var(--read-font-size) * var(--read-font-space) * 5 + vw(88));
     overflow: hidden;
     padding-bottom: 0;
+    position: relative;
+    .lock-content-bottom {
+      position: absolute;
+      background: var(--linear-gradient);
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: calc(var(--read-font-size) * var(--read-font-space) * 2);
+    }
   }
 
   .lock-bottom-operation {
     margin-top: vw(48);
-    padding-bottom: vw(80);
+    /*padding-bottom: vw(80);*/
     .lock-operation-title {
       margin-bottom: vw(24);
       font-weight: bold;
@@ -964,7 +985,7 @@ export default {
       line-height: vw(42);
       font-weight: 600;
       font-size: vw(28);
-      color: $color2;
+      //color: $color2;
     }
     .download-app {
       font-weight: 600;
@@ -975,6 +996,9 @@ export default {
       margin-top: vw(20);
     }
     .lock-btn-box {
+      position: sticky;
+      bottom: vw(80);
+      margin-top: vw(32);
       .watch-ad-unlock {
         height: vw(88);
         width: vw(658);
@@ -1018,7 +1042,7 @@ export default {
         margin: vw(24) auto 0;
         font-weight: 400;
         font-size: vw(26);
-        color: $color2;
+        // color: $color2;
         display: flex;
         align-items: center;
         .check-box {
@@ -1043,7 +1067,7 @@ export default {
 
   .content-text {
     ::v-deep .br {
-      height: calc(var(--read-font-size) * var(--read-font-space) * 0.5);
+      height: calc(var(--read-font-size) * var(--read-font-space));
     }
     ::v-deep .content-ad-1 {
       margin-bottom: calc(var(--read-font-size) * var(--read-font-space) * 0.5);

@@ -86,7 +86,7 @@ export default {
     color: rgba($color2, 0.6);
     width: vw(718);
     margin-left: vw(-30);
-    height: vw(440);
+    height: vw(460);
     background: #fef1ea;
     border-radius: vw(32);
     padding: vw(32);
@@ -97,6 +97,7 @@ export default {
     font-weight: bold;
     color: $color2;
     line-height: vw(40);
+    margin-bottom: vw(20);
   }
   .text-content {
     height: vw(184);

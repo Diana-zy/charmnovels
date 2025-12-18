@@ -49,7 +49,7 @@
             :chapters="novelChapterList"
             :purchase-status="currentChapterDetail?.purchase_status"
             :current-chapter-id="currentChapterDetail?.chapter_id"
-            theme="dark"
+            theme="light"
             @close-chapter-popup="handleHideChapterPopup"
             @change-chapter="handleOpenIncentiveAd"
           />

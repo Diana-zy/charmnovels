@@ -21,15 +21,15 @@
           <div class="author-row">
             <!--            <span>{{ novelDetailInfo.category }}</span>-->
             <!--            <span class="line"></span>-->
-            <span>By:{{ novelDetailInfo.author }}</span>
+            <span>By：{{ novelDetailInfo.author }}</span>
           </div>
           <div class="author-row updated-time-row">
-            <span>Latest Updated: {{ novelUpdatedDate }}</span>
+            <span>Latest Updated： {{ novelUpdatedDate }}</span>
           </div>
 
           <!--          最新章节 -->
           <div class="latest-chapter pc-hidden-flex" @click="handleShowChapterPopup('top')">
-            <div>Latest Chapter Chapter {{ novelChapterList.length }}</div>
+            <div>Latest Chapter：Chapter {{ novelChapterList.length }}</div>
             <div class="icon-arrow-right"> </div>
           </div>
 
@@ -219,7 +219,7 @@
     <!-- 激励视频广告 -->
     <incentive-ad ref="refIncentiveAd" @close-incentive-ad="closeIncentiveAd" />
     <common-notification />
-    <ad-loading />
+    <!--    <ad-loading />-->
     <common-back-top />
   </main>
 </template>
@@ -804,6 +804,9 @@ export default {
     font-weight: bold;
     .novel-info-user {
       width: vw(179);
+      div:last-child {
+        font-weight: normal;
+      }
     }
     .line {
       width: vw(2);

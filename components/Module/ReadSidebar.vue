@@ -10,15 +10,15 @@
               <div :style="`--progress-width:${currentReadProgress}%`" class="progress-bar"></div>
             </div>
             <div class="menu-box">
-              <div class="menu-item menu-chapters" @click="showChapterPopup"
-                ><i class="icon-sidebar-chapter"></i
-              ></div>
+              <!--              <div class="menu-item menu-chapters" @click="showChapterPopup"-->
+              <!--                ><i class="icon-sidebar-chapter"></i-->
+              <!--              ></div>-->
               <div class="menu-item menu-style" @click="showStyleSetting">
                 <i class="icon-sidebar-theme"></i>
               </div>
-              <div class="menu-item menu-theme" @click="handleChangeDarkTheme"
-                ><i :class="[isDarkTheme ? 'icon-sidebar-light' : 'icon-sidebar-dark']"></i
-              ></div>
+              <!--              <div class="menu-item menu-theme" @click="handleChangeDarkTheme"-->
+              <!--                ><i :class="[isDarkTheme ? 'icon-sidebar-light' : 'icon-sidebar-dark']"></i-->
+              <!--              ></div>-->
             </div>
           </div>
         </transition>
@@ -100,23 +100,27 @@ export default {
         {
           theme: "dark",
           bgColor: "#0f0f0f",
-          textColor: "#6E6E6E"
+          textColor: "#6E6E6E",
+          bgColorNum: "15,15,15"
         },
         /* 常规 */
         {
           theme: "light",
           bgColor: "#fffcf7",
-          textColor: "#41414c"
+          textColor: "#41414c",
+          bgColorNum: "255,252,247"
         },
         {
           theme: "green",
           bgColor: "#CCDCBE",
-          textColor: "#41414C"
+          textColor: "#41414C",
+          bgColorNum: "204,220,190"
         },
         {
           theme: "brown",
           bgColor: "#393335",
-          textColor: "#928D8B"
+          textColor: "#928D8B",
+          bgColorNum: "57,51,53"
         }
       ],
       themeColorIndex: 1,
@@ -154,7 +158,16 @@ export default {
       const root = document.documentElement;
       root.style.setProperty("--read-bg-color", item.bgColor);
       root.style.setProperty("--read-text-color", item.textColor);
+      root.style.setProperty(
+        "--linear-gradient",
+        `linear-gradient(
+        180deg,
+        rgba(${item.bgColorNum}, 0.5),
+        rgba(${item.bgColorNum}, 1)
+      )`
+      );
       Storage.setCookie("novel_cssReadBackgroundColor", item.bgColor);
+      Storage.setCookie("novel_cssReadBackgroundColorNum", item.bgColorNum);
       Storage.setCookie("novel_cssReadTextColor", item.textColor);
       Storage.setCookie("novel_cssReadLastTheme", item.theme);
     },

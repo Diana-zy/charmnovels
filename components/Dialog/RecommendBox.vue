@@ -5,13 +5,15 @@
         <div class="dialog-title">You May Like</div>
         <section v-once v-swiper:mySwiper="swiperOption" ref="swiperRef" class="swiper-box">
           <div class="swiper-wrapper">
-            <div
-              v-for="(item, i) in recBooks.slice(0, 5)"
-              :key="i"
-              class="swiper-slide"
-              @click="handleRecItemClick(i)"
-            >
-              <nuxt-img width="200" fit="cover" format="auto" :src="item.cover" :alt="item.name" />
+            <div v-for="(item, i) in recBooks.slice(0, 5)" :key="i" class="swiper-slide">
+              <nuxt-img
+                width="200"
+                fit="cover"
+                format="auto"
+                preload
+                :src="item.cover"
+                :alt="item.name"
+              />
             </div>
           </div>
         </section>
@@ -160,11 +162,11 @@ export default {
 @media screen and (max-width: 750px) {
   .dialog-title {
     font-weight: bold;
-    font-size: vw(52);
+    font-size: vw(46);
     color: $color1;
     line-height: vw(70);
     text-align: center;
-    margin-bottom: vw(84);
+    margin-bottom: vw(64);
   }
   .book-info-box {
     height: auto;
@@ -179,7 +181,7 @@ export default {
     .rec-novel-name {
       color: $color1;
       font-weight: bold;
-      font-size: vw(32);
+      font-size: vw(38);
       line-height: vw(50);
       text-align: left;
     }
@@ -197,6 +199,7 @@ export default {
       .rec-category {
         display: flex;
         gap: vw(20);
+        height: vw(38);
         align-items: center;
         .rec-category-item {
           padding: 0 vw(20);
@@ -205,7 +208,7 @@ export default {
           color: $color1;
           font-weight: 400;
           text-align: center;
-          line-height: vw(30);
+          line-height: vw(38);
           font-size: vw(24);
         }
       }
