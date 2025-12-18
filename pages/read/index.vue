@@ -269,12 +269,43 @@ export default {
     },
 
     // 激励广告关闭
-    closeIncentiveAd(isGetReward) {
+    closeIncentiveAd(isGetReward, isTimeOut = false) {
       this.$refs.moduleReadContentRef.handleCloseLoading();
+      // 请求超时记录当前章节错误次数
+      if (isTimeOut) {
+        const chapterId = this.$route.query.ch;
+        let chapterErrorIncentiveAd = getCookie("chapterErrorIncentiveAd");
+        if (chapterErrorIncentiveAd) {
+          chapterErrorIncentiveAd = JSON.parse(chapterErrorIncentiveAd);
+          if (chapterErrorIncentiveAd[chapterId]) {
+            chapterErrorIncentiveAd[chapterId] < 3 && chapterErrorIncentiveAd[chapterId]++;
+          } else {
+            chapterErrorIncentiveAd[chapterId] = 1;
+          }
+        } else {
+          chapterErrorIncentiveAd = {
+            [chapterId]: 1
+          };
+        }
+        setCookie("chapterErrorIncentiveAd", JSON.stringify(chapterErrorIncentiveAd));
+
+        this.$globalMethod.showNotification({
+          message: "Network error, please try again.",
+          type: "warning"
+        });
+      }
+      // 请求到激励了则清空当前章节的错误次数
       if (isGetReward) {
-        this.handleAfterIncentiveAd();
+        const chapterId = this.$route.query.ch;
+        let chapterErrorIncentiveAd = getCookie("chapterErrorIncentiveAd");
+        if (chapterErrorIncentiveAd) {
+          chapterErrorIncentiveAd = JSON.parse(chapterErrorIncentiveAd);
+          chapterErrorIncentiveAd[chapterId] && delete chapterErrorIncentiveAd[chapterId];
+        }
+        setCookie("chapterErrorIncentiveAd", JSON.stringify(chapterErrorIncentiveAd));
       }
     },
+
     handleOpenIncentiveAd(item, callback) {
       this.clickChapterId = item.id;
       this.callback = callback;

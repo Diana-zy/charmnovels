@@ -15,7 +15,7 @@ export default {
         event: "Q_IR"
       });
       const timer = setTimeout(() => {
-        this.$emit("close-incentive-ad", false);
+        this.$emit("close-incentive-ad", false, true);
         clearTimeout(timer);
       }, 5000);
       try {

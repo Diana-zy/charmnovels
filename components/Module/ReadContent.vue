@@ -178,6 +178,12 @@
       @handlePayByStripe="handlePayByStripe"
       @handleViewAdUnlock="handleViewAdUnlock"
     ></dialog-win-back-box>
+
+    <!--    挽回弹窗-->
+    <dialog-incentive-ad-use-up-tip
+      ref="incentiveAdUseUpTipRef"
+      @handleClickUnlockNow="handleClickUnlockNow"
+    ></dialog-incentive-ad-use-up-tip>
   </section>
 </template>
 
@@ -186,12 +192,10 @@ import Vue from "vue";
 import Storage from "@/utils/storage";
 import googleAdPreload from "@/components/GoogleAdPreload";
 import googleAdSmall from "@/components/GoogleAdSmall";
-import GoogleAdPreloadSmall from "../GoogleAdPreloadSmall";
 import { getUserInfo, unlockNovelChapter, paymentSKU } from "~/api/api";
 import { simulateClickToPath } from "~/utils/utils";
 
 export default {
-  components: { GoogleAdPreloadSmall },
   props: {
     currentChapterDetail: {
       // eslint-disable-next-line vue/require-prop-type-constructor
@@ -413,13 +417,45 @@ export default {
     },
     handleViewAdUnlock(callback) {
       if (this.userInfo?.user_free_count) {
-        window.dataLayer.push({
-          event: "Novel_Lock_Chap_Page",
-          lock_chap_page: "lock_chap_button_watch_ad_click"
-        });
+        // 判断当前章节是否连续请求激励失败累计3次
+        const chapterId = this.$route.query.ch;
+        let chapterErrorIncentiveAd = getCookie("chapterErrorIncentiveAd");
+        if (chapterErrorIncentiveAd) {
+          chapterErrorIncentiveAd = JSON.parse(chapterErrorIncentiveAd);
+          if (chapterErrorIncentiveAd[chapterId] && chapterErrorIncentiveAd[chapterId] >= 3) {
+            this.$globalMethod.showNotification({
+              message: "Network error, retry later.",
+              type: "warning"
+            });
+            return;
+          }
+        }
+
+        if (!callback) {
+          window.dataLayer.push({
+            event: "Novel_Lock_Chap_Page",
+            lock_chap_page: "lock_chap_button_watch_ad_click"
+          });
+        }
+        // 挽回弹窗
+        else {
+          window.dataLayer.push({
+            event: "Novel_Purchase_Dialog",
+            purchase_dialog: "second_page_button_watch_ad_click"
+          });
+        }
+
         this.loading = true;
         this.$emit("change-chapter", this.currentChapterDetail, callback);
+      } else {
+        if (callback instanceof Function) {
+          callback();
+        }
+        this.$refs.incentiveAdUseUpTipRef.visible = true;
       }
+    },
+    handleClickUnlockNow() {
+      this.handlePurchaseStripe();
     },
     handleWinBack(val) {
       this.loading = true;
