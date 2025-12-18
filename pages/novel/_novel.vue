@@ -946,7 +946,8 @@ main {
       }
     }
     .novel-content {
-      font-family: serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial,
+        sans-serif;
       padding: vw(28) 0 vw(20);
       font-size: vw(28);
       color: $color2;

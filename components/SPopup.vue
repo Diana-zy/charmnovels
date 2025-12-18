@@ -118,7 +118,7 @@ export default {
 }
 .popup-bottom {
   pointer-events: auto;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 450px;
   z-index: 901;
@@ -150,7 +150,7 @@ export default {
 @media (max-width: 750px) {
   .popup-bottom {
     pointer-events: auto;
-    position: absolute;
+    position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;

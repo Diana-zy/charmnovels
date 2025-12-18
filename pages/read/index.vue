@@ -301,6 +301,8 @@ export default {
         if (chapterErrorIncentiveAd) {
           chapterErrorIncentiveAd = JSON.parse(chapterErrorIncentiveAd);
           chapterErrorIncentiveAd[chapterId] && delete chapterErrorIncentiveAd[chapterId];
+        } else {
+          chapterErrorIncentiveAd = {};
         }
         setCookie("chapterErrorIncentiveAd", JSON.stringify(chapterErrorIncentiveAd));
       }

@@ -226,7 +226,7 @@ export default {
         width: 110px;
         height: 150px;
         margin-bottom: 6px;
-        background: rgba(#fce6db, 0.59);
+        background: #fefaf8;
         border-radius: 8px;
         border: 1px solid #f59a23;
         display: flex;
@@ -407,7 +407,7 @@ export default {
         width: vw(200);
         height: vw(272);
         margin-bottom: vw(48);
-        background: rgba(#fce6db, 0.59);
+        background: #fefaf8;
         border-radius: vw(16);
         border: vw(2) solid #f59a23;
         display: flex;

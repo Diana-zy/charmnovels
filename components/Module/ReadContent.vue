@@ -51,7 +51,7 @@
           :class="['btn-change', 'btn-pre', { 'btn-disable': preChapterItem === null }]"
           @click="(event) => handleClickPageChapter(event, preChapterItem, preChapterPath)"
         >
-          <div class="previous btn"> previous</div>
+          <div class="previous btn"> Previous</div>
         </div>
         <div
           :to="nextChapterPath"
@@ -1027,7 +1027,7 @@ export default {
     }
   }
   .lock-content {
-    height: calc(var(--read-font-size) * var(--read-font-space) * 14 + vw(102));
+    height: calc(var(--read-font-size) * var(--read-font-space) * 8 + vw(102));
     overflow: hidden;
     padding-bottom: 0;
     position: relative;

@@ -7,8 +7,8 @@
           @click="handleViewAdUnlock"
           :class="{ 'disable-btn': !userInfo?.user_free_count }"
         >
-          <div> watch ad to unlock this chapter</div>
-          <div> Watched today({{ 5 - userInfo?.user_free_count }}/5)</div>
+          <div> Watch Ad To Unlock This Chapter</div>
+          <div> Watched Today({{ 5 - userInfo?.user_free_count }}/5)</div>
         </div>
 
         <div class="top-up-out-box">
