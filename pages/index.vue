@@ -38,7 +38,7 @@
       <common-infinite-scroll-list
         api-endpoint="/api/novel/novel_module"
         :initial-page="2"
-        :page-size="4"
+        :page-size="5"
         :initial-items="allBooks"
         :params="{ module_id: 'all' }"
         class="module-all-content"
@@ -68,7 +68,7 @@ export default {
         $axios.$post("/api/novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "rec",
-          page_size: 3,
+          page_size: 4,
           page: 1
         }),
         $axios.$post("/api/novel/novel_module", {
@@ -86,7 +86,7 @@ export default {
         $axios.$post("/api/novel/novel_module", {
           site_id: env.SITE_ID,
           module_id: "all",
-          page_size: 4,
+          page_size: 5,
           page: 1
         })
       ]);
