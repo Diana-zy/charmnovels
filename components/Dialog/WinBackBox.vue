@@ -54,13 +54,6 @@ export default {
   mounted() {},
   methods: {
     handleViewAdUnlock() {
-      if (!this.userInfo?.user_free_count) {
-        return;
-      }
-      window.dataLayer.push({
-        event: "Novel_Purchase_Dialog",
-        purchase_dialog: "second_page_button_watch_ad_click"
-      });
       this.$emit("handleViewAdUnlock", () => {
         this.visible = false;
       });

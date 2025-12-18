@@ -40,7 +40,7 @@ export default {
   display: flex;
   align-items: center;
   transition: transform 0.5s ease; /* 添加过渡效果 */
-  z-index: 999;
+  z-index: 9999;
   &.success {
     background: $color3;
   }
