@@ -364,12 +364,20 @@ export default {
     }
 
     .top-up-box {
+      width: 100vw;
+      margin-left: vw(-32);
       display: flex;
       flex-wrap: nowrap;
       overflow-x: scroll;
       align-items: flex-end;
       gap: vw(20);
 
+      .item-top:first-child {
+        margin-left: vw(32);
+      }
+      .item-top:last-child {
+        margin-right: vw(32);
+      }
       &::-webkit-scrollbar {
         display: none;
       }
