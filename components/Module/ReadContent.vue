@@ -1042,7 +1042,7 @@ export default {
 
   .lock-bottom-operation {
     margin-top: vw(48);
-    margin-bottom: vw(40);
+    /*margin-bottom: vw(40);*/
     /*padding-bottom: vw(80);*/
     .lock-operation-title {
       margin-bottom: vw(24);
@@ -1073,9 +1073,12 @@ export default {
       margin-bottom: vw(30);
     }
     .lock-btn-box {
+      width: 100vw;
       position: sticky;
-      bottom: vw(120);
+      bottom: vw(80);
+      padding-bottom: vw(40);
       padding-top: vw(32);
+      transform: translateX(vw(-46));
       .watch-ad-unlock {
         height: vw(88);
         width: vw(658);

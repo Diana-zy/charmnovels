@@ -5,7 +5,9 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      timer: null
+    };
   },
   mounted() {},
   methods: {
@@ -14,9 +16,9 @@ export default {
       window.dataLayer.push({
         event: "Q_IR"
       });
-      const timer = setTimeout(() => {
+      this.timer = setTimeout(() => {
         this.$emit("close-incentive-ad", false, true);
-        clearTimeout(timer);
+        clearTimeout(this.timer);
       }, 5000);
       try {
         // eslint-disable-next-line no-undef
@@ -33,6 +35,7 @@ export default {
     },
     loadRewardedAd(rewardedAd) {
       this.$emit("close-incentive-ad", false);
+      clearTimeout(this.timer);
       if (rewardedAd == null) {
         // 加载失败
         // this.showAdBreak();
