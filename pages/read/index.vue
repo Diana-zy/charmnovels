@@ -171,6 +171,8 @@ export default {
                   chapter_id: chapterDetail.chapter_id,
                   unlock_type: 2
                 }).then((res) => {
+                  self.$refs.moduleReadContentRef &&
+                    (self.$refs.moduleReadContentRef.loading = false);
                   if (res.success) {
                     if (res.data.status === 1) {
                       window.trackEventToPixel("Unlock_Succeed");
@@ -181,6 +183,9 @@ export default {
                     self.getCurrentChapterDetail();
                   }
                 });
+              } else {
+                self.$refs.moduleReadContentRef &&
+                  (self.$refs.moduleReadContentRef.loading = false);
               }
             });
           }

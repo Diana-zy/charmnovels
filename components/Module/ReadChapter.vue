@@ -100,6 +100,7 @@ export default {
       });
     },
     handleClickChapter(event, item) {
+      return;
       this.$emit("change-chapter", item);
     }
   }

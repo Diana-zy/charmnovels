@@ -382,13 +382,13 @@ export default {
               window.dataLayer.push({
                 event: "Unlock_Succeed"
               });
+              if (this.autoUnLock) {
+                Storage.setItem("autoUnLock", "yes");
+              } else {
+                Storage.setItem("autoUnLock", "no");
+              }
             }
             this.$emit("reload");
-            if (this.autoUnLock) {
-              Storage.setItem("autoUnLock", "yes");
-            } else {
-              Storage.setItem("autoUnLock", "no");
-            }
           }
         });
       } else {
@@ -398,11 +398,11 @@ export default {
           event: "Novel_Lock_Chap_Page",
           lock_chap_page: "lock_chap_purchase_dialog_show"
         });
-        if (this.autoUnLock) {
-          Storage.setItem("autoUnLock", "yes");
-        } else {
-          Storage.setItem("autoUnLock", "no");
-        }
+        // if (this.autoUnLock) {
+        //   Storage.setItem("autoUnLock", "yes");
+        // } else {
+        //   Storage.setItem("autoUnLock", "no");
+        // }
         this.$refs.topUpPopupRef.handleOpen(() => {
           this.loading = false;
         });
@@ -615,6 +615,11 @@ export default {
                 event: "Start_Purchase_Novel",
                 purchase_novel: `id_${this.currentChapterDetail.chapter_id}`
               });
+            }
+            if (this.autoUnLock) {
+              Storage.setItem("autoUnLock", "yes");
+            } else {
+              Storage.setItem("autoUnLock", "no");
             }
             window.location.href = url;
           }
