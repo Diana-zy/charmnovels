@@ -141,13 +141,13 @@ export default {
           const chapterDetail = response;
           self.$refs.moduleReadContentRef && (self.$refs.moduleReadContentRef.loading = false);
           if (window.getCookie("is_Purchase_Completed") === "yes") {
-            window.setCookie("is_Purchase_Completed", "no");
             unlockNovelChapter({
               novel_id: chapterDetail.novel_info.id,
               chapter_id: chapterDetail.chapter_id,
               unlock_type: 2
             }).then((res) => {
               if (res.success) {
+                window.setCookie("is_Purchase_Completed", "no");
                 if (res.data.status === 1) {
                   window.trackEventToPixel("Unlock_Succeed");
                   window.dataLayer.push({
