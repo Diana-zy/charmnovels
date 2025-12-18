@@ -715,6 +715,7 @@ export default {
 
 <style scoped lang="scss">
 .read-container {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   width: 100%;
   max-width: 900px;
   margin: 100px auto 32px;

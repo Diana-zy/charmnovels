@@ -120,7 +120,7 @@ export default {
 
 @media screen and (max-width: 750px) {
   main {
-    padding-top: vw(167);
+    /*padding-top: vw(167);*/
   }
 
   .module-trending-content,

@@ -5,24 +5,24 @@
     </custom-link>
 
     <!-- Tab -->
-    <div
-      :class="[
-        'header-tabs',
-        { 'header-tabs-hidden': currentPage != 'Home' && currentPage != 'Library' }
-      ]"
-    >
-      <custom-link
-        v-for="(tab, i) in tabsArr"
-        :key="i"
-        :to="tab.path"
-        :class="[
-          'tab-item',
-          `tab-item-${tab.name}`,
-          { 'tab-item-active': currentPage === tab.name }
-        ]"
-        >{{ tab.name }}</custom-link
-      >
-    </div>
+    <!--    <div-->
+    <!--      :class="[-->
+    <!--        'header-tabs',-->
+    <!--        { 'header-tabs-hidden': currentPage != 'Home' && currentPage != 'Library' }-->
+    <!--      ]"-->
+    <!--    >-->
+    <!--      <custom-link-->
+    <!--        v-for="(tab, i) in tabsArr"-->
+    <!--        :key="i"-->
+    <!--        :to="tab.path"-->
+    <!--        :class="[-->
+    <!--          'tab-item',-->
+    <!--          `tab-item-${tab.name}`,-->
+    <!--          { 'tab-item-active': currentPage === tab.name }-->
+    <!--        ]"-->
+    <!--        >{{ tab.name }}</custom-link-->
+    <!--      >-->
+    <!--    </div>-->
 
     <div class="header-right">
       <common-search-input @handle-search="handleSearch" />
