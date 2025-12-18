@@ -22,6 +22,13 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => {
     const res = response.data;
+    // const { msg } = response.data;
+    // console.log(response.data, "response.dat");
+    // if (msg === "tid is not exist") {
+    //   window.removeItem("novel_tid");
+    //   window.history.replaceState({}, "", window.location.href);
+    //   return Promise.reject("error:tid is not exist");
+    // }
     if (res.success === true) {
       return res;
     } else {

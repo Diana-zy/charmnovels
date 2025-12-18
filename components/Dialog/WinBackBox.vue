@@ -199,7 +199,7 @@ export default {
 
       .item {
         width: vw(660);
-        height: vw(184);
+        height: auto;
       }
     }
   }

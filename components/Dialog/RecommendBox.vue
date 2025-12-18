@@ -39,6 +39,18 @@
         </section>
       </div>
     </template>
+    <template v-slot:preload>
+      <div v-for="(item, i) in recBooks.slice(0, 5)" :key="i">
+        <nuxt-img
+          width="200"
+          fit="cover"
+          format="auto"
+          preload
+          :src="item.cover"
+          :alt="item.name"
+        />
+      </div>
+    </template>
   </s-model>
 </template>
 

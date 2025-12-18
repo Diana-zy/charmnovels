@@ -542,6 +542,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+main {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+}
 .module-introduce {
   position: relative;
   margin-top: 32px;

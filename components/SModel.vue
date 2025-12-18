@@ -12,6 +12,9 @@
           <div class="icon-dialog-close"></div>
         </footer>
       </div>
+      <div class="preload-class">
+        <slot name="preload"></slot>
+      </div>
     </div>
   </transition>
 </template>
@@ -91,6 +94,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.preload-class {
+  display: none;
+}
 @media screen and (min-width: 751px) {
   .model-overlay {
     position: fixed;

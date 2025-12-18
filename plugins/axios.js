@@ -28,6 +28,13 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
     (response) => {
       // console.log("response", response.config.url);
       const res = response.data;
+      // const { msg } = response.data;
+      // if (msg === "tid is not exist") {
+      //   window.removeItem("novel_tid");
+      //   window.history.replaceState({}, "", window.location.href);
+      //   console.log("error:tid is not exist", 1111);
+      //   return Promise.reject("error:tid is not exist");
+      // }
       if (res.success === true) {
         return res;
       } else {

@@ -72,7 +72,7 @@
           <div>Words of this chapter: {{ currentChapterDetail.word_count }}</div>
           <div>Balance: {{ userInfo?.coin }} coins</div>
         </div>
-        <google-ad-preload class="ad-1" ad-slot="7793230426" />
+        <!--        <google-ad-preload class="ad-1" ad-slot="7793230426" />-->
         <!--      <div class="download-app"> Download App to read this chapter for FREE </div>-->
         <div class="lock-btn-box">
           <div
@@ -238,7 +238,7 @@ export default {
   },
   computed: {
     chapterContent() {
-      let content = this.currentChapterDetail?.content;
+      let content = this.currentChapterDetail?.content.replace(/\n\n/g, "\n");
       content = content?.replace(/\n/g, "<p class='br'></p>");
       return content;
     },
@@ -758,7 +758,7 @@ export default {
   opacity: 0.6;
 }
 .read-content {
-  font-family: serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   h3 {
     font-size: 20px;
     line-height: 26px;
@@ -887,12 +887,13 @@ export default {
   }
 }
 .lock-bottom-operation {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   margin-top: 32px;
   .lock-operation-title {
     margin-bottom: 24px;
     font-weight: bold;
     font-size: 22px;
-    color: $color2;
+    //color: $color2;
     line-height: 30px;
     text-align: center;
     width: 100%;
@@ -901,7 +902,7 @@ export default {
     width: 100%;
     height: 128px;
     line-height: 42px;
-    font-weight: 600;
+    /*font-weight: 600;*/
     font-size: 24px;
     //color: $color2;
   }
@@ -1026,7 +1027,7 @@ export default {
     }
   }
   .lock-content {
-    height: calc(var(--read-font-size) * var(--read-font-space) * 5 + vw(102));
+    height: calc(var(--read-font-size) * var(--read-font-space) * 14 + vw(102));
     overflow: hidden;
     padding-bottom: 0;
     position: relative;
@@ -1036,7 +1037,7 @@ export default {
       left: 0;
       bottom: 0;
       width: 100%;
-      height: calc(var(--read-font-size) * var(--read-font-space) * 2);
+      height: calc(var(--read-font-size) * var(--read-font-space) * 3);
     }
   }
 
@@ -1047,18 +1048,20 @@ export default {
     .lock-operation-title {
       margin-bottom: vw(24);
       font-weight: bold;
-      font-size: vw(28);
-      color: $color2;
-      line-height: vw(38);
+      font-size: vw(34);
+      //color: $color2;
+      line-height: var(--read-font-space);
       text-align: center;
       width: 100%;
     }
     .lock-user-info {
       width: 100%;
       height: vw(128);
-      line-height: vw(42);
-      font-weight: 600;
-      font-size: vw(28);
+      line-height: var(--read-font-space);
+      /*font-weight: 600;*/
+      font-weight: 300;
+      font-size: vw(24);
+      text-align: center;
       //color: $color2;
     }
     .download-app {
@@ -1074,7 +1077,7 @@ export default {
     }
     .lock-btn-box {
       width: 100vw;
-      position: sticky;
+      position: fixed;
       bottom: vw(80);
       padding-bottom: vw(40);
       padding-top: vw(32);
@@ -1120,8 +1123,8 @@ export default {
         width: auto;
         height: vw(48);
         margin: vw(24) auto 0;
-        font-weight: 400;
-        font-size: vw(26);
+        font-weight: 300;
+        font-size: vw(24);
         // color: $color2;
         display: flex;
         align-items: center;

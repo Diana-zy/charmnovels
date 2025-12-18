@@ -352,6 +352,8 @@ export default {
 }
 @media screen and (max-width: 750px) {
   .content {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial,
+      sans-serif;
     padding: vw(32);
 
     .ms-box {
