@@ -312,7 +312,7 @@ export default {
   mounted() {
     this.isMobile = window.innerWidth <= 750;
     this.initStorageReadSetting();
-
+    this.autoUnLock = Storage.getItem("autoUnLock") !== "no";
     const root = document.documentElement;
     root.style.setProperty("--read-font-size", Storage.getCookie("novel_cssReadFontSize") + "px");
     root.style.setProperty("--read-font-space", Storage.getCookie("novel_cssReadFontSpace"));
@@ -393,6 +393,11 @@ export default {
           event: "Novel_Lock_Chap_Page",
           lock_chap_page: "lock_chap_purchase_dialog_show"
         });
+        if (this.autoUnLock) {
+          Storage.setItem("autoUnLock", "yes");
+        } else {
+          Storage.setItem("autoUnLock", "no");
+        }
         this.$refs.topUpPopupRef.handleOpen(() => {
           this.loading = false;
         });
@@ -615,7 +620,7 @@ export default {
     },
     async updateUserCoins() {
       await getUserInfo().then((res) => {
-        console.log(res, "res");
+        // console.log(res, "res");
         if (res.success) {
           this.userInfo = res.data;
         }
@@ -864,7 +869,7 @@ export default {
       div:last-child {
         font-size: 16px;
         font-weight: 400;
-        color: $color2;
+        //color: $color2;
         line-height: 22px;
         text-align: center;
       }
@@ -969,6 +974,7 @@ export default {
 
   .lock-bottom-operation {
     margin-top: vw(48);
+    margin-bottom: vw(40);
     /*padding-bottom: vw(80);*/
     .lock-operation-title {
       margin-bottom: vw(24);
@@ -995,10 +1001,13 @@ export default {
       text-align: center;
       margin-top: vw(20);
     }
+    .ad-1 {
+      margin-bottom: vw(100);
+    }
     .lock-btn-box {
       position: sticky;
-      bottom: vw(80);
-      margin-top: vw(32);
+      bottom: vw(120);
+      padding-top: vw(32);
       .watch-ad-unlock {
         height: vw(88);
         width: vw(658);
@@ -1019,7 +1028,7 @@ export default {
         div:last-child {
           font-size: vw(20);
           font-weight: 400;
-          color: $color2;
+          //color: $color2;
           line-height: vw(26);
           text-align: center;
         }

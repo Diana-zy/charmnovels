@@ -245,5 +245,12 @@ export default {
       }
     }
   }
+  ::v-deep .model-center {
+    .footer-close-icon {
+      position: absolute;
+      top: vw(-150);
+      right: vw(30);
+    }
+  }
 }
 </style>
