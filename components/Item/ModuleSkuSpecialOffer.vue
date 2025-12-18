@@ -48,7 +48,7 @@ export default {
   justify-content: space-between;
   padding: 10px 12px;
   border-radius: 8px;
-  background: #fce5d933;
+  background: #fefaf8;
   border: 1px solid $color3;
   .tag-off {
     position: absolute;
