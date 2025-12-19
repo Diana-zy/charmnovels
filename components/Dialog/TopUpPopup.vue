@@ -78,7 +78,8 @@ export default {
       skuVipList: [],
       loading: false,
       skuTopUpList: [],
-      visible: false
+      visible: false,
+      price: 24.99
       // sku: []
     };
   },
@@ -94,6 +95,7 @@ export default {
   methods: {
     handleClick(num, type, item) {
       this.select = item.ID;
+      this.price = item.price;
     },
     handlePayByPaypel() {
       window.dataLayer.push({
@@ -128,6 +130,7 @@ export default {
         "purchase_action",
         `purchase_completed_with_${window.getTypeByID(this.select)}`
       );
+      window.setCookie("purchase_price", this.price);
       window.dataLayer.push({
         event: "Novel_Purchase_Dialog",
         purchase_dialog: `purchase_dialog_with_${window.getTypeByID(this.select)}`

@@ -69,6 +69,7 @@ export default {
       });
 
       window.setCookie("purchase_action", `purchase_completed_with_${window.getTypeByID(item.ID)}`);
+      window.setCookie("purchase_price", item.price);
     },
 
     async handleGetOrderPayStatus() {

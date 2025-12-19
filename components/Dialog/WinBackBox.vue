@@ -71,6 +71,7 @@ export default {
       });
       window.setCookie("purchase_dialog", "purchase_completed_with_second_page");
       window.setCookie("purchase_action", `purchase_completed_with_${window.getTypeByID(val.ID)}`);
+      window.setCookie("purchase_price", val.price);
       this.$emit("handlePayByStripe", val.ID);
     },
     async handleOpen(val = false, callback) {

@@ -134,10 +134,11 @@ function trackEventToPixel(eventKey) {
     if (source === "tiktok") {
       window.ttq?.track?.(eventName);
     } else if (source === "facebook") {
+      const price = window.getCookie("purchase_price") || 1;
       eventName === "Purchase"
         ? window.fbq?.("track", eventName, {
             currency: "USD",
-            value: 1
+            value: price
           })
         : window.fbq?.("track", eventName);
     }
