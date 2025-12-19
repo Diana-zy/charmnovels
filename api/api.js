@@ -21,6 +21,7 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
+    console.log(arguments, "arguments");
     const res = response.data;
     // const { msg } = response.data;
     // console.log(response.data, "response.dat");
@@ -36,6 +37,21 @@ instance.interceptors.response.use(
     }
   },
   (error) => {
+    //接口返回tid不存在处理
+    if (error.response) {
+      const responseData = error.response.data; // 这就是接口返回的JSON
+      console.log(responseData, "responseData");
+      const { msg } = responseData;
+      if (msg === "tid is not exist") {
+        window.removeItem("novel_tid");
+        // 在拿到响应后刷新当前页面
+        if (process.client) {
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+        }
+      }
+    }
     console.log("err" + error);
     return Promise.reject(error);
   }
