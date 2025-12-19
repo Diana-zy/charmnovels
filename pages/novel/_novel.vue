@@ -355,6 +355,10 @@ export default {
         event: "Novel_Intro_Page_Click",
         intro_click: "continue_reading_button"
       });
+      window.dataLayer.push({
+        event: "Landing_Page_Continue_Reading",
+      });
+      window.trackEventToPixel("Landing_Page_Continue_Reading");
     },
     handleResize() {
       if (window.innerWidth <= 750) {

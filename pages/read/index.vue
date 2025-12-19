@@ -186,8 +186,39 @@ export default {
               } else {
                 self.$refs.moduleReadContentRef &&
                   (self.$refs.moduleReadContentRef.loading = false);
+                const source = window.getParam("hi_source");
+                const { hi_source_clid } = window.getSourceClid(source);
+                if(!window.getCookie("Locked_Chapter_Show"+hi_source_clid )){
+                  window.dataLayer.push({
+                    event:'Locked_Chapter_Show_User'
+                  })
+                  window.trackEventToPixel("Locked_Chapter_Show_User");
+                  window.setCookie("Locked_Chapter_Show"+hi_source_clid,'yes')
+                }
+                window.dataLayer.push({
+                  event:'Locked_Chapter_Show_Count'
+                })
+                window.trackEventToPixel("Locked_Chapter_Show_Count");
+
               }
             });
+          } else {
+            if( chapterDetail?.locked_chapter &&
+              !chapterDetail?.is_unlock){
+              const source = window.getParam("hi_source");
+              const { hi_source_clid } = window.getSourceClid(source);
+              if(!window.getCookie("Locked_Chapter_Show"+hi_source_clid )){
+                window.dataLayer.push({
+                  event:'Locked_Chapter_Show_User'
+                })
+                window.trackEventToPixel("Locked_Chapter_Show_User");
+                window.setCookie("Locked_Chapter_Show"+hi_source_clid,'yes')
+              }
+              window.dataLayer.push({
+                event:'Locked_Chapter_Show_Count'
+              })
+              window.trackEventToPixel("Locked_Chapter_Show_Count");
+            }
           }
           /* 登录过期 */
           // if (!chapterDetail.is_login && Storage.getCookie("novel_token")) {

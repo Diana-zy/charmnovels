@@ -99,7 +99,7 @@ function trackEventToPixel(eventKey) {
   const eventNameObj = {
     Land_User_Home: {
       tiktok: "Search",
-      facebook: "Search"
+      // facebook: "Search"
     },
     Land_User_Not_Home: {
       tiktok: "Download",
@@ -107,11 +107,23 @@ function trackEventToPixel(eventKey) {
     },
     Land_User_Home_Count: {
       tiktok: "StartTrial",
+      // facebook: "StartTrial"
+    },
+    Landing_Page_Continue_Reading: {
+      tiktok: "",
+      facebook: "ViewContent"
+    },
+    Locked_Chapter_Show_User: {
+      tiktok: "",
       facebook: "StartTrial"
+    },
+    Locked_Chapter_Show_Count: {
+      tiktok: "",
+      facebook: "InitiateCheckout"
     },
     Land_User_Not_Home_Count: {
       tiktok: "ViewContent",
-      facebook: "ViewContent"
+      facebook: "Search"
     },
     Purchase_Completed: {
       tiktok: "Purchase",
