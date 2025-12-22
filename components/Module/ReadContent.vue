@@ -77,7 +77,7 @@
         <div class="lock-btn-box">
           <div
             class="watch-ad-unlock"
-            @click="handleViewAdUnlock"
+            @click="handleViewAdUnlock()"
             :class="{ 'disable-btn': !userInfo?.user_free_count }"
           >
             <div> Watch Ad To Unlock This Chapter</div>
