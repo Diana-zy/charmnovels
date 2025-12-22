@@ -75,14 +75,14 @@
         <!--        <google-ad-preload class="ad-1" ad-slot="7793230426" />-->
         <!--      <div class="download-app"> Download App to read this chapter for FREE </div>-->
         <div class="lock-btn-box">
-          <div
-            class="watch-ad-unlock"
-            @click="handleViewAdUnlock()"
-            :class="{ 'disable-btn': !userInfo?.user_free_count }"
-          >
-            <div> Watch Ad To Unlock This Chapter</div>
-            <div> Watched Today({{ 5 - userInfo?.user_free_count }}/5)</div>
-          </div>
+<!--          <div-->
+<!--            class="watch-ad-unlock"-->
+<!--            @click="handleViewAdUnlock()"-->
+<!--            :class="{ 'disable-btn': !userInfo?.user_free_count }"-->
+<!--          >-->
+<!--            <div> Watch Ad To Unlock This Chapter</div>-->
+<!--            <div> Watched Today({{ 5 - userInfo?.user_free_count }}/5)</div>-->
+<!--          </div>-->
           <div class="purchase-stripe" @click="handlePurchaseStripe">
             Unlock This Chapter With {{ this.currentChapterDetail.coin }} Coins
           </div>
@@ -383,8 +383,12 @@ export default {
             // console.log(res);
             if (res.data.status === 1) {
               window.trackEventToPixel("Unlock_Succeed");
+              window.trackEventToPixel("Unlock_With_Coins");
               window.dataLayer.push({
                 event: "Unlock_Succeed"
+              });
+              window.dataLayer.push({
+                event: "Unlock_With_Coins"
               });
               if (this.autoUnLock) {
                 Storage.setItem("autoUnLock", "yes");
@@ -579,6 +583,10 @@ export default {
           }).then(async (res) => {
             if (res.success && res.data.status === 1) {
               window.trackEventToPixel("Unlock_Succeed");
+              window.trackEventToPixel("Unlock_With_Coins");
+              window.dataLayer.push({
+                event: "Unlock_With_Coins"
+              });
               await window.dataLayer.push({
                 event: "Unlock_Succeed"
               });

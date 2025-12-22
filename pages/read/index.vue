@@ -150,8 +150,12 @@ export default {
                 window.setCookie("is_Purchase_Completed", "no");
                 if (res.data.status === 1) {
                   window.trackEventToPixel("Unlock_Succeed");
+                  window.trackEventToPixel("Unlock_With_Coins");
                   window.dataLayer.push({
                     event: "Unlock_Succeed"
+                  });
+                  window.dataLayer.push({
+                    event: "Unlock_With_Coins"
                   });
                 }
                 self.getCurrentChapterDetail();
@@ -176,8 +180,12 @@ export default {
                   if (res.success) {
                     if (res.data.status === 1) {
                       window.trackEventToPixel("Unlock_Succeed");
+                      window.trackEventToPixel("Unlock_With_Coins");
                       window.dataLayer.push({
                         event: "Unlock_Succeed"
+                      });
+                      window.dataLayer.push({
+                        event: "Unlock_With_Coins"
                       });
                     }
                     self.getCurrentChapterDetail();

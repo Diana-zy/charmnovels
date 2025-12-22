@@ -136,6 +136,9 @@ function trackEventToPixel(eventKey) {
     Unlock_Succeed: {
       tiktok: "CompleteRegistration",
       facebook: "CompleteRegistration"
+    },
+    Unlock_With_Coins:{
+      facebook: "AddToCart"
     }
   };
   const source = window.getParam("hi_source");
@@ -145,6 +148,9 @@ function trackEventToPixel(eventKey) {
   if (source && pixelId && eventName) {
     if (source === "tiktok") {
       window.ttq?.track?.(eventName);
+      try {
+        trackEventToApi(eventName);
+      } catch (e) {}
     } else if (source === "facebook") {
       const price = window.getCookie("purchase_price") || 1;
       eventName === "Purchase"
@@ -153,6 +159,10 @@ function trackEventToPixel(eventKey) {
             value: price
           })
         : window.fbq?.("track", eventName);
+
+      try {
+        trackEventToApi(eventName);
+      } catch (e) {}
     }
   }
 }

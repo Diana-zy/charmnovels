@@ -2,14 +2,14 @@
   <s-model :value.sync="visible" @handleClose="handleClose">
     <template v-slot:content>
       <div class="win-back-content">
-        <div
-          class="watch-ad-unlock"
-          @click="handleViewAdUnlock"
-          :class="{ 'disable-btn': !userInfo?.user_free_count }"
-        >
-          <div> Watch Ad To Unlock This Chapter</div>
-          <div> Watched Today({{ 5 - userInfo?.user_free_count }}/5)</div>
-        </div>
+<!--        <div-->
+<!--          class="watch-ad-unlock"-->
+<!--          @click="handleViewAdUnlock"-->
+<!--          :class="{ 'disable-btn': !userInfo?.user_free_count }"-->
+<!--        >-->
+<!--          <div> Watch Ad To Unlock This Chapter</div>-->
+<!--          <div> Watched Today({{ 5 - userInfo?.user_free_count }}/5)</div>-->
+<!--        </div>-->
 
         <div class="top-up-out-box">
           <item-module-sku-special-offer
