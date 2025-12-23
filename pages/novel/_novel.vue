@@ -1,7 +1,7 @@
 <template>
-  <main v-if="novelDetail">
+  <main>
     <custom-header v-if="!isMobile" />
-    <custom-back-header v-else needBackModel @handleOpenRecommendBox="handleOpenRecommendBox" />
+    <custom-back-header v-else need-back-model @handleOpenRecommendBox="handleOpenRecommendBox" />
     <section v-if="novelDetailInfo" class="module-introduce">
       <div class="introduce-content">
         <div class="cover-container">
@@ -19,8 +19,6 @@
         <div class="introduce-info">
           <h3 class="name">{{ novelDetailInfo.name }}</h3>
           <div class="author-row">
-            <!--            <span>{{ novelDetailInfo.category }}</span>-->
-            <!--            <span class="line"></span>-->
             <span>By：{{ novelDetailInfo.author }}</span>
           </div>
           <div class="author-row updated-time-row">
@@ -36,18 +34,7 @@
           <!--          是否连载-->
           <div class="novel-status pc-hidden-block">
             <span>{{ novelDetailInfo.is_complete ? "Completed!" : "Update Just Now!" }}</span>
-            <!--            <span>/</span>-->
-            <!--            <span>Update Just Now!</span>-->
           </div>
-          <!--          <div class="rating rating-mobile pc-hidden-flex">-->
-          <!--            <i-->
-          <!--              v-for="(item, i) in getStarListStyle(novelDetailInfo.score)"-->
-          <!--              :key="i"-->
-          <!--              :class="item"-->
-          <!--              class="rating-item"-->
-          <!--            ></i>-->
-          <!--            <span class="score">{{ getStarScore(novelDetailInfo.score) }}</span>-->
-          <!--          </div>-->
 
           <div class="info-row m-hidden-flex">
             <div class="m-hidden-block">
@@ -75,7 +62,7 @@
           <custom-link :to="startReadPath" class="btn-read">
             <i class="icon-read-book"></i>
             <span>{{
-              novelDetail.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
+              novelDetail?.user_last_read_chapter_num === 0 ? "Start Reading" : "Continue Reading"
             }}</span>
           </custom-link>
         </div>
@@ -86,7 +73,7 @@
       <p class="desc m-hidden-block">{{ novelDetailInfo.intro }}</p>
       <module-expandable-text
         :text="novelDetailInfo.intro"
-        :novelDetailInfo="novelDetailInfo"
+        :novel-detail-info="novelDetailInfo"
         class="pc-hidden-block"
       >
         <div class="novel-info-rating">
@@ -104,7 +91,7 @@
                 :class="item"
                 class="rating-item"
               ></i>
-              <span v-show="!novelDetail.real_score" class="rating-book" @click="handleRatingBook">
+              <span v-show="!novelDetail?.real_score" class="rating-book" @click="handleRatingBook">
                 Rating this book</span
               >
             </div>
@@ -183,7 +170,7 @@
     ></dialog-rating-box>
 
     <dialog-recommend-box
-      :recBooks="trending.filter((item) => item.id !== novelDetailInfo?.id).slice(0, 5)"
+      :rec-books="trending.filter((item) => item.id !== novelDetailInfo?.id).slice(0, 5)"
       :visible.sync="showRecommendBox"
     ></dialog-recommend-box>
     <!-- 移动端章节弹窗 -->
@@ -238,31 +225,39 @@ import { saveNovelScore } from "~/api/api";
 export default {
   async asyncData({ $axios, params, env }) {
     try {
-      const [allBooksResponse, recBooksResponse, trendingResponse] = await Promise.all([
-        $axios.$post("/api/novel/novel_module", {
-          site_id: env.SITE_ID,
-          module_id: "all",
-          page_size: 4,
-          page: 1
-        }),
-        $axios.$post("/api/novel/novel_module", {
-          site_id: env.SITE_ID,
-          module_id: "all",
-          page_size: 20,
-          page: 1
-        }),
-        $axios.$post("/api/novel/novel_module", {
-          site_id: env.SITE_ID,
-          module_id: "trending",
-          page_size: 6,
-          page: 1
-        })
-      ]);
+      const novelId = params.novel;
+      const [allBooksResponse, recBooksResponse, trendingResponse, novelDetailResponse] =
+        await Promise.all([
+          $axios.$post("/api/novel/novel_module", {
+            site_id: env.SITE_ID,
+            module_id: "all",
+            page_size: 4,
+            page: 1
+          }),
+          $axios.$post("/api/novel/novel_module", {
+            site_id: env.SITE_ID,
+            module_id: "all",
+            page_size: 20,
+            page: 1
+          }),
+          $axios.$post("/api/novel/novel_module", {
+            site_id: env.SITE_ID,
+            module_id: "trending",
+            page_size: 6,
+            page: 1
+          }),
+          $axios.$post("/api/novel/novel_info", {
+            site_id: env.SITE_ID,
+            novel_id: Number(novelId)
+          })
+        ]);
       const recBooks = shuffleArray(recBooksResponse.novel_list).slice(0, 5);
       return {
         allBooks: allBooksResponse.novel_list,
         recBooks,
-        trending: trendingResponse.novel_list
+        trending: trendingResponse.novel_list,
+        novelDetailInfo: novelDetailResponse.novel_info,
+        first_chapter_content: novelDetailResponse.first_chapter_content
       };
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -273,6 +268,7 @@ export default {
       isMobile: false,
       novelDetail: null,
       novelDetailInfo: null,
+      first_chapter_content: "",
       clickChapterId: 0, // 点击章节id
       isInitIncentiveAd: false, // 激励广告是否初始化
       novelChapterList: [],
@@ -289,7 +285,7 @@ export default {
   },
   computed: {
     chapterContent() {
-      let content = this.novelDetail?.first_chapter_content;
+      let content = this.first_chapter_content;
       content = content?.replace(/\n/g, "<p class='br'></p>");
       return content;
     },
@@ -356,7 +352,7 @@ export default {
         intro_click: "continue_reading_button"
       });
       window.dataLayer.push({
-        event: "Landing_Page_Continue_Reading",
+        event: "Landing_Page_Continue_Reading"
       });
       window.trackEventToPixel("Landing_Page_Continue_Reading");
     },
@@ -397,7 +393,7 @@ export default {
         .then((response) => {
           const novelDetail = response;
           this.novelDetail = novelDetail;
-          this.novelDetailInfo = novelDetail.novel_info;
+          // this.novelDetailInfo = novelDetail.novel_info;
 
           this.novelChapterList = novelDetail.chapter.map((item) => {
             return { ...item, isUnlocked: true };
