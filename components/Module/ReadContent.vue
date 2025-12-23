@@ -657,7 +657,7 @@ export default {
               });
               window.dataLayer.push({
                 event: "Start_Purchase_Novel",
-                purchase_novel: `id_${this.currentChapterDetail.chapter_id}`
+                purchase_novel: `id_${this.currentChapterDetail.novel_info.id}`
               });
             }
             if (this.autoUnLock) {
