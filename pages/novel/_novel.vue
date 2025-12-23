@@ -1,7 +1,7 @@
 <template>
   <main>
-    <custom-header v-if="!isMobile" />
-    <custom-back-header v-else need-back-model @handleOpenRecommendBox="handleOpenRecommendBox" />
+    <custom-header class="m-hidden-flex" />
+    <custom-back-header class="m-header" need-back-model @handleOpenRecommendBox="handleOpenRecommendBox" />
     <section v-if="novelDetailInfo" class="module-introduce">
       <div class="introduce-content">
         <div class="cover-container">
