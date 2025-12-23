@@ -1,8 +1,6 @@
 // layouts/default.vue
 <template>
-  <div>
-    <nuxt v-if="isShowNuxtContent" />
-  </div>
+  <div> <nuxt v-if="$nuxt.context.route.path.includes('/novel/') || isShowNuxtContent" /> </div>
 </template>
 
 <script>
@@ -13,10 +11,12 @@ export default {
     };
   },
   mounted() {
-    if (window.getItem("novel_tid")) {
-      this.isShowNuxtContent = true;
-    } else {
-      this.getUserTid();
+    if (!this.$nuxt.context.route.path.includes("/novel/")) {
+      if (window.getItem("novel_tid")) {
+        this.isShowNuxtContent = true;
+      } else {
+        this.getUserTid();
+      }
     }
   },
   methods: {

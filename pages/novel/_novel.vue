@@ -108,7 +108,7 @@
         ></div>
       </div>
       <div class="novel-content-top novel-content"> {{ firstP }} </div>
-      <google-ad-preload class="google-ad" ad-slot="2858514230" />
+      <google-ad class="google-ad" ad-slot="2858514230" />
       <div class="novel-content-bottom novel-content" v-html="otherP"> </div>
     </section>
 
@@ -327,12 +327,13 @@ export default {
       }
     }
   },
-  created() {
-    if (process.client) {
-      this.getNovelDetailInfo();
-    }
-  },
   mounted() {
+    if (window.getItem("novel_tid")) {
+      this.getNovelDetailInfo();
+    } else {
+      this.getUserTid();
+    }
+
     // this.configAdBreak();
     window.dataLayer.push({
       event: "Novel_Intro_Page",
@@ -346,6 +347,18 @@ export default {
   methods: {
     getStarListStyle,
     getStarScore,
+    async getUserTid() {
+      await this.$axios
+        .$get("/api/user/get_tid", {
+          site_id: process.env.SITE_ID
+        })
+        .then((response) => {
+          if (response.tid) {
+            window.setItem("novel_tid", response.tid);
+          }
+        });
+      await this.getNovelDetailInfo();
+    },
     handleClickRead() {
       window.dataLayer.push({
         event: "Novel_Intro_Page_Click",
@@ -384,6 +397,7 @@ export default {
       });
     },
     async getNovelDetailInfo() {
+      console.log("加载落地页");
       const novelId = this.$route.params.novel;
       await this.$axios
         .$post("/api/novel/novel_info", {
