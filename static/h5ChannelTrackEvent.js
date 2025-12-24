@@ -113,7 +113,7 @@ function trackEventToPixel(eventKey) {
       tiktok: "",
       facebook: "ViewContent"
     },
-    Locked_Chapter_Show_User: {
+    Click_Unlock_With_Coins: {
       tiktok: "",
       facebook: "StartTrial"
     },
@@ -143,7 +143,7 @@ function trackEventToPixel(eventKey) {
   };
   const source = window.getParam("hi_source");
   const pixelId = window.getParam("hi_pc");
-  const eventName = eventNameObj[eventKey][source];
+  const eventName = eventNameObj?.[eventKey]?.[source];
 
   if (source && pixelId && eventName) {
     if (source === "tiktok") {

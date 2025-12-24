@@ -382,6 +382,10 @@ export default {
           if (res.success) {
             // console.log(res);
             if (res.data.status === 1) {
+              window.dataLayer.push({
+                event:'Click_Unlock_With_Coins'
+              })
+              window.trackEventToPixel("Click_Unlock_With_Coins");
               window.trackEventToPixel("Unlock_Succeed");
               window.trackEventToPixel("Unlock_With_Coins");
               window.dataLayer.push({
@@ -406,6 +410,10 @@ export default {
           event: "Novel_Lock_Chap_Page",
           lock_chap_page: "lock_chap_purchase_dialog_show"
         });
+        window.dataLayer.push({
+          event:'Click_Unlock_With_Coins'
+        })
+        window.trackEventToPixel("Click_Unlock_With_Coins");
         // if (this.autoUnLock) {
         //   Storage.setItem("autoUnLock", "yes");
         // } else {
