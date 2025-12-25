@@ -2,7 +2,7 @@
   <main>
     <custom-header current-page="Home" />
 
-    <module-home-banner :data="recBooks" />
+    <module-home-banner :data="recBooks" @handleBannerItemClick="handleNovelItemClick" />
 
     <section class="module-common module-trending">
       <common-title-label title="Trending" />
@@ -15,6 +15,7 @@
           :eager="3"
           :to="`/novel/${item.id}/`"
           :is-show-tag="true"
+          @click.native="handleNovelItemClick(item.id)"
         />
       </div>
     </section>
@@ -29,6 +30,7 @@
           :index="i"
           :eager="3"
           :to="`/novel/${item.id}/`"
+          @click.native="handleNovelItemClick(item.id)"
         />
       </div>
     </section>
@@ -50,6 +52,7 @@
             :item="item"
             :index="i"
             :to="`/novel/${item.id}/`"
+            @click.native="handleNovelItemClick(item.id)"
           />
         </template>
       </common-infinite-scroll-list>
@@ -57,7 +60,6 @@
     <custom-footer />
     <common-notification />
     <common-back-top />
-    <ad-loading />
   </main>
 </template>
 <script>
@@ -104,9 +106,22 @@ export default {
   data() {
     return {};
   },
-  mounted() {},
-  beforeDestroy() {},
-  methods: {}
+  mounted() {
+    // 页面卸载跳转时，记录点击的小说id
+    window.addEventListener("beforeunload", () => {
+      if (this.currentClickNovelId) {
+        window.dataLayer.push({
+          event: "Home_Novel_Click",
+          novel_id: this.currentClickNovelId
+        });
+      }
+    });
+  },
+  methods: {
+    handleNovelItemClick(novelId) {
+      this.currentClickNovelId = novelId;
+    }
+  }
 };
 </script>
 

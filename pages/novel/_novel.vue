@@ -1,7 +1,11 @@
 <template>
   <main>
     <custom-header class="m-hidden-flex" />
-    <custom-back-header class="m-header" need-back-model @handleOpenRecommendBox="handleOpenRecommendBox" />
+    <custom-back-header
+      class="m-header"
+      need-back-model
+      @handleOpenRecommendBox="handleOpenRecommendBox"
+    />
     <section v-if="novelDetailInfo" class="module-introduce">
       <div class="introduce-content">
         <div class="cover-container">
@@ -397,7 +401,6 @@ export default {
       });
     },
     async getNovelDetailInfo() {
-      console.log("加载落地页");
       const novelId = this.$route.params.novel;
       await this.$axios
         .$post("/api/novel/novel_info", {

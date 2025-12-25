@@ -1,11 +1,16 @@
 <template>
-  <section v-swiper:recPcSwiper="swiperOption" class="swiper-box">
+  <section ref="moduleHomeBanner" v-swiper:recPcSwiper="swiperOption" class="swiper-box">
     <div class="swiper-wrapper">
       <custom-link
         v-for="(item, i) in data"
         :key="i"
         :to="`/novel/${item.id}/`"
         class="swiper-slide"
+        @click.native="
+          () => {
+            $emit('handleBannerItemClick', item.id);
+          }
+        "
       >
         <nuxt-img
           format="auto"
@@ -73,6 +78,7 @@ export default {
       required: true
     }
   },
+
   data() {
     return {
       swiperOption: {
@@ -84,13 +90,51 @@ export default {
         pagination: {
           el: ".swiper-pagination",
           clickable: true
+        },
+        on: {
+          slideChange: () => this.handleBannerChange()
         }
-      }
+      },
+      observerShow: null,
+      observerHide: null,
+      isHide: true,
+      bannerShowData: this.data.map((item) => ({ id: item.id, isItemShow: false }))
     };
+  },
+  mounted() {
+    this.observerShow = new IntersectionObserver((e) => this.handleIntersection(e, "show"), {
+      threshold: 1
+    });
+    this.observerHide = new IntersectionObserver((e) => this.handleIntersection(e, "hide"));
+    setTimeout(() => {
+      this.observerShow.observe(this.$refs.moduleHomeBanner);
+      this.observerHide.observe(this.$refs.moduleHomeBanner);
+    }, 0);
   },
   methods: {
     getStarScore,
-    getStarListStyle
+    getStarListStyle,
+    handleIntersection(entries, type) {
+      if (entries[0].isIntersecting && type === "show" && this.isHide) {
+        this.isHide = false;
+        this.handleBannerChange();
+      } else if (!entries[0].isIntersecting && type === "hide") {
+        this.isHide = true;
+        // 重置轮播展示状态
+        this.bannerShowData = this.data.map((item) => ({ id: item.id, isItemShow: false }));
+      }
+    },
+    handleBannerChange() {
+      const currentSwiperIndex = this.$refs.moduleHomeBanner.swiper.realIndex;
+      // 当前轮播外层为展示状态且当前item未展示过
+      if (!this.isHide && !this.bannerShowData[currentSwiperIndex].isItemShow) {
+        this.bannerShowData[currentSwiperIndex].isItemShow = true;
+        window.dataLayer.push({
+          event: "Home_Novel_Show",
+          novel_id: this.bannerShowData[currentSwiperIndex].id
+        });
+      }
+    }
   }
 };
 </script>

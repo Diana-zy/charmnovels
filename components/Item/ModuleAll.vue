@@ -1,5 +1,5 @@
 <template>
-  <custom-link :to="to" class="item">
+  <custom-link ref="moduleAll" :to="to" class="item">
     <div class="item-left">
       <nuxt-img
         format="auto"
@@ -74,7 +74,40 @@ export default {
       default: false
     }
   },
-  methods: { getStarListStyle, getStarScore }
+  data() {
+    return {
+      observerShow: null,
+      observerHide: null,
+      isHide: true
+    };
+  },
+  mounted() {
+    if (this.$route.path === "/") {
+      this.observerShow = new IntersectionObserver((e) => this.handleIntersection(e, "show"), {
+        threshold: 1
+      });
+      this.observerHide = new IntersectionObserver((e) => this.handleIntersection(e, "hide"));
+      setTimeout(() => {
+        this.observerShow.observe(this.$refs.moduleAll.$el);
+        this.observerHide.observe(this.$refs.moduleAll.$el);
+      }, 0);
+    }
+  },
+  methods: {
+    getStarListStyle,
+    getStarScore,
+    handleIntersection(entries, type) {
+      if (entries[0].isIntersecting && type === "show" && this.isHide) {
+        this.isHide = false;
+        window.dataLayer.push({
+          event: "Home_Novel_Show",
+          novel_id: this.item.id
+        });
+      } else if (!entries[0].isIntersecting && type === "hide") {
+        this.isHide = true;
+      }
+    }
+  }
 };
 </script>
 
