@@ -368,10 +368,17 @@ export default {
         event: "Novel_Intro_Page_Click",
         intro_click: "continue_reading_button"
       });
-      window.dataLayer.push({
-        event: "Landing_Page_Continue_Reading"
-      });
-      window.trackEventToPixel("Landing_Page_Continue_Reading");
+      const hi_source = getValueByURLOrCookie("hi_source");
+      const {
+        hi_source_clid,
+      } = getInfoBySource(hi_source);
+      if(!window.getCookie("Landing_Page_Continue_Reading"+this.novelDetailInfo?.id+hi_source_clid)){
+        window.dataLayer.push({
+          event: "Landing_Page_Continue_Reading"
+        });
+        window.trackEventToPixel("Landing_Page_Continue_Reading");
+        window.setCookie("Landing_Page_Continue_Reading"+this.novelDetailInfo?.id+hi_source_clid,'yes')
+      }
     },
     handleResize() {
       if (window.innerWidth <= 750) {

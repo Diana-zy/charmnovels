@@ -574,10 +574,10 @@ export default {
             hi_source_clid,
           } = getInfoBySource(hi_source);
           if(!window.getCookie("First_Chapter_Click_Next_Button"+this.currentChapterDetail.chapter_id+hi_source_clid)){
+            window.trackEventToPixel("First_Chapter_Click_Next_Button");
             window.dataLayer.push({
               event: "First_Chapter_Click_Next_Button",
             });
-            window.trackEventToPixel("First_Chapter_Click_Next_Button");
             window.setCookie("First_Chapter_Click_Next_Button"+this.currentChapterDetail.chapter_id+hi_source_clid,'yes')
           }
         } else {
