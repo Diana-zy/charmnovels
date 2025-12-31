@@ -569,6 +569,17 @@ export default {
             event: "Novel_Free_Chap_Click",
             free_chap_click: "first_chap_button_next_click"
           });
+          const hi_source = getValueByURLOrCookie("hi_source");
+          const {
+            hi_source_clid,
+          } = getInfoBySource(hi_source);
+          if(!window.getCookie("First_Chapter_Click_Next_Button"+this.currentChapterDetail.chapter_id+hi_source_clid)){
+            window.dataLayer.push({
+              event: "First_Chapter_Click_Next_Button",
+            });
+            window.trackEventToPixel("First_Chapter_Click_Next_Button");
+            window.setCookie("First_Chapter_Click_Next_Button"+this.currentChapterDetail.chapter_id+hi_source_clid,'yes')
+          }
         } else {
           window.dataLayer.push({
             event: "Novel_Free_Chap_Click",

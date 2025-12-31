@@ -139,7 +139,10 @@ function trackEventToPixel(eventKey) {
     },
     Unlock_With_Coins:{
       facebook: "AddToCart"
-    }
+    },
+    First_Chapter_Click_Next_Button:{
+      facebook: "AddToWishlist"
+    },
   };
   const source = window.getParam("hi_source");
   const pixelId = window.getParam("hi_pc");
