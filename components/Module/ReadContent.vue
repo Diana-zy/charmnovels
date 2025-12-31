@@ -581,7 +581,7 @@ export default {
           const hi_source = getValueByURLOrCookie("hi_source");
           const {
             hi_source_clid,
-          } = getInfoBySource(hi_source);
+          } = getSourceClid(hi_source);
           if(!window.getCookie("First_Chapter_Click_Next_Button"+this.currentChapterDetail.chapter_id+hi_source_clid)){
             window.trackEventToPixel("First_Chapter_Click_Next_Button");
             window.dataLayer.push({
