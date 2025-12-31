@@ -371,7 +371,7 @@ export default {
       const hi_source = getValueByURLOrCookie("hi_source");
       const {
         hi_source_clid,
-      } = getInfoBySource(hi_source);
+      } = getSourceClid(hi_source);
       if(!window.getCookie("Landing_Page_Continue_Reading"+this.novelDetailInfo?.id+hi_source_clid)){
         window.dataLayer.push({
           event: "Landing_Page_Continue_Reading"
