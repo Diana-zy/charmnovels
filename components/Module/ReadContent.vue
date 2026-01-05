@@ -5,10 +5,10 @@
       <custom-back-header
         v-if="isMobile"
         isPageContent
-        :position="'relative'"
+        :position="headPosition"
         :title="currentChapterDetail.novel_info.name"
         needBackModel
-        :url="`/novel/${currentChapterDetail.novel_info.id}/`"
+        :url="`/`"
       />
       <!-- 第一章节才展示 top-info-->
       <div v-if="currentChapterDetail.chapter_num === 1 && !isMobile" class="top-info">
@@ -75,14 +75,14 @@
         <!--        <google-ad-preload class="ad-1" ad-slot="7793230426" />-->
         <!--      <div class="download-app"> Download App to read this chapter for FREE </div>-->
         <div class="lock-btn-box">
-<!--          <div-->
-<!--            class="watch-ad-unlock"-->
-<!--            @click="handleViewAdUnlock()"-->
-<!--            :class="{ 'disable-btn': !userInfo?.user_free_count }"-->
-<!--          >-->
-<!--            <div> Watch Ad To Unlock This Chapter</div>-->
-<!--            <div> Watched Today({{ 5 - userInfo?.user_free_count }}/5)</div>-->
-<!--          </div>-->
+          <!--          <div-->
+          <!--            class="watch-ad-unlock"-->
+          <!--            @click="handleViewAdUnlock()"-->
+          <!--            :class="{ 'disable-btn': !userInfo?.user_free_count }"-->
+          <!--          >-->
+          <!--            <div> Watch Ad To Unlock This Chapter</div>-->
+          <!--            <div> Watched Today({{ 5 - userInfo?.user_free_count }}/5)</div>-->
+          <!--          </div>-->
           <div class="purchase-stripe" @click="handlePurchaseStripe">
             Unlock This Chapter With {{ this.currentChapterDetail.coin }} Coins
           </div>
@@ -219,6 +219,7 @@ export default {
   },
   data() {
     return {
+      headPosition: "relative",
       loading: false,
       isMobile: false,
       firstTagCount: 30, // 首次广告展示的字数位置
@@ -230,11 +231,9 @@ export default {
       autoUnLock: true,
       showTopUpPopup: false,
       // isLock: true,
-      userInfo: null
+      userInfo: null,
+      timer: null
     };
-  },
-  async created() {
-    await this.updateUserCoins();
   },
   computed: {
     chapterContent() {
@@ -276,7 +275,11 @@ export default {
     chapterContent(newContent) {
       if (newContent && !this.isLock) {
         this.$nextTick(() => {
-          const cut30pTags = this.getContentPTagesToLength(30);
+          // 首个章节页内位置下调
+          if (this.currentChapterDetail?.chapter_num === 1) {
+            this.firstTagCount = 500;
+          }
+          const cut30pTags = this.getContentPTagesToLength(this.firstTagCount);
           if (cut30pTags) {
             this.insertContentAd(cut30pTags, "content-ad-1", "page", "7045171250", true, 1);
           }
@@ -307,6 +310,9 @@ export default {
       },
       immediate: true
     }
+  },
+  async created() {
+    await this.updateUserCoins();
   },
   updated() {
     if (!this.isLock) {
@@ -361,58 +367,73 @@ export default {
     handleClickAutoUnLock() {
       this.autoUnLock = !this.autoUnLock;
     },
-    //付费
+    // 付费
     async handlePurchaseStripe() {
       this.loading = true;
-      //点击金币解锁
+
+      this.timer = setTimeout(() => {
+        if (this.loading) {
+          this.loading = false;
+          this.$globalMethod.showNotification({
+            message: "Network timeout, please try again later.",
+            type: "warning"
+          });
+        }
+        this.timer && clearTimeout(this.timer);
+      }, 10000);
+      // 点击金币解锁
       window.dataLayer.push({
         event: "Novel_Lock_Chap_Page",
         lock_chap_page: "lock_chap_button_coins_click"
       });
-      //调一遍用户信息接口更新一下钱 再判断
+      // 调一遍用户信息接口更新一下钱 再判断
       await this.updateUserCoins();
       if (this.userInfo.coin >= this.currentChapterDetail.coin_price) {
-        //如果钱够直接扣费
+        // 如果钱够直接扣费
         unlockNovelChapter({
           novel_id: this.currentChapterDetail.novel_info.id,
           chapter_id: this.currentChapterDetail.chapter_id,
           unlock_type: 2
-        }).then((res) => {
-          this.loading = false;
-          if (res.success) {
-            // console.log(res);
-            if (res.data.status === 1) {
-              window.dataLayer.push({
-                event:'Click_Unlock_With_Coins'
-              })
-              window.trackEventToPixel("Click_Unlock_With_Coins");
-              window.trackEventToPixel("Unlock_Succeed");
-              window.trackEventToPixel("Unlock_With_Coins");
-              window.dataLayer.push({
-                event: "Unlock_Succeed"
-              });
-              window.dataLayer.push({
-                event: "Unlock_With_Coins"
-              });
-              if (this.autoUnLock) {
-                Storage.setItem("autoUnLock", "yes");
-              } else {
-                Storage.setItem("autoUnLock", "no");
+        })
+          .then((res) => {
+            this.loading = false;
+            if (res.success) {
+              // console.log(res);
+              if (res.data.status === 1) {
+                window.dataLayer.push({
+                  event: "Click_Unlock_With_Coins"
+                });
+                window.trackEventToPixel("Click_Unlock_With_Coins");
+                window.trackEventToPixel("Unlock_Succeed");
+                window.trackEventToPixel("Unlock_With_Coins");
+                window.dataLayer.push({
+                  event: "Unlock_Succeed"
+                });
+                window.dataLayer.push({
+                  event: "Unlock_With_Coins"
+                });
+                if (this.autoUnLock) {
+                  Storage.setItem("autoUnLock", "yes");
+                } else {
+                  Storage.setItem("autoUnLock", "no");
+                }
               }
+              this.$emit("reload");
             }
-            this.$emit("reload");
-          }
-        });
+          })
+          .catch(() => {
+            this.loading = false;
+          });
       } else {
-        //钱不够，进入充值
+        // 钱不够，进入充值
         // this.loading = true;
         window.dataLayer.push({
           event: "Novel_Lock_Chap_Page",
           lock_chap_page: "lock_chap_purchase_dialog_show"
         });
         window.dataLayer.push({
-          event:'Click_Unlock_With_Coins'
-        })
+          event: "Click_Unlock_With_Coins"
+        });
         window.trackEventToPixel("Click_Unlock_With_Coins");
         // if (this.autoUnLock) {
         //   Storage.setItem("autoUnLock", "yes");

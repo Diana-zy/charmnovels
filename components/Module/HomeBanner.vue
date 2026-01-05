@@ -4,7 +4,7 @@
       <custom-link
         v-for="(item, i) in data"
         :key="i"
-        :to="`/novel/${item.id}/`"
+        :to="`/read/?ch=${item.first_chapter_id}`"
         class="swiper-slide"
         @click.native="
           () => {
@@ -36,7 +36,7 @@
         <div class="info">
           <div class="info-left">
             <nuxt-img
-              width="198"
+              width="218"
               height="296"
               :src="item.cover"
               :alt="item.name"
@@ -46,6 +46,7 @@
           </div>
           <div class="info-right">
             <p class="name">{{ item.name }}</p>
+            <p class="author">{{ item.category }}</p>
             <div class="rating">
               <i
                 v-for="(item2, i2) in getStarListStyle(item.score)"
@@ -55,7 +56,6 @@
               ></i>
               <span class="score">{{ getStarScore(item.score) }}</span>
             </div>
-            <p class="author">{{ item.author }}</p>
           </div>
         </div>
       </custom-link>
@@ -202,7 +202,7 @@ export default {
     @include ellipsis(2);
   }
   .rating {
-    margin-top: 19px;
+    margin-top: 12px;
     .icon-star-on,
     .icon-star-half {
       width: 24px;
@@ -264,7 +264,7 @@ export default {
 @media (max-width: 750px) {
   .swiper-box {
     margin: vw(22) auto 0;
-    width: vw(658);
+    width: vw(702);
     height: vw(330);
     border-radius: vw(16);
   }
@@ -277,7 +277,7 @@ export default {
 
   .info-left {
     position: relative;
-    width: vw(198);
+    width: vw(218);
     height: vw(296);
     margin-right: vw(32);
     box-shadow: 0 vw(8) vw(24) 0 rgba(0, 0, 0, 0.45);
@@ -293,7 +293,7 @@ export default {
       line-height: vw(46);
     }
     .rating {
-      margin-top: vw(32);
+      margin-top: vw(16);
       .icon-star-on,
       .icon-star-half {
         width: vw(32);
