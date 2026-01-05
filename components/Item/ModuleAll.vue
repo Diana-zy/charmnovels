@@ -14,7 +14,7 @@
       <nuxt-img
         format="auto"
         fit="cover"
-        width="198"
+        width="226"
         height="280"
         :src="item.cover"
         :alt="item.name"
@@ -192,7 +192,7 @@ export default {
     background: none;
   }
   .item-left {
-    width: vw(198);
+    width: vw(226);
     height: vw(280);
     margin-right: vw(16);
     border-radius: vw(4);
@@ -200,7 +200,7 @@ export default {
     @include book-edge(vw(4), vw(8));
   }
   .item-right {
-    width: vw(444);
+    width: vw(468);
     padding: vw(4) 0;
     font-size: vw(28);
     line-height: vw(38);

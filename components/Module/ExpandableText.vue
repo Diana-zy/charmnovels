@@ -5,14 +5,6 @@
     <div class="text-content">
       {{ text }}
     </div>
-    <div class="tips-box">
-      <div class="tips">{{ novelDetailInfo.category }}</div>
-      <!--      <div class="tips">分类</div>-->
-      <!--      <div class="tips">分类</div>-->
-    </div>
-    <!--    <div class="toggle-button" @click="toggleExpand">-->
-    <!--      {{ expanded ? "Show Less" : "Show More" }}<i class="icon-more"></i>-->
-    <!--    </div>-->
   </div>
 </template>
 
@@ -86,7 +78,7 @@ export default {
     color: rgba($color2, 0.6);
     width: vw(718);
     margin-left: vw(-30);
-    height: vw(460);
+    height: vw(410);
     background: #fef1ea;
     border-radius: vw(32);
     padding: vw(32);
@@ -119,26 +111,6 @@ export default {
       transform: translateY(vw(4)) rotate(180deg);
     }
   }
-  .tips-box {
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    overflow-x: auto;
-    overflow-y: hidden;
-    flex-wrap: nowrap;
-    height: vw(50);
-    margin-top: vw(24);
-    gap: vw(40);
-    .tips {
-      line-height: vw(50);
-      color: $color1;
-      font-size: vw(24);
-      flex-shrink: 0;
-      padding: 0 vw(54);
-      background: rgba(#ffa463, 0.9);
-      border-radius: vw(22);
-      font-weight: 600;
-    }
-  }
+
 }
 </style>

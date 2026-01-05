@@ -13,6 +13,9 @@
               <!--              <div class="menu-item menu-chapters" @click="showChapterPopup"-->
               <!--                ><i class="icon-sidebar-chapter"></i-->
               <!--              ></div>-->
+              <div class="menu-item menu-detail" @click="showDetailPopup"
+                ><i class="icon-sidebar-detail"></i
+              ></div>
               <div class="menu-item menu-style" @click="showStyleSetting">
                 <i class="icon-sidebar-theme"></i>
               </div>
@@ -218,6 +221,10 @@ export default {
       this.isShowMenuSetting = true;
       this.getReadThemeColor(); // 刷新昼夜模式
     },
+    showDetailPopup() {
+      this.isShowMenuSetting = false;
+      this.$emit("show-detail-popup");
+    },
     showStyleSetting() {
       this.isShowStyleSetting = true;
       this.isShowMenuSetting = false;
@@ -303,7 +310,8 @@ export default {
         "icon-sidebar-chapter",
         "icon-sidebar-theme",
         "icon-sidebar-light",
-        "icon-sidebar-dark"
+        "icon-sidebar-dark",
+        "icon-sidebar-detail"
       );
       @each $icon in $menuIcons {
         .#{$icon} {

@@ -216,7 +216,6 @@
 </template>
 
 <script>
-import Storage from "~/utils/storage";
 import {
   getStarListStyle,
   getStarScore,

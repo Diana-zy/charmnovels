@@ -5,7 +5,7 @@
     <module-home-banner :data="recBooks" @handleBannerItemClick="handleNovelItemClick" />
 
     <section class="module-common module-trending">
-      <common-title-label title="Trending" />
+      <common-title-label title="Most Recommended" />
       <div class="module-trending-content">
         <item-module-common
           v-for="(item, i) in trendingBooks"
@@ -13,7 +13,7 @@
           :item="item"
           :index="i"
           :eager="3"
-          :to="`/novel/${item.id}/`"
+          :to="`/read/?ch=${item.first_chapter_id}`"
           :is-show-tag="true"
           @click.native="handleNovelItemClick(item.id)"
         />
@@ -21,7 +21,7 @@
     </section>
 
     <section class="module-common module-popular">
-      <common-title-label title="Popular" />
+      <common-title-label title="Trending Now" />
       <div class="module-popular-content">
         <item-module-common
           v-for="(item, i) in popularBooks"
@@ -29,14 +29,14 @@
           :item="item"
           :index="i"
           :eager="3"
-          :to="`/novel/${item.id}/`"
+          :to="`/read/?ch=${item.first_chapter_id}`"
           @click.native="handleNovelItemClick(item.id)"
         />
       </div>
     </section>
 
     <section class="module-all">
-      <common-title-label title="Rec Books" />
+      <common-title-label title="More Popular Books" />
       <common-infinite-scroll-list
         api-endpoint="/api/novel/novel_module"
         :initial-page="2"
@@ -51,7 +51,7 @@
             :key="i"
             :item="item"
             :index="i"
-            :to="`/novel/${item.id}/`"
+            :to="`/read/?ch=${item.first_chapter_id}`"
             @click.native="handleNovelItemClick(item.id)"
           />
         </template>
@@ -92,7 +92,6 @@ export default {
           page: 1
         })
       ]);
-
       return {
         recBooks: recResponse.novel_list,
         trendingBooks: trendingResponse.novel_list,
@@ -134,14 +133,14 @@ export default {
 }
 
 @media screen and (max-width: 750px) {
-  main {
-    /*padding-top: vw(167);*/
+  .module-common,
+  .module-all {
+    padding: 0 vw(24);
   }
-
   .module-trending-content,
   .module-popular-content {
-    grid-template-columns: repeat(3, vw(198));
-    gap: vw(32);
+    grid-template-columns: repeat(3, vw(226));
+    gap: vw(12);
     & .item:nth-of-type(n + 4) {
       display: none;
     }

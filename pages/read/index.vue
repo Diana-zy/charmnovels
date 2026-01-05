@@ -35,6 +35,7 @@
       ref="readSidebar"
       :current-read-progress="currentReadProgress"
       @show-chapter-popup="handleShowChapterPopup"
+      @show-detail-popup="handleShowDetailPopup"
       @hide-menu-setting="handleHideHeader"
       @hide-style-setting="handleHideHeader"
     />
@@ -57,6 +58,20 @@
       </div>
     </transition>
 
+    <!-- 移动端详情弹窗 -->
+    <transition name="fade">
+      <div v-show="isShowDetailPopup" class="detail-popup">
+        <div class="mask" @click="handleHideDetailPopup"></div>
+        <transition name="slide">
+          <module-novel-detail-intro
+            v-show="isShowDetailPopup"
+            ref="novelDetailPopup"
+            :novel-detail-info="novelDetailInfo"
+          />
+        </transition>
+      </div>
+    </transition>
+
     <!-- 激励视频广告 -->
     <incentive-ad
       ref="refIncentiveAd"
@@ -71,12 +86,7 @@
 <script>
 import Storage from "~/utils/storage";
 import { getUserInfo, updateSkuOrder, unlockNovelChapter } from "~/api/api";
-import {
-  getQueryParam,
-  simulateClick,
-  getIsWatchedIncentiveVideo,
-  setWatchedIncentiveVideo
-} from "@/utils/utils";
+import { getQueryParam, getIsWatchedIncentiveVideo } from "@/utils/utils";
 
 export default {
   data() {
@@ -93,33 +103,33 @@ export default {
       isShowChapters: false, // PC端悬浮章节列表
       isShowHeader: false,
       isShowChapterPopup: false, // 移动端章节弹窗
+      isShowDetailPopup: false, // 移动端详情弹窗
       distanceFromTop: 0, // body距离顶部距离
-      callback: null
+      callback: null,
+      novelDetailInfo: null
     };
   },
   created() {},
   mounted() {
-    if (process.client) {
-      if (
-        getQueryParam("nov") &&
-        getQueryParam("pay_status") === "success" &&
-        getQueryParam("order_no")
-      ) {
-        dataLayer.push({ event: "Content_Pay_successful" });
-        this.confirmUnlockNovel();
-      } else {
-        if (getQueryParam("order_no") && getQueryParam("pay_status") === "cancel") {
-          window.dataLayer.push({
-            event: "Purchase_action",
-            purchase_action: "purchase_fail_by_userexit"
-          });
-          this.$globalMethod.updateUrlQuery(this, "order_no");
-          this.$nextTick(() => {
-            this.$refs.moduleReadContentRef.handleWinBack();
-          });
-        }
-        this.getCurrentChapterDetail();
+    if (
+      getQueryParam("nov") &&
+      getQueryParam("pay_status") === "success" &&
+      getQueryParam("order_no")
+    ) {
+      dataLayer.push({ event: "Content_Pay_successful" });
+      this.confirmUnlockNovel();
+    } else {
+      if (getQueryParam("order_no") && getQueryParam("pay_status") === "cancel") {
+        window.dataLayer.push({
+          event: "Purchase_action",
+          purchase_action: "purchase_fail_by_userexit"
+        });
+        this.$globalMethod.updateUrlQuery(this, "order_no");
+        this.$nextTick(() => {
+          this.$refs.moduleReadContentRef.handleWinBack();
+        });
       }
+      this.getCurrentChapterDetail();
     }
     document.addEventListener("click", this.handleUserClickEvent);
     this.handleResize();
@@ -196,35 +206,33 @@ export default {
                   (self.$refs.moduleReadContentRef.loading = false);
                 const source = window.getParam("hi_source");
                 const { hi_source_clid } = window.getSourceClid(source);
-                if(!window.getCookie("Locked_Chapter_Show"+hi_source_clid )){
+                if (!window.getCookie("Locked_Chapter_Show" + hi_source_clid)) {
                   window.dataLayer.push({
-                    event:'Locked_Chapter_Show_User'
-                  })
+                    event: "Locked_Chapter_Show_User"
+                  });
                   window.trackEventToPixel("Locked_Chapter_Show_User");
-                  window.setCookie("Locked_Chapter_Show"+hi_source_clid,'yes')
+                  window.setCookie("Locked_Chapter_Show" + hi_source_clid, "yes");
                 }
                 window.dataLayer.push({
-                  event:'Locked_Chapter_Show_Count'
-                })
+                  event: "Locked_Chapter_Show_Count"
+                });
                 window.trackEventToPixel("Locked_Chapter_Show_Count");
-
               }
             });
           } else {
-            if( chapterDetail?.locked_chapter &&
-              !chapterDetail?.is_unlock){
+            if (chapterDetail?.locked_chapter && !chapterDetail?.is_unlock) {
               const source = window.getParam("hi_source");
               const { hi_source_clid } = window.getSourceClid(source);
-              if(!window.getCookie("Locked_Chapter_Show"+hi_source_clid )){
+              if (!window.getCookie("Locked_Chapter_Show" + hi_source_clid)) {
                 window.dataLayer.push({
-                  event:'Locked_Chapter_Show_User'
-                })
+                  event: "Locked_Chapter_Show_User"
+                });
                 window.trackEventToPixel("Locked_Chapter_Show_User");
-                window.setCookie("Locked_Chapter_Show"+hi_source_clid,'yes')
+                window.setCookie("Locked_Chapter_Show" + hi_source_clid, "yes");
               }
               window.dataLayer.push({
-                event:'Locked_Chapter_Show_Count'
-              })
+                event: "Locked_Chapter_Show_Count"
+              });
               window.trackEventToPixel("Locked_Chapter_Show_Count");
             }
           }
@@ -260,6 +268,7 @@ export default {
         })
         .then((response) => {
           const novelDetail = response;
+          this.novelDetailInfo = novelDetail.novel_info;
           this.novelChapterList = novelDetail.chapter.map((item) => {
             return { ...item, isUnlocked: true };
           });
@@ -408,6 +417,10 @@ export default {
     handleShowMenuSetting() {
       this.$refs.readSidebar.showMenuSetting();
       this.isShowHeader = true;
+      this.$refs.moduleReadContentRef.headPosition = "fixed";
+      // 顶部padding避免内容跳动
+      const headHeight = document.querySelectorAll(".back-header")[0].offsetHeight;
+      document.body.style.paddingTop = `${headHeight}px`;
 
       this.distanceFromTop = document.documentElement.scrollTop;
       document.body.classList.add("no-scroll");
@@ -428,6 +441,9 @@ export default {
     },
     // 关闭header，等同关闭所有弹窗
     handleHideHeader() {
+      this.$refs.moduleReadContentRef.headPosition = "relative";
+      document.body.style.paddingTop = 0;
+
       this.isShowHeader = false;
       document.body.classList.remove("no-scroll");
       window.scrollTo(0, this.distanceFromTop); // 恢复滚动位置
@@ -470,6 +486,13 @@ export default {
         console.log(" error:", error);
       }
       this.getCurrentChapterDetail();
+    },
+    handleShowDetailPopup() {
+      this.isShowDetailPopup = true;
+    },
+    handleHideDetailPopup() {
+      this.isShowDetailPopup = false;
+      this.handleHideHeader();
     }
   }
 };
@@ -550,6 +573,29 @@ export default {
       background: rgba($color6, 0.4);
     }
     .chapter-container {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  }
+
+  .detail-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 101;
+    .mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba($color6, 0.4);
+    }
+    .module-introduce {
       position: absolute;
       left: 0;
       bottom: 0;

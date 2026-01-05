@@ -104,7 +104,7 @@ export default {
       });
       window.setCookie("purchase_dialog", "purchase_completed_with_dialog");
       this.$globalMethod.showNotification({
-        message: "PayPal is currently unavailable.Please use Stripe to complete your payment",
+        message: "PayPal is currently unavailable. Please use Stripe to complete your payment.",
         type: "warning"
       });
     },
@@ -512,6 +512,9 @@ export default {
     .btn-box {
       padding-top: vw(32);
       width: 100%;
+      .disable-btn {
+        background: #003087 !important;
+      }
 
       .btn {
         width: 100%;
