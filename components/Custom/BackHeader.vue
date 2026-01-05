@@ -24,7 +24,8 @@ export default {
       default: "sticky"
     },
     url: {
-      type: String
+      type: String,
+      default: "/"
     },
     isPageContent: {
       type: Boolean,
@@ -37,7 +38,11 @@ export default {
   },
   watch: {
     position: {
-      handler(val) {},
+      handler(val) {
+        if (val && process.client) {
+          document.documentElement.style.setProperty("--position", val);
+        }
+      },
       immediate: true
     }
   },

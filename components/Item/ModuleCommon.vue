@@ -5,7 +5,7 @@
       <nuxt-img
         format="auto"
         fit="cover"
-        width="198"
+        width="226"
         height="296"
         :src="item.cover"
         :alt="item.name"
@@ -18,8 +18,8 @@
       <p class="name">{{ item.name }}</p>
       <div class="info-row">
         <span>{{ item.category }}</span>
-        <span class="line"></span>
-        <span>{{ item.author }}</span>
+        <!-- <span class="line"></span>
+        <span>{{ item.author }}</span> -->
       </div>
       <p class="desc">{{ item.intro }}</p>
       <div class="info-bottom">
@@ -180,7 +180,7 @@ export default {
     flex-direction: column;
   }
   .item-left {
-    width: vw(198);
+    width: vw(226);
     height: vw(296);
     margin: 0;
     border-radius: vw(4);
@@ -204,11 +204,8 @@ export default {
   }
   .name {
     margin: vw(8) 0 vw(4);
-    line-height: vw(38);
-    font-size: vw(28);
-    @include ellipsis;
-    display: block;
-    -webkit-line-clamp: unset;
+    line-height: vw(32);
+    font-size: vw(24);
   }
   .info-row {
     display: flex;

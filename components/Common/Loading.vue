@@ -24,7 +24,7 @@ export default {};
 .loading-bars div {
   width: 6px;
   height: 14px;
-  background: rgba($color3, 0.6);
+  background: rgba($color2, 0.8);
   transform-origin: center center;
   animation: grow-shrink 1s infinite ease-in-out;
 }
