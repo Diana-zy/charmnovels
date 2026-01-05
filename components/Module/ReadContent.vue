@@ -231,8 +231,7 @@ export default {
       autoUnLock: true,
       showTopUpPopup: false,
       // isLock: true,
-      userInfo: null,
-      timer: null
+      userInfo: null
     };
   },
   computed: {
@@ -370,17 +369,6 @@ export default {
     // 付费
     async handlePurchaseStripe() {
       this.loading = true;
-
-      this.timer = setTimeout(() => {
-        if (this.loading) {
-          this.loading = false;
-          this.$globalMethod.showNotification({
-            message: "Network timeout, please try again later.",
-            type: "warning"
-          });
-        }
-        this.timer && clearTimeout(this.timer);
-      }, 10000);
       // 点击金币解锁
       window.dataLayer.push({
         event: "Novel_Lock_Chap_Page",
@@ -694,6 +682,7 @@ export default {
             } else {
               Storage.setItem("autoUnLock", "no");
             }
+            this.loading = false;
             window.location.href = url;
           }
         });
