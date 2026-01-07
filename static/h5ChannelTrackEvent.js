@@ -99,14 +99,14 @@ function trackEventToPixel(eventKey) {
   const eventNameObj = {
     Land_User_Home: {
       tiktok: "Search",
-      // facebook: "Search"
+      facebook: "Search"
     },
     Land_User_Not_Home: {
       tiktok: "Download",
       facebook: "Contact"
     },
     Land_User_Home_Count: {
-      tiktok: "StartTrial",
+      tiktok: "StartTrial"
       // facebook: "StartTrial"
     },
     Landing_Page_Continue_Reading: {
@@ -122,27 +122,33 @@ function trackEventToPixel(eventKey) {
       facebook: "InitiateCheckout"
     },
     Land_User_Not_Home_Count: {
-      tiktok: "ViewContent",
-      facebook: "Search"
+      tiktok: "ViewContent"
+      // facebook: "Search"
     },
     Purchase_Completed: {
       tiktok: "Purchase",
       facebook: "Purchase"
     },
     Watch_Ad_Completed: {
-      tiktok: "AddPaymentInfo",
-      facebook: "AddPaymentInfo"
+      tiktok: "AddPaymentInfo"
+      // facebook: "AddPaymentInfo"
     },
     Unlock_Succeed: {
       tiktok: "CompleteRegistration",
       facebook: "CompleteRegistration"
     },
-    Unlock_With_Coins:{
-      facebook: "AddToCart"
+    Unlock_With_Coins: {
+      // facebook: "AddToCart"
     },
-    First_Chapter_Click_Next_Button:{
+    First_Chapter_Click_Next_Button: {
       facebook: "AddToWishlist"
     },
+    Click_Books_Clid: {
+      facebook: "AddPaymentInfo"
+    },
+    Click_Books_Book: {
+      facebook: "AddToCart"
+    }
   };
   const source = window.getParam("hi_source");
   const pixelId = window.getParam("hi_pc");

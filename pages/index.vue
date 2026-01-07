@@ -103,7 +103,9 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      currentClickNovelId: null
+    };
   },
   mounted() {
     // 页面卸载跳转时，记录点击的小说id
@@ -113,6 +115,34 @@ export default {
           event: "Home_Novel_Click",
           novel_id: this.currentClickNovelId
         });
+
+        const source = window.getParam("hi_source");
+        const { hi_source_clid } = window.getSourceClid(source);
+        const userClickBooksData = window.getCookie("User_Click_Books_Data");
+        if (!userClickBooksData) {
+          const userClickBooksDataObj = {
+            sourceClidArr: [hi_source_clid],
+            clickBookArr: [this.currentClickNovelId]
+          };
+          window.setCookieToDay("User_Click_Books_Data", JSON.stringify(userClickBooksDataObj));
+          window.trackEventToPixel("Click_Books_Clid");
+          window.pushEventParamsToGtm("Click_Books_Clid");
+          window.trackEventToPixel("Click_Books_Book");
+          window.pushEventParamsToGtm("Click_Books_Book");
+        } else {
+          const userClickBooksDataObj = JSON.parse(userClickBooksData);
+          if (!userClickBooksDataObj.sourceClidArr.includes(hi_source_clid)) {
+            userClickBooksDataObj.sourceClidArr.push(hi_source_clid);
+            window.trackEventToPixel("Click_Books_Clid");
+            window.pushEventParamsToGtm("Click_Books_Clid");
+          }
+          if (!userClickBooksDataObj.clickBookArr.includes(this.currentClickNovelId)) {
+            userClickBooksDataObj.clickBookArr.push(this.currentClickNovelId);
+            window.trackEventToPixel("Click_Books_Book");
+            window.pushEventParamsToGtm("Click_Books_Book");
+          }
+          window.setCookieToDay("User_Click_Books_Data", JSON.stringify(userClickBooksDataObj));
+        }
       }
     });
   },
