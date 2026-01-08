@@ -389,7 +389,8 @@ export default {
               // console.log(res);
               if (res.data.status === 1) {
                 window.dataLayer.push({
-                  event: "Click_Unlock_With_Coins"
+                  event: "Click_Unlock_With_Coins",
+                  unlock_id: `novel_${this.currentChapterDetail.novel_info.id}_chapter_${this.currentChapterDetail.chapter_num}`
                 });
                 window.trackEventToPixel("Click_Unlock_With_Coins");
                 window.trackEventToPixel("Unlock_Succeed");
@@ -420,7 +421,8 @@ export default {
           lock_chap_page: "lock_chap_purchase_dialog_show"
         });
         window.dataLayer.push({
-          event: "Click_Unlock_With_Coins"
+          event: "Click_Unlock_With_Coins",
+          unlock_id: `novel_${this.currentChapterDetail.novel_info.id}_chapter_${this.currentChapterDetail.chapter_num}`
         });
         window.trackEventToPixel("Click_Unlock_With_Coins");
         // if (this.autoUnLock) {
@@ -579,15 +581,24 @@ export default {
             free_chap_click: "first_chap_button_next_click"
           });
           const hi_source = getValueByURLOrCookie("hi_source");
-          const {
-            hi_source_clid,
-          } = getSourceClid(hi_source);
-          if(!window.getCookie("First_Chapter_Click_Next_Button"+this.currentChapterDetail.chapter_id+hi_source_clid)){
+          const { hi_source_clid } = getSourceClid(hi_source);
+          if (
+            !window.getCookie(
+              "First_Chapter_Click_Next_Button" +
+                this.currentChapterDetail.chapter_id +
+                hi_source_clid
+            )
+          ) {
             window.trackEventToPixel("First_Chapter_Click_Next_Button");
             window.dataLayer.push({
-              event: "First_Chapter_Click_Next_Button",
+              event: "First_Chapter_Click_Next_Button"
             });
-            window.setCookie("First_Chapter_Click_Next_Button"+this.currentChapterDetail.chapter_id+hi_source_clid,'yes')
+            window.setCookie(
+              "First_Chapter_Click_Next_Button" +
+                this.currentChapterDetail.chapter_id +
+                hi_source_clid,
+              "yes"
+            );
           }
         } else {
           window.dataLayer.push({
