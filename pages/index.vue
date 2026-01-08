@@ -99,7 +99,7 @@ export default {
         allBooks: allBooksResponse.novel_list
       };
     } catch (error) {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
     }
   },
   data() {

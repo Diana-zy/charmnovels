@@ -263,7 +263,7 @@ export default {
         first_chapter_content: novelDetailResponse.first_chapter_content
       };
     } catch (error) {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
     }
   },
   data() {

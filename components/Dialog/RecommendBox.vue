@@ -113,7 +113,7 @@ export default {
       }
     },
     handleClick(item, i) {
-      console.log(i);
+      // console.log(i);
       const currentBannerRealIndex = i;
       this.currentBannerRealIndex = currentBannerRealIndex;
     },

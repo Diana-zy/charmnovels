@@ -46,7 +46,7 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
       //接口返回tid不存在处理
       if (error.response) {
         const responseData = error.response.data; // 这就是接口返回的JSON
-        console.log(responseData, "responseData");
+        // console.log(responseData, "responseData");
         const { msg } = responseData;
         if (msg === "tid is not exist") {
           window.removeItem("novel_tid");
@@ -58,7 +58,7 @@ export default function ({ $axios, $globalData, $globalMethod, redirect }) {
           }
         }
       }
-      console.log("err" + error); // for debug
+      // console.log("err" + error); // for debug
 
       return Promise.reject(error);
     }

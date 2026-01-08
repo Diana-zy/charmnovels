@@ -687,7 +687,7 @@ export default {
         };
         await paymentSKU(data).then((res) => {
           if (res.success) {
-            console.log(" response:", res);
+            // console.log(" response:", res);
             const { url } = res.data.order_info;
             if (res.success) {
               window.dataLayer.push({
@@ -709,7 +709,7 @@ export default {
           }
         });
       } catch (error) {
-        console.log(" error:", error.msg);
+        // console.log(" error:", error.msg);
         this.loading = false;
       }
     },

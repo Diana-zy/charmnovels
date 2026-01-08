@@ -62,7 +62,7 @@ export default {
         }
         this.currentPage++;
       } catch (error) {
-        console.error("Failed to load more data:", error);
+        // console.error("Failed to load more data:", error);
       } finally {
         this.loading = false;
       }
