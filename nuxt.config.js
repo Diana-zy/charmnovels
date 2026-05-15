@@ -80,12 +80,12 @@ export default {
     "~/plugins/axios"
   ],
   components: true,
-  buildModules: ["@nuxtjs/style-resources", "@nuxt/image", "@nuxtjs/pwa", "@nuxtjs/sitemap"],
+  buildModules: ["@nuxtjs/style-resources", "@nuxt/image", "@nuxtjs/pwa"],
   css: ["@/assets/css/fonts.css", "@/assets/css/reset.css", "@/assets/css/common.scss"],
   styleResources: {
     scss: ["~/assets/css/_mixins.scss"]
   },
-  modules: ["@nuxtjs/axios"],
+  modules: ["@nuxtjs/axios", "@nuxtjs/sitemap"],
   sitemap: {
     hostname: "https://charmnovels.com",
     filter({ routes }) {
