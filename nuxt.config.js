@@ -67,9 +67,9 @@ export default {
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
   image: {
-    provider: "cloudflare",
-    cloudflare: {
-      baseURL: "https://bunchthings.com"
+    provider: "static",
+    static: {
+      baseURL: "https://d16z0y80dlmvt7.cloudfront.net"
     }
   },
   plugins: [
