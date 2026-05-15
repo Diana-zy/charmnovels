@@ -87,7 +87,20 @@ export default {
   },
   modules: ["@nuxtjs/axios"],
   sitemap: {
-    hostname: "https://charmnovels.com" // 网站根 URL
+    hostname: "https://charmnovels.com",
+    routes: async () => {
+      try {
+        const pathData = await fetch(
+          `${process.env.PROD_API_URL}/api/novel/novel_chapter_path?site_id=${process.env.SITE_ID}`
+        );
+        const path = await pathData.json();
+        return path.data.list
+          .filter((item) => item.novel_id)
+          .map((item) => `/novel/${item.novel_id}/`);
+      } catch (e) {
+        return [];
+      }
+    }
   },
   pwa: {
     manifest: {
