@@ -265,6 +265,13 @@ export default {
       };
     } catch (error) {
       console.error("Error fetching data:", error);
+      return {
+        allBooks: [],
+        recBooks: [],
+        trending: [],
+        novelDetailInfo: null,
+        first_chapter_content: ""
+      };
     }
   },
   data() {
