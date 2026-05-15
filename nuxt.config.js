@@ -88,6 +88,9 @@ export default {
   modules: ["@nuxtjs/axios"],
   sitemap: {
     hostname: "https://charmnovels.com",
+    filter({ routes }) {
+      return routes.filter((route) => route.url && typeof route.url === "string");
+    },
     routes: async () => {
       try {
         const pathData = await fetch(
