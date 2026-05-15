@@ -85,26 +85,7 @@ export default {
   styleResources: {
     scss: ["~/assets/css/_mixins.scss"]
   },
-  modules: ["@nuxtjs/axios", "@nuxtjs/sitemap"],
-  sitemap: {
-    hostname: "https://charmnovels.com",
-    filter({ routes }) {
-      return routes.filter((route) => route.url && typeof route.url === "string");
-    },
-    routes: async () => {
-      try {
-        const pathData = await fetch(
-          `${process.env.PROD_API_URL}/api/novel/novel_chapter_path?site_id=${process.env.SITE_ID}`
-        );
-        const path = await pathData.json();
-        return path.data.list
-          .filter((item) => item.novel_id)
-          .map((item) => `/novel/${item.novel_id}/`);
-      } catch (e) {
-        return [];
-      }
-    }
-  },
+  modules: ["@nuxtjs/axios"],
   pwa: {
     manifest: {
       name: "CharmNovels", // 应用名称
